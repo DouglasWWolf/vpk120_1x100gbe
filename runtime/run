@@ -1,0 +1,183 @@
+export axi_uart_device=/dev/ttyUSB2
+
+                DCMAC=0xA4000000
+          GLOBAL_MODE=0x0004
+    GLOBAL_CONTROL_RX=0x00F0
+    GLOBAL_CONTROL_TX=0x00F8
+ C0_CHANNEL_CONFIG_TX=0x1000
+ C0_CHANNEL_CONFIG_RX=0x1004
+C0_CHANNEL_CONTROL_RX=0x1030
+C0_CHANNEL_CONTROL_TX=0x1038
+           C0_TX_MODE=0x1040
+           C0_RX_MODE=0x1044
+   C0_PORT_CONTROL_RX=0x10F0
+   C0_PORT_CONTROL_TX=0x10F8
+           
+     RESET=0xA4100000
+RESET_DONE=$((RESET + 4))
+
+  rx_core=1
+  tx_core=2
+rx_serdes=4
+tx_serdes=8
+   gt_all=16
+  gt_rxdp=32
+  gt_txdp=64
+
+
+sreg=$((DCMAC + 0x1C00))
+
+axi()
+{
+    axireg $1 $2 $3 $4
+}
+
+
+all_ports()
+{
+     for i in {0..5}; do 
+         addr=$((DCMAC + $1 + (i*4096)))
+         axi $addr $2
+     done
+}
+
+assert_all_reset()
+{
+    axi $((DCMAC + GLOBAL_CONTROL_RX)) 7
+    axi $((DCMAC + GLOBAL_CONTROL_TX)) 7 
+    all_ports $C0_PORT_CONTROL_TX 3
+    all_ports $C0_PORT_CONTROL_RX 3
+}
+
+release_all_reset()
+{
+    axi $((DCMAC + GLOBAL_CONTROL_RX)) 0
+    axi $((DCMAC + GLOBAL_CONTROL_TX)) 0 
+    all_ports $C0_PORT_CONTROL_TX 0
+    all_ports $C0_PORT_CONTROL_RX 0
+}
+
+
+
+# Should per port that is in use
+assert_channel_resets()
+{
+    for i in {0..0}; do
+        axi $((DCMAC + C0_CHANNEL_CONTROL_RX + i*4096)) 1
+        axi $((DCMAC + C0_CHANNEL_CONTROL_TX + i*4096)) 1 
+        sleep .01
+        axi $((DCMAC + C0_PORT_CONTROL_RX + i*4096)) 3
+        axi $((DCMAC + C0_PORT_CONTROL_TX + i*4096)) 3 
+        sleep .01
+    done
+}
+
+release_channel_resets()
+{
+    for i in {0..0}; do
+        axi $((DCMAC + C0_CHANNEL_CONTROL_RX + i*4096)) 0
+        axi $((DCMAC + C0_CHANNEL_CONTROL_TX + i*4096)) 0 
+        sleep .01
+        axi $((DCMAC + C0_PORT_CONTROL_RX + i*4096)) 0
+        axi $((DCMAC + C0_PORT_CONTROL_TX + i*4096)) 0 
+        sleep .01
+    done
+}
+
+
+assert_dcmac_global_port_channel_resets_static()
+{
+    assert_all_reset
+    assert_channel_resets    
+}
+
+release_dcmac_global_port_channel_resets_static()
+{
+    release_all_reset
+    release_channel_resets    
+} 
+
+
+config_mac()
+{
+    all_ports $C0_CHANNEL_CONFIG_TX 0x25800062
+    all_ports $C0_CHANNEL_CONFIG_RX 0xC01
+}
+
+
+set_data_rate()
+{
+    wdata_tx=$(( (5 * 2**16) | (1 * 2**4 ) ))
+    wdata_rx=$(( (5 * 2**16) | (1 * 2**11) ))
+    all_ports $C0_TX_MODE $wdata_tx
+    all_ports $C0_RX_MODE $wdata_rx
+}
+
+program_dcmac()
+{
+    axi $((DCMAC + GLOBAL_MODE)) 0x07550000
+    config_mac
+    set_data_rate
+}
+
+gt_rx_datapathonly_reset()
+{
+    axi $RESET $gt_rxdp
+    sleep .1
+    axi $RESET 0
+}
+
+dcmac_rx_port_reset()
+{
+    all_ports $C0_PORT_CONTROL_RX 2
+    sleep .1
+    all_ports $C0_PORT_CONTROL_RX 0        
+    sleep .1
+}
+
+
+
+axi $RESET $gt_all
+sleep .1
+axi $RESET 0
+sleep .1
+if [ $(axi -dec $RESET_DONE) -ne 255 ]; then
+    echo "Never came out of reset!"
+    exit 1
+fi
+
+axi $RESET $gt_rxdp
+sleep .1
+axi $RESET 0
+sleep .5
+
+# Reset Cn_PORT_CONTROL_REG_RX
+all_ports $C0_PORT_CONTROL_RX 2
+sleep .1
+all_ports $C0_PORT_CONTROL_RX 0
+sleep .1
+
+
+assert_dcmac_global_port_channel_resets_static
+program_dcmac
+release_dcmac_global_port_channel_resets_static
+sleep .5
+gt_rx_datapathonly_reset
+
+sleep .5
+if [ $(axi -dec $RESET_DONE) -ne 255 ]; then
+    echo "gt_rx_datapathonly never came out of reset!"
+    exit 1
+fi
+dcmac_rx_port_reset
+
+
+sleep 3
+
+# Show alignment status
+for i in {1..5}; do
+    axi $sreg 0xFFFFFFFF
+    sleep 1
+    axi -hex $sreg
+done
+
