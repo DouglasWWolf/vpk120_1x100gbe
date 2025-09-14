@@ -2,7 +2,7 @@
 //Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.
 //--------------------------------------------------------------------------------
 //Tool Version: Vivado v.2024.2 (lin64) Build 5239630 Fri Nov 08 22:34:34 MST 2024
-//Date        : Thu Sep 11 18:40:04 2025
+//Date        : Sun Sep 14 03:08:20 2025
 //Host        : wolf-super-server running 64-bit Ubuntu 20.04.6 LTS
 //Command     : generate_target top_level.bd
 //Design      : top_level
@@ -41,7 +41,7 @@ module axi_uart_bridge_imp_SLJY4W
   output M_AXI_bready;
   input [1:0]M_AXI_bresp;
   input M_AXI_bvalid;
-  input [0:0]M_AXI_rdata;
+  input [31:0]M_AXI_rdata;
   output M_AXI_rready;
   input [1:0]M_AXI_rresp;
   input M_AXI_rvalid;
@@ -63,7 +63,7 @@ module axi_uart_bridge_imp_SLJY4W
   wire M_AXI_bready;
   wire [1:0]M_AXI_bresp;
   wire M_AXI_bvalid;
-  wire [0:0]M_AXI_rdata;
+  wire [31:0]M_AXI_rdata;
   wire M_AXI_rready;
   wire [1:0]M_AXI_rresp;
   wire M_AXI_rvalid;
@@ -104,7 +104,7 @@ module axi_uart_bridge_imp_SLJY4W
         .M_AXI_BREADY(M_AXI_bready),
         .M_AXI_BRESP(M_AXI_bresp),
         .M_AXI_BVALID(M_AXI_bvalid),
-        .M_AXI_RDATA({1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,M_AXI_rdata}),
+        .M_AXI_RDATA(M_AXI_rdata),
         .M_AXI_RREADY(M_AXI_rready),
         .M_AXI_RRESP(M_AXI_rresp),
         .M_AXI_RVALID(M_AXI_rvalid),
@@ -171,19 +171,17 @@ module dcmac_ip_imp_1UROX8O
     ch0_tx_usr_clk2_0,
     ch0_tx_usr_clk_0,
     gpo,
+    gt_loopback,
     gt_reset_all_in,
     gt_reset_rx_datapath_in_0,
     gt_reset_rx_datapath_in_1,
     gt_reset_rx_datapath_in_2,
     gt_reset_rx_datapath_in_3,
-    gt_reset_tx_datapath_in_0,
-    gt_reset_tx_datapath_in_1,
-    gt_reset_tx_datapath_in_2,
-    gt_reset_tx_datapath_in_3,
     gt_rx_reset_done_out_0,
     gt_rx_reset_done_out_1,
     gt_rx_reset_done_out_2,
     gt_rx_reset_done_out_3,
+    gt_rxcdrhold,
     gt_tx_reset_done_out_0,
     gt_tx_reset_done_out_1,
     gt_tx_reset_done_out_2,
@@ -210,11 +208,9 @@ module dcmac_ip_imp_1UROX8O
     rx_axis_tuser_sop1,
     rx_axis_tvalid_0,
     rx_core_clk,
-    rx_core_reset,
     rx_flexif_clk,
     rx_macif_clk,
     rx_serdes_clk,
-    rx_serdes_reset,
     s_axi_aclk,
     s_axi_araddr,
     s_axi_aresetn,
@@ -252,11 +248,9 @@ module dcmac_ip_imp_1UROX8O
     tx_axis_tuser_sop1,
     tx_axis_tvalid_0,
     tx_core_clk,
-    tx_core_reset,
     tx_flexif_clk,
     tx_macif_clk,
-    tx_serdes_clk,
-    tx_serdes_reset);
+    tx_serdes_clk);
   input [0:0]CLK_IN_D_0_clk_n;
   input [0:0]CLK_IN_D_0_clk_p;
   input [3:0]GT_Serial_grx_n;
@@ -270,19 +264,17 @@ module dcmac_ip_imp_1UROX8O
   output [0:0]ch0_tx_usr_clk2_0;
   output [0:0]ch0_tx_usr_clk_0;
   output [31:0]gpo;
+  input [2:0]gt_loopback;
   input gt_reset_all_in;
   input gt_reset_rx_datapath_in_0;
   input gt_reset_rx_datapath_in_1;
   input gt_reset_rx_datapath_in_2;
   input gt_reset_rx_datapath_in_3;
-  input gt_reset_tx_datapath_in_0;
-  input gt_reset_tx_datapath_in_1;
-  input gt_reset_tx_datapath_in_2;
-  input gt_reset_tx_datapath_in_3;
   output gt_rx_reset_done_out_0;
   output gt_rx_reset_done_out_1;
   output gt_rx_reset_done_out_2;
   output gt_rx_reset_done_out_3;
+  input gt_rxcdrhold;
   output gt_tx_reset_done_out_0;
   output gt_tx_reset_done_out_1;
   output gt_tx_reset_done_out_2;
@@ -309,17 +301,15 @@ module dcmac_ip_imp_1UROX8O
   output rx_axis_tuser_sop1;
   output rx_axis_tvalid_0;
   input rx_core_clk;
-  input rx_core_reset;
   input [5:0]rx_flexif_clk;
   input rx_macif_clk;
   input [5:0]rx_serdes_clk;
-  input [5:0]rx_serdes_reset;
   input s_axi_aclk;
-  input [0:0]s_axi_araddr;
+  input [31:0]s_axi_araddr;
   input s_axi_aresetn;
   output s_axi_arready;
   input s_axi_arvalid;
-  input [0:0]s_axi_awaddr;
+  input [31:0]s_axi_awaddr;
   output s_axi_awready;
   input s_axi_awvalid;
   input s_axi_bready;
@@ -329,7 +319,7 @@ module dcmac_ip_imp_1UROX8O
   input s_axi_rready;
   output [1:0]s_axi_rresp;
   output s_axi_rvalid;
-  input [0:0]s_axi_wdata;
+  input [31:0]s_axi_wdata;
   output s_axi_wready;
   input s_axi_wvalid;
   input [5:0]ts_clk;
@@ -351,11 +341,9 @@ module dcmac_ip_imp_1UROX8O
   input tx_axis_tuser_sop1;
   input tx_axis_tvalid_0;
   input tx_core_clk;
-  input tx_core_reset;
   input [5:0]tx_flexif_clk;
   input tx_macif_clk;
   input [5:0]tx_serdes_clk;
-  input [5:0]tx_serdes_reset;
 
   wire [0:0]CLK_IN_D_0_clk_n;
   wire [0:0]CLK_IN_D_0_clk_p;
@@ -455,6 +443,7 @@ module dcmac_ip_imp_1UROX8O
   wire dcmac_0_tx_clr_out_0;
   wire dcmac_0_tx_clrb_leaf_out_0;
   wire [31:0]gpo;
+  wire [2:0]gt_loopback;
   wire gt_quad_base_ch0_iloresetdone;
   wire gt_quad_base_ch0_rxoutclk;
   wire gt_quad_base_ch0_txoutclk;
@@ -467,14 +456,11 @@ module dcmac_ip_imp_1UROX8O
   wire gt_reset_rx_datapath_in_1;
   wire gt_reset_rx_datapath_in_2;
   wire gt_reset_rx_datapath_in_3;
-  wire gt_reset_tx_datapath_in_0;
-  wire gt_reset_tx_datapath_in_1;
-  wire gt_reset_tx_datapath_in_2;
-  wire gt_reset_tx_datapath_in_3;
   wire gt_rx_reset_done_out_0;
   wire gt_rx_reset_done_out_1;
   wire gt_rx_reset_done_out_2;
   wire gt_rx_reset_done_out_3;
+  wire gt_rxcdrhold;
   wire gt_tx_reset_done_out_0;
   wire gt_tx_reset_done_out_1;
   wire gt_tx_reset_done_out_2;
@@ -501,17 +487,15 @@ module dcmac_ip_imp_1UROX8O
   wire rx_axis_tuser_sop1;
   wire rx_axis_tvalid_0;
   wire rx_core_clk;
-  wire rx_core_reset;
   wire [5:0]rx_flexif_clk;
   wire rx_macif_clk;
   wire [5:0]rx_serdes_clk;
-  wire [5:0]rx_serdes_reset;
   wire s_axi_aclk;
-  wire [0:0]s_axi_araddr;
+  wire [31:0]s_axi_araddr;
   wire s_axi_aresetn;
   wire s_axi_arready;
   wire s_axi_arvalid;
-  wire [0:0]s_axi_awaddr;
+  wire [31:0]s_axi_awaddr;
   wire s_axi_awready;
   wire s_axi_awvalid;
   wire s_axi_bready;
@@ -521,7 +505,7 @@ module dcmac_ip_imp_1UROX8O
   wire s_axi_rready;
   wire [1:0]s_axi_rresp;
   wire s_axi_rvalid;
-  wire [0:0]s_axi_wdata;
+  wire [31:0]s_axi_wdata;
   wire s_axi_wready;
   wire s_axi_wvalid;
   wire [5:0]ts_clk;
@@ -543,11 +527,9 @@ module dcmac_ip_imp_1UROX8O
   wire tx_axis_tuser_sop1;
   wire tx_axis_tvalid_0;
   wire tx_core_clk;
-  wire tx_core_reset;
   wire [5:0]tx_flexif_clk;
   wire tx_macif_clk;
   wire [5:0]tx_serdes_clk;
-  wire [5:0]tx_serdes_reset;
   wire [0:0]util_ds_buf_0_IBUFDS_GTME5_O;
   wire [0:0]util_ds_buf_0_IBUFDS_GTME5_ODIV2;
   wire [0:0]xlconstant_0_dout;
@@ -619,10 +601,10 @@ module dcmac_ip_imp_1UROX8O
         .gt_reset_rx_datapath_in_1(gt_reset_rx_datapath_in_1),
         .gt_reset_rx_datapath_in_2(gt_reset_rx_datapath_in_2),
         .gt_reset_rx_datapath_in_3(gt_reset_rx_datapath_in_3),
-        .gt_reset_tx_datapath_in_0(gt_reset_tx_datapath_in_0),
-        .gt_reset_tx_datapath_in_1(gt_reset_tx_datapath_in_1),
-        .gt_reset_tx_datapath_in_2(gt_reset_tx_datapath_in_2),
-        .gt_reset_tx_datapath_in_3(gt_reset_tx_datapath_in_3),
+        .gt_reset_tx_datapath_in_0(1'b0),
+        .gt_reset_tx_datapath_in_1(1'b0),
+        .gt_reset_tx_datapath_in_2(1'b0),
+        .gt_reset_tx_datapath_in_3(1'b0),
         .gt_rx_reset_done_out_0(gt_rx_reset_done_out_0),
         .gt_rx_reset_done_out_1(gt_rx_reset_done_out_1),
         .gt_rx_reset_done_out_2(gt_rx_reset_done_out_2),
@@ -696,7 +678,7 @@ module dcmac_ip_imp_1UROX8O
         .rx_clr_out_0(dcmac_0_rx_clr_out_0),
         .rx_clrb_leaf_out_0(dcmac_0_rx_clrb_leaf_out_0),
         .rx_core_clk(rx_core_clk),
-        .rx_core_reset(rx_core_reset),
+        .rx_core_reset(1'b0),
         .rx_flexif_clk(rx_flexif_clk),
         .rx_macif_clk(rx_macif_clk),
         .rx_pma_resetdone_in_0(dcmac_0_gtm_rx_serdes_interface_0_ch_rxpmaresetdone),
@@ -711,7 +693,7 @@ module dcmac_ip_imp_1UROX8O
         .rx_serdes_fifo_flagin_3(1'b0),
         .rx_serdes_fifo_flagin_4(1'b0),
         .rx_serdes_fifo_flagin_5(1'b0),
-        .rx_serdes_reset(rx_serdes_reset),
+        .rx_serdes_reset({1'b0,1'b0,1'b0,1'b0,1'b0,1'b0}),
         .rxcdrlock_in_0(dcmac_0_gtm_rx_serdes_interface_0_ch_rxcdrlock),
         .rxcdrlock_in_1(dcmac_0_gtm_rx_serdes_interface_1_ch_rxcdrlock),
         .rxcdrlock_in_2(dcmac_0_gtm_rx_serdes_interface_2_ch_rxcdrlock),
@@ -733,11 +715,11 @@ module dcmac_ip_imp_1UROX8O
         .rxuserrdy_out_2(dcmac_0_gtm_rx_serdes_interface_2_ch_rxuserrdy),
         .rxuserrdy_out_3(dcmac_0_gtm_rx_serdes_interface_3_ch_rxuserrdy),
         .s_axi_aclk(s_axi_aclk),
-        .s_axi_araddr({1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,s_axi_araddr}),
+        .s_axi_araddr(s_axi_araddr),
         .s_axi_aresetn(s_axi_aresetn),
         .s_axi_arready(s_axi_arready),
         .s_axi_arvalid(s_axi_arvalid),
-        .s_axi_awaddr({1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,s_axi_awaddr}),
+        .s_axi_awaddr(s_axi_awaddr),
         .s_axi_awready(s_axi_awready),
         .s_axi_awvalid(s_axi_awvalid),
         .s_axi_bready(s_axi_bready),
@@ -747,7 +729,7 @@ module dcmac_ip_imp_1UROX8O
         .s_axi_rready(s_axi_rready),
         .s_axi_rresp(s_axi_rresp),
         .s_axi_rvalid(s_axi_rvalid),
-        .s_axi_wdata({1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,s_axi_wdata}),
+        .s_axi_wdata(s_axi_wdata),
         .s_axi_wready(s_axi_wready),
         .s_axi_wvalid(s_axi_wvalid),
         .ts_clk(ts_clk),
@@ -773,7 +755,7 @@ module dcmac_ip_imp_1UROX8O
         .tx_clr_out_0(dcmac_0_tx_clr_out_0),
         .tx_clrb_leaf_out_0(dcmac_0_tx_clrb_leaf_out_0),
         .tx_core_clk(tx_core_clk),
-        .tx_core_reset(tx_core_reset),
+        .tx_core_reset(1'b0),
         .tx_flexif_clk(tx_flexif_clk),
         .tx_macif_clk(tx_macif_clk),
         .tx_pma_resetdone_in_0(dcmac_0_gtm_tx_serdes_interface_0_ch_txpmaresetdone),
@@ -783,7 +765,7 @@ module dcmac_ip_imp_1UROX8O
         .tx_port_pm_tick({1'b0,1'b0,1'b0,1'b0,1'b0,1'b0}),
         .tx_preamblein_0({1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0}),
         .tx_serdes_clk(tx_serdes_clk),
-        .tx_serdes_reset(tx_serdes_reset),
+        .tx_serdes_reset({1'b0,1'b0,1'b0,1'b0,1'b0,1'b0}),
         .txdata_out_0(dcmac_0_gtm_tx_serdes_interface_0_ch_txdata),
         .txdata_out_1(dcmac_0_gtm_tx_serdes_interface_1_ch_txdata),
         .txdata_out_2(dcmac_0_gtm_tx_serdes_interface_2_ch_txdata),
@@ -831,10 +813,10 @@ module dcmac_ip_imp_1UROX8O
         .ch0_iloreset(dcmac_0_iloreset_out_0),
         .ch0_iloresetdone(gt_quad_base_ch0_iloresetdone),
         .ch0_iloresetmask(1'b1),
-        .ch0_loopback({1'b0,1'b0,1'b0}),
+        .ch0_loopback(gt_loopback),
         .ch0_pcierstb(1'b1),
         .ch0_pcsrsvdin({1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b1,1'b0,1'b0,1'b1,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0}),
-        .ch0_rxcdrhold(1'b0),
+        .ch0_rxcdrhold(gt_rxcdrhold),
         .ch0_rxcdrlock(dcmac_0_gtm_rx_serdes_interface_0_ch_rxcdrlock),
         .ch0_rxcdrovrden(1'b0),
         .ch0_rxcdrreset(1'b0),
@@ -910,10 +892,10 @@ module dcmac_ip_imp_1UROX8O
         .ch1_iloreset(dcmac_0_iloreset_out_1),
         .ch1_iloresetdone(gt_quad_base_ch1_iloresetdone),
         .ch1_iloresetmask(1'b1),
-        .ch1_loopback({1'b0,1'b0,1'b0}),
+        .ch1_loopback(gt_loopback),
         .ch1_pcierstb(1'b1),
         .ch1_pcsrsvdin({1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b1,1'b0,1'b0,1'b1,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0}),
-        .ch1_rxcdrhold(1'b0),
+        .ch1_rxcdrhold(gt_rxcdrhold),
         .ch1_rxcdrlock(dcmac_0_gtm_rx_serdes_interface_1_ch_rxcdrlock),
         .ch1_rxcdrovrden(1'b0),
         .ch1_rxcdrreset(1'b0),
@@ -987,10 +969,10 @@ module dcmac_ip_imp_1UROX8O
         .ch2_iloreset(dcmac_0_iloreset_out_2),
         .ch2_iloresetdone(gt_quad_base_ch2_iloresetdone),
         .ch2_iloresetmask(1'b1),
-        .ch2_loopback({1'b0,1'b0,1'b0}),
+        .ch2_loopback(gt_loopback),
         .ch2_pcierstb(1'b1),
         .ch2_pcsrsvdin({1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b1,1'b0,1'b0,1'b1,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0}),
-        .ch2_rxcdrhold(1'b0),
+        .ch2_rxcdrhold(gt_rxcdrhold),
         .ch2_rxcdrlock(dcmac_0_gtm_rx_serdes_interface_2_ch_rxcdrlock),
         .ch2_rxcdrovrden(1'b0),
         .ch2_rxcdrreset(1'b0),
@@ -1064,10 +1046,10 @@ module dcmac_ip_imp_1UROX8O
         .ch3_iloreset(dcmac_0_iloreset_out_3),
         .ch3_iloresetdone(gt_quad_base_ch3_iloresetdone),
         .ch3_iloresetmask(1'b1),
-        .ch3_loopback({1'b0,1'b0,1'b0}),
+        .ch3_loopback(gt_loopback),
         .ch3_pcierstb(1'b1),
         .ch3_pcsrsvdin({1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b1,1'b0,1'b0,1'b1,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0}),
-        .ch3_rxcdrhold(1'b0),
+        .ch3_rxcdrhold(gt_rxcdrhold),
         .ch3_rxcdrlock(dcmac_0_gtm_rx_serdes_interface_3_ch_rxcdrlock),
         .ch3_rxcdrovrden(1'b0),
         .ch3_rxcdrreset(1'b0),
@@ -1251,6 +1233,7 @@ module ethernet_imp_1TO1EDN
     axis_resetn,
     gt_rx_reset_done,
     gt_tx_reset_done,
+    porta_gt_reset_rx_datapath,
     s_axi_aclk,
     s_axi_araddr,
     s_axi_aresetn,
@@ -1269,13 +1252,7 @@ module ethernet_imp_1TO1EDN
     s_axi_wdata,
     s_axi_wready,
     s_axi_wvalid,
-    user_gt_reset_all,
-    user_gt_reset_rx_datapath,
-    user_gt_reset_tx_datapath,
-    user_rx_core_reset,
-    user_rx_serdes_reset,
-    user_tx_core_reset,
-    user_tx_serdes_reset);
+    user_gt_reset_all);
   input [0:0]DCMAC_GT_REFCLK_clk_n;
   input [0:0]DCMAC_GT_REFCLK_clk_p;
   input [3:0]GT_Serial_grx_n;
@@ -1291,12 +1268,13 @@ module ethernet_imp_1TO1EDN
   output axis_resetn;
   output [3:0]gt_rx_reset_done;
   output [3:0]gt_tx_reset_done;
+  input porta_gt_reset_rx_datapath;
   input s_axi_aclk;
-  input [0:0]s_axi_araddr;
+  input [31:0]s_axi_araddr;
   input s_axi_aresetn;
   output s_axi_arready;
   input s_axi_arvalid;
-  input [0:0]s_axi_awaddr;
+  input [31:0]s_axi_awaddr;
   output s_axi_awready;
   input s_axi_awvalid;
   input s_axi_bready;
@@ -1306,16 +1284,10 @@ module ethernet_imp_1TO1EDN
   input s_axi_rready;
   output [1:0]s_axi_rresp;
   output s_axi_rvalid;
-  input [0:0]s_axi_wdata;
+  input [31:0]s_axi_wdata;
   output s_axi_wready;
   input s_axi_wvalid;
   input user_gt_reset_all;
-  input user_gt_reset_rx_datapath;
-  input user_gt_reset_tx_datapath;
-  input user_rx_core_reset;
-  input user_rx_serdes_reset;
-  input user_tx_core_reset;
-  input user_tx_serdes_reset;
 
   wire [0:0]DCMAC_GT_REFCLK_clk_n;
   wire [0:0]DCMAC_GT_REFCLK_clk_p;
@@ -1330,11 +1302,13 @@ module ethernet_imp_1TO1EDN
   wire axis_in_tready;
   wire axis_in_tvalid;
   wire axis_resetn;
-  wire [5:0]dcmac_helper_gt_postcursor;
-  wire [5:0]dcmac_helper_gt_precursor;
+  wire dcmac_helper_gt_loopback;
+  wire dcmac_helper_gt_reset_all_in;
   wire dcmac_helper_gt_reset_rx_datapath_in_0;
-  wire dcmac_helper_gt_reset_tx_datapath_in_0;
+  wire dcmac_helper_gt_rxcdrhold;
   wire [6:0]dcmac_helper_gt_txmaincursor;
+  wire [5:0]dcmac_helper_gt_txpostcursor;
+  wire [5:0]dcmac_helper_gt_txprecursor;
   wire [7:0]dcmac_helper_gt_txrate;
   wire dcmac_helper_gtpowergood_in;
   wire [5:0]dcmac_helper_rx_alt_serdes_clk;
@@ -1343,7 +1317,6 @@ module ethernet_imp_1TO1EDN
   wire [5:0]dcmac_helper_rx_flexif_clk;
   wire dcmac_helper_rx_macif_clk;
   wire [5:0]dcmac_helper_rx_serdes_clk;
-  wire [5:0]dcmac_helper_rx_serdes_reset;
   wire [5:0]dcmac_helper_ts_clk;
   wire [5:0]dcmac_helper_tx_alt_serdes_clk;
   wire dcmac_helper_tx_axi_clk;
@@ -1357,7 +1330,6 @@ module ethernet_imp_1TO1EDN
   wire dcmac_helper_tx_axis_tuser_err1;
   wire dcmac_helper_tx_axis_tvalid_0;
   wire dcmac_helper_tx_core_clk;
-  wire dcmac_helper_tx_core_reset;
   wire dcmac_helper_tx_macif_clk;
   wire dcmac_ip_IBUFDS_ODIV2;
   wire [0:0]dcmac_ip_ch0_rx_usr_clk2_0;
@@ -1387,22 +1359,18 @@ module ethernet_imp_1TO1EDN
   wire dcmac_ip_rx_axis_tuser_sop1;
   wire dcmac_ip_rx_axis_tvalid_0;
   wire dcmac_ip_tx_axis_tready_1;
-  wire gt_reset_all_in_1;
   wire gt_reset_rx_datapath_in_1_1;
   wire gt_reset_rx_datapath_in_2_1;
   wire gt_reset_rx_datapath_in_3_1;
-  wire gt_reset_tx_datapath_in_1_1;
-  wire gt_reset_tx_datapath_in_2_1;
-  wire gt_reset_tx_datapath_in_3_1;
   wire [3:0]gt_rx_reset_done;
   wire [3:0]gt_tx_reset_done;
-  wire rx_core_reset_2;
+  wire porta_gt_reset_rx_datapath;
   wire s_axi_aclk;
-  wire [0:0]s_axi_araddr;
+  wire [31:0]s_axi_araddr;
   wire s_axi_aresetn;
   wire s_axi_arready;
   wire s_axi_arvalid;
-  wire [0:0]s_axi_awaddr;
+  wire [31:0]s_axi_awaddr;
   wire s_axi_awready;
   wire s_axi_awvalid;
   wire s_axi_bready;
@@ -1412,7 +1380,7 @@ module ethernet_imp_1TO1EDN
   wire s_axi_rready;
   wire [1:0]s_axi_rresp;
   wire s_axi_rvalid;
-  wire [0:0]s_axi_wdata;
+  wire [31:0]s_axi_wdata;
   wire s_axi_wready;
   wire s_axi_wvalid;
   wire tx_axis_tuser_mty0_1;
@@ -1421,30 +1389,23 @@ module ethernet_imp_1TO1EDN
   wire tx_axis_tuser_sop1_1;
   wire [5:0]tx_macif_clk_1;
   wire [5:0]tx_serdes_clk_1;
-  wire [5:0]tx_serdes_reset_1;
   wire user_gt_reset_all;
-  wire user_gt_reset_rx_datapath;
-  wire user_gt_reset_tx_datapath;
-  wire user_rx_core_reset;
-  wire user_rx_serdes_reset;
-  wire user_tx_core_reset;
-  wire user_tx_serdes_reset;
 
   top_level_axis_ila_1_0 axis_ila_1
        (.clk(dcmac_helper_rx_axi_clk),
         .probe0(dcmac_ip_rx_axis_tvalid_0),
-        .probe1(dcmac_ip_rx_axis_tdata0[0]),
-        .probe10(dcmac_ip_rx_axis_tuser_mty1[0]),
+        .probe1(dcmac_ip_rx_axis_tdata0),
+        .probe10(dcmac_ip_rx_axis_tuser_mty1),
         .probe11(dcmac_ip_rx_axis_tuser_err0),
         .probe12(dcmac_ip_rx_axis_tuser_err1),
-        .probe2(dcmac_ip_rx_axis_tdata1[0]),
+        .probe2(dcmac_ip_rx_axis_tdata1),
         .probe3(dcmac_ip_rx_axis_tuser_ena0),
         .probe4(dcmac_ip_rx_axis_tuser_ena1),
         .probe5(dcmac_ip_rx_axis_tuser_sop0),
         .probe6(dcmac_ip_rx_axis_tuser_sop1),
         .probe7(dcmac_ip_rx_axis_tuser_eop0),
         .probe8(dcmac_ip_rx_axis_tuser_eop1),
-        .probe9(dcmac_ip_rx_axis_tuser_mty0[0]));
+        .probe9(dcmac_ip_rx_axis_tuser_mty0));
   top_level_dcmac_helper_0_0 dcmac_helper
        (.IBUFDS_ODIV2(dcmac_ip_IBUFDS_ODIV2),
         .axis_clk(axis_clk),
@@ -1458,40 +1419,37 @@ module ethernet_imp_1TO1EDN
         .ch0_rx_usr_clk_0(dcmac_ip_ch0_rx_usr_clk_0),
         .ch0_tx_usr_clk2_0(dcmac_ip_ch0_tx_usr_clk2_0),
         .ch0_tx_usr_clk_0(dcmac_ip_ch0_tx_usr_clk_0),
-        .dcmac_rx_core_reset(rx_core_reset_2),
-        .dcmac_tx_core_reset(dcmac_helper_tx_core_reset),
-        .gt_reset_all_in(gt_reset_all_in_1),
+        .gt_loopback(dcmac_helper_gt_loopback),
+        .gt_reset_all_in(dcmac_helper_gt_reset_all_in),
         .gt_reset_rx_datapath_in_0(dcmac_helper_gt_reset_rx_datapath_in_0),
         .gt_reset_rx_datapath_in_1(gt_reset_rx_datapath_in_1_1),
         .gt_reset_rx_datapath_in_2(gt_reset_rx_datapath_in_2_1),
         .gt_reset_rx_datapath_in_3(gt_reset_rx_datapath_in_3_1),
-        .gt_reset_tx_datapath_in_0(dcmac_helper_gt_reset_tx_datapath_in_0),
-        .gt_reset_tx_datapath_in_1(gt_reset_tx_datapath_in_1_1),
-        .gt_reset_tx_datapath_in_2(gt_reset_tx_datapath_in_2_1),
-        .gt_reset_tx_datapath_in_3(gt_reset_tx_datapath_in_3_1),
         .gt_rx_reset_done(gt_rx_reset_done),
         .gt_rx_reset_done_0(dcmac_ip_gt_rx_reset_done_out_0),
         .gt_rx_reset_done_1(dcmac_ip_gt_rx_reset_done_out_1),
         .gt_rx_reset_done_2(dcmac_ip_gt_rx_reset_done_out_2),
         .gt_rx_reset_done_3(dcmac_ip_gt_rx_reset_done_out_3),
+        .gt_rxcdrhold(dcmac_helper_gt_rxcdrhold),
         .gt_tx_reset_done(gt_tx_reset_done),
         .gt_tx_reset_done_0(dcmac_ip_gt_tx_reset_done_out_0),
         .gt_tx_reset_done_1(dcmac_ip_gt_tx_reset_done_out_1),
         .gt_tx_reset_done_2(dcmac_ip_gt_tx_reset_done_out_2),
         .gt_tx_reset_done_3(dcmac_ip_gt_tx_reset_done_out_3),
         .gt_txmaincursor(dcmac_helper_gt_txmaincursor),
-        .gt_txpostcursor(dcmac_helper_gt_postcursor),
-        .gt_txprecursor(dcmac_helper_gt_precursor),
+        .gt_txpostcursor(dcmac_helper_gt_txpostcursor),
+        .gt_txprecursor(dcmac_helper_gt_txprecursor),
         .gt_txrate(dcmac_helper_gt_txrate),
         .gtpowergood_0(dcmac_ip_gtpowergood_0),
         .gtpowergood_in(dcmac_helper_gtpowergood_in),
+        .porta_gt_reset_rx_datapath(porta_gt_reset_rx_datapath),
         .rx_alt_serdes_clk(dcmac_helper_rx_alt_serdes_clk),
         .rx_axi_clk(dcmac_helper_rx_axi_clk),
         .rx_core_clk(dcmac_helper_rx_core_clk),
         .rx_flexif_clk(dcmac_helper_rx_flexif_clk),
         .rx_macif_clk(dcmac_helper_rx_macif_clk),
         .rx_serdes_clk(dcmac_helper_rx_serdes_clk),
-        .rx_serdes_reset(dcmac_helper_rx_serdes_reset),
+        .s_axi_clk(s_axi_aclk),
         .ts_clk(dcmac_helper_ts_clk),
         .tx_alt_serdes_clk(dcmac_helper_tx_alt_serdes_clk),
         .tx_axi_clk(dcmac_helper_tx_axi_clk),
@@ -1513,14 +1471,7 @@ module ethernet_imp_1TO1EDN
         .tx_flexif_clk(tx_macif_clk_1),
         .tx_macif_clk(dcmac_helper_tx_macif_clk),
         .tx_serdes_clk(tx_serdes_clk_1),
-        .tx_serdes_reset(tx_serdes_reset_1),
-        .user_gt_reset_all(user_gt_reset_all),
-        .user_gt_reset_rx_datapath(user_gt_reset_rx_datapath),
-        .user_gt_reset_tx_datapath(user_gt_reset_tx_datapath),
-        .user_rx_core_reset(user_rx_core_reset),
-        .user_rx_serdes_reset(user_rx_serdes_reset),
-        .user_tx_core_reset(user_tx_core_reset),
-        .user_tx_serdes_reset(user_tx_serdes_reset));
+        .user_gt_reset_all(user_gt_reset_all));
   dcmac_ip_imp_1UROX8O dcmac_ip
        (.CLK_IN_D_0_clk_n(DCMAC_GT_REFCLK_clk_n),
         .CLK_IN_D_0_clk_p(DCMAC_GT_REFCLK_clk_p),
@@ -1534,26 +1485,24 @@ module ethernet_imp_1TO1EDN
         .ch0_rx_usr_clk_0(dcmac_ip_ch0_rx_usr_clk_0),
         .ch0_tx_usr_clk2_0(dcmac_ip_ch0_tx_usr_clk2_0),
         .ch0_tx_usr_clk_0(dcmac_ip_ch0_tx_usr_clk_0),
-        .gt_reset_all_in(gt_reset_all_in_1),
+        .gt_loopback({dcmac_helper_gt_loopback,dcmac_helper_gt_loopback,dcmac_helper_gt_loopback}),
+        .gt_reset_all_in(dcmac_helper_gt_reset_all_in),
         .gt_reset_rx_datapath_in_0(dcmac_helper_gt_reset_rx_datapath_in_0),
         .gt_reset_rx_datapath_in_1(gt_reset_rx_datapath_in_1_1),
         .gt_reset_rx_datapath_in_2(gt_reset_rx_datapath_in_2_1),
         .gt_reset_rx_datapath_in_3(gt_reset_rx_datapath_in_3_1),
-        .gt_reset_tx_datapath_in_0(dcmac_helper_gt_reset_tx_datapath_in_0),
-        .gt_reset_tx_datapath_in_1(gt_reset_tx_datapath_in_1_1),
-        .gt_reset_tx_datapath_in_2(gt_reset_tx_datapath_in_2_1),
-        .gt_reset_tx_datapath_in_3(gt_reset_tx_datapath_in_3_1),
         .gt_rx_reset_done_out_0(dcmac_ip_gt_rx_reset_done_out_0),
         .gt_rx_reset_done_out_1(dcmac_ip_gt_rx_reset_done_out_1),
         .gt_rx_reset_done_out_2(dcmac_ip_gt_rx_reset_done_out_2),
         .gt_rx_reset_done_out_3(dcmac_ip_gt_rx_reset_done_out_3),
+        .gt_rxcdrhold(dcmac_helper_gt_rxcdrhold),
         .gt_tx_reset_done_out_0(dcmac_ip_gt_tx_reset_done_out_0),
         .gt_tx_reset_done_out_1(dcmac_ip_gt_tx_reset_done_out_1),
         .gt_tx_reset_done_out_2(dcmac_ip_gt_tx_reset_done_out_2),
         .gt_tx_reset_done_out_3(dcmac_ip_gt_tx_reset_done_out_3),
         .gt_txmaincursor(dcmac_helper_gt_txmaincursor),
-        .gt_txpostcursor(dcmac_helper_gt_postcursor),
-        .gt_txprecursor(dcmac_helper_gt_precursor),
+        .gt_txpostcursor(dcmac_helper_gt_txpostcursor),
+        .gt_txprecursor(dcmac_helper_gt_txprecursor),
         .gt_txrate(dcmac_helper_gt_txrate),
         .gtpowergood_0(dcmac_ip_gtpowergood_0),
         .gtpowergood_in(dcmac_helper_gtpowergood_in),
@@ -1573,11 +1522,9 @@ module ethernet_imp_1TO1EDN
         .rx_axis_tuser_sop1(dcmac_ip_rx_axis_tuser_sop1),
         .rx_axis_tvalid_0(dcmac_ip_rx_axis_tvalid_0),
         .rx_core_clk(dcmac_helper_rx_core_clk),
-        .rx_core_reset(rx_core_reset_2),
         .rx_flexif_clk(dcmac_helper_rx_flexif_clk),
         .rx_macif_clk(dcmac_helper_rx_macif_clk),
         .rx_serdes_clk(dcmac_helper_rx_serdes_clk),
-        .rx_serdes_reset(dcmac_helper_rx_serdes_reset),
         .s_axi_aclk(s_axi_aclk),
         .s_axi_araddr(s_axi_araddr),
         .s_axi_aresetn(s_axi_aresetn),
@@ -1614,11 +1561,9 @@ module ethernet_imp_1TO1EDN
         .tx_axis_tuser_sop1(tx_axis_tuser_sop1_1),
         .tx_axis_tvalid_0(dcmac_helper_tx_axis_tvalid_0),
         .tx_core_clk(dcmac_helper_tx_core_clk),
-        .tx_core_reset(dcmac_helper_tx_core_reset),
         .tx_flexif_clk(tx_macif_clk_1),
         .tx_macif_clk(dcmac_helper_tx_macif_clk),
-        .tx_serdes_clk(tx_serdes_clk_1),
-        .tx_serdes_reset(tx_serdes_reset_1));
+        .tx_serdes_clk(tx_serdes_clk_1));
 endmodule
 
 module pl_rtl_imp_QFYSB7
@@ -1670,60 +1615,56 @@ module pl_rtl_imp_QFYSB7
     UART_rxd,
     UART_txd,
     aclk,
-    aresetn,
-    intr,
-    irq);
+    aresetn);
   input [0:0]DCMAC_GT_REFCLK_clk_n;
   input [0:0]DCMAC_GT_REFCLK_clk_p;
   input [3:0]GT_Serial_grx_n;
   input [3:0]GT_Serial_grx_p;
   output [3:0]GT_Serial_gtx_n;
   output [3:0]GT_Serial_gtx_p;
-  input S00_AXI_araddr;
+  input [43:0]S00_AXI_araddr;
   input [1:0]S00_AXI_arburst;
   input [3:0]S00_AXI_arcache;
-  input S00_AXI_arid;
-  input S00_AXI_arlen;
-  input S00_AXI_arlock;
+  input [15:0]S00_AXI_arid;
+  input [7:0]S00_AXI_arlen;
+  input [0:0]S00_AXI_arlock;
   input [2:0]S00_AXI_arprot;
   input [3:0]S00_AXI_arqos;
-  output [0:0]S00_AXI_arready;
+  output S00_AXI_arready;
   input [2:0]S00_AXI_arsize;
-  input S00_AXI_aruser;
-  input [0:0]S00_AXI_arvalid;
-  input S00_AXI_awaddr;
+  input [15:0]S00_AXI_aruser;
+  input S00_AXI_arvalid;
+  input [43:0]S00_AXI_awaddr;
   input [1:0]S00_AXI_awburst;
   input [3:0]S00_AXI_awcache;
-  input S00_AXI_awid;
-  input S00_AXI_awlen;
-  input S00_AXI_awlock;
+  input [15:0]S00_AXI_awid;
+  input [7:0]S00_AXI_awlen;
+  input [0:0]S00_AXI_awlock;
   input [2:0]S00_AXI_awprot;
   input [3:0]S00_AXI_awqos;
-  output [0:0]S00_AXI_awready;
+  output S00_AXI_awready;
   input [2:0]S00_AXI_awsize;
-  input S00_AXI_awuser;
-  input [0:0]S00_AXI_awvalid;
-  output S00_AXI_bid;
-  input [0:0]S00_AXI_bready;
+  input [15:0]S00_AXI_awuser;
+  input S00_AXI_awvalid;
+  output [15:0]S00_AXI_bid;
+  input S00_AXI_bready;
   output [1:0]S00_AXI_bresp;
-  output [0:0]S00_AXI_bvalid;
-  output S00_AXI_rdata;
-  output S00_AXI_rid;
-  output [0:0]S00_AXI_rlast;
-  input [0:0]S00_AXI_rready;
+  output S00_AXI_bvalid;
+  output [127:0]S00_AXI_rdata;
+  output [15:0]S00_AXI_rid;
+  output S00_AXI_rlast;
+  input S00_AXI_rready;
   output [1:0]S00_AXI_rresp;
-  output [0:0]S00_AXI_rvalid;
-  input S00_AXI_wdata;
-  input [0:0]S00_AXI_wlast;
-  output [0:0]S00_AXI_wready;
-  input S00_AXI_wstrb;
-  input [0:0]S00_AXI_wvalid;
+  output S00_AXI_rvalid;
+  input [127:0]S00_AXI_wdata;
+  input S00_AXI_wlast;
+  output S00_AXI_wready;
+  input [15:0]S00_AXI_wstrb;
+  input S00_AXI_wvalid;
   input UART_rxd;
   output UART_txd;
   input aclk;
   input aresetn;
-  input [0:0]intr;
-  output irq;
 
   wire [0:0]DCMAC_GT_REFCLK_clk_n;
   wire [0:0]DCMAC_GT_REFCLK_clk_p;
@@ -1731,281 +1672,110 @@ module pl_rtl_imp_QFYSB7
   wire [3:0]GT_Serial_grx_p;
   wire [3:0]GT_Serial_gtx_n;
   wire [3:0]GT_Serial_gtx_p;
-  wire S00_AXI_araddr;
+  wire [43:0]S00_AXI_araddr;
   wire [1:0]S00_AXI_arburst;
   wire [3:0]S00_AXI_arcache;
-  wire S00_AXI_arid;
-  wire S00_AXI_arlen;
-  wire S00_AXI_arlock;
+  wire [15:0]S00_AXI_arid;
+  wire [7:0]S00_AXI_arlen;
+  wire [0:0]S00_AXI_arlock;
   wire [2:0]S00_AXI_arprot;
   wire [3:0]S00_AXI_arqos;
-  wire [0:0]S00_AXI_arready;
+  wire S00_AXI_arready;
   wire [2:0]S00_AXI_arsize;
-  wire S00_AXI_aruser;
-  wire [0:0]S00_AXI_arvalid;
-  wire S00_AXI_awaddr;
+  wire [15:0]S00_AXI_aruser;
+  wire S00_AXI_arvalid;
+  wire [43:0]S00_AXI_awaddr;
   wire [1:0]S00_AXI_awburst;
   wire [3:0]S00_AXI_awcache;
-  wire S00_AXI_awid;
-  wire S00_AXI_awlen;
-  wire S00_AXI_awlock;
+  wire [15:0]S00_AXI_awid;
+  wire [7:0]S00_AXI_awlen;
+  wire [0:0]S00_AXI_awlock;
   wire [2:0]S00_AXI_awprot;
   wire [3:0]S00_AXI_awqos;
-  wire [0:0]S00_AXI_awready;
+  wire S00_AXI_awready;
   wire [2:0]S00_AXI_awsize;
-  wire S00_AXI_awuser;
-  wire [0:0]S00_AXI_awvalid;
-  wire S00_AXI_bid;
-  wire [0:0]S00_AXI_bready;
+  wire [15:0]S00_AXI_awuser;
+  wire S00_AXI_awvalid;
+  wire [15:0]S00_AXI_bid;
+  wire S00_AXI_bready;
   wire [1:0]S00_AXI_bresp;
-  wire [0:0]S00_AXI_bvalid;
-  wire S00_AXI_rdata;
-  wire S00_AXI_rid;
-  wire [0:0]S00_AXI_rlast;
-  wire [0:0]S00_AXI_rready;
+  wire S00_AXI_bvalid;
+  wire [127:0]S00_AXI_rdata;
+  wire [15:0]S00_AXI_rid;
+  wire S00_AXI_rlast;
+  wire S00_AXI_rready;
   wire [1:0]S00_AXI_rresp;
-  wire [0:0]S00_AXI_rvalid;
-  wire S00_AXI_wdata;
-  wire [0:0]S00_AXI_wlast;
-  wire [0:0]S00_AXI_wready;
-  wire S00_AXI_wstrb;
-  wire [0:0]S00_AXI_wvalid;
+  wire S00_AXI_rvalid;
+  wire [127:0]S00_AXI_wdata;
+  wire S00_AXI_wlast;
+  wire S00_AXI_wready;
+  wire [15:0]S00_AXI_wstrb;
+  wire S00_AXI_wvalid;
   wire UART_rxd;
   wire UART_txd;
   wire aclk;
   wire aresetn;
   wire [63:0]axi_uart_bridge_M_AXI_ARADDR;
-  wire [0:0]axi_uart_bridge_M_AXI_ARREADY;
+  wire axi_uart_bridge_M_AXI_ARREADY;
   wire axi_uart_bridge_M_AXI_ARVALID;
   wire [63:0]axi_uart_bridge_M_AXI_AWADDR;
-  wire [0:0]axi_uart_bridge_M_AXI_AWREADY;
+  wire axi_uart_bridge_M_AXI_AWREADY;
   wire axi_uart_bridge_M_AXI_AWVALID;
   wire axi_uart_bridge_M_AXI_BREADY;
   wire [1:0]axi_uart_bridge_M_AXI_BRESP;
-  wire [0:0]axi_uart_bridge_M_AXI_BVALID;
-  wire axi_uart_bridge_M_AXI_RDATA;
+  wire axi_uart_bridge_M_AXI_BVALID;
+  wire [31:0]axi_uart_bridge_M_AXI_RDATA;
   wire axi_uart_bridge_M_AXI_RREADY;
   wire [1:0]axi_uart_bridge_M_AXI_RRESP;
-  wire [0:0]axi_uart_bridge_M_AXI_RVALID;
+  wire axi_uart_bridge_M_AXI_RVALID;
   wire [31:0]axi_uart_bridge_M_AXI_WDATA;
-  wire [0:0]axi_uart_bridge_M_AXI_WREADY;
+  wire axi_uart_bridge_M_AXI_WREADY;
   wire [3:0]axi_uart_bridge_M_AXI_WSTRB;
   wire axi_uart_bridge_M_AXI_WVALID;
   wire dcmac_ctrl_0_gt_reset_all;
   wire dcmac_ctrl_0_gt_reset_rx_datapath;
-  wire dcmac_ctrl_0_gt_reset_tx_datapath;
-  wire dcmac_ctrl_0_rx_core_reset;
-  wire dcmac_ctrl_0_rx_serdes_reset;
-  wire dcmac_ctrl_0_tx_core_reset;
-  wire dcmac_ctrl_0_tx_serdes_reset;
   wire ethernet_axis_clk;
   wire ethernet_axis_resetn;
   wire [3:0]ethernet_gt_rx_reset_done;
   wire [3:0]ethernet_gt_tx_reset_done;
-  wire icn_ctrl_0_M00_AXI_ARADDR;
-  wire [2:0]icn_ctrl_0_M00_AXI_ARPROT;
-  wire icn_ctrl_0_M00_AXI_ARREADY;
-  wire [0:0]icn_ctrl_0_M00_AXI_ARVALID;
-  wire icn_ctrl_0_M00_AXI_AWADDR;
-  wire [2:0]icn_ctrl_0_M00_AXI_AWPROT;
-  wire icn_ctrl_0_M00_AXI_AWREADY;
-  wire [0:0]icn_ctrl_0_M00_AXI_AWVALID;
-  wire [0:0]icn_ctrl_0_M00_AXI_BREADY;
-  wire [1:0]icn_ctrl_0_M00_AXI_BRESP;
-  wire icn_ctrl_0_M00_AXI_BVALID;
-  wire [31:0]icn_ctrl_0_M00_AXI_RDATA;
-  wire [0:0]icn_ctrl_0_M00_AXI_RREADY;
-  wire [1:0]icn_ctrl_0_M00_AXI_RRESP;
-  wire icn_ctrl_0_M00_AXI_RVALID;
-  wire icn_ctrl_0_M00_AXI_WDATA;
-  wire icn_ctrl_0_M00_AXI_WREADY;
-  wire icn_ctrl_0_M00_AXI_WSTRB;
-  wire [0:0]icn_ctrl_0_M00_AXI_WVALID;
-  wire icn_ctrl_1_M00_AXI_ARADDR;
-  wire [2:0]icn_ctrl_1_M00_AXI_ARPROT;
-  wire icn_ctrl_1_M00_AXI_ARREADY;
-  wire [0:0]icn_ctrl_1_M00_AXI_ARVALID;
-  wire icn_ctrl_1_M00_AXI_AWADDR;
-  wire [2:0]icn_ctrl_1_M00_AXI_AWPROT;
-  wire icn_ctrl_1_M00_AXI_AWREADY;
-  wire [0:0]icn_ctrl_1_M00_AXI_AWVALID;
-  wire [0:0]icn_ctrl_1_M00_AXI_BREADY;
-  wire [1:0]icn_ctrl_1_M00_AXI_BRESP;
-  wire icn_ctrl_1_M00_AXI_BVALID;
-  wire [31:0]icn_ctrl_1_M00_AXI_RDATA;
-  wire [0:0]icn_ctrl_1_M00_AXI_RREADY;
-  wire [1:0]icn_ctrl_1_M00_AXI_RRESP;
-  wire icn_ctrl_1_M00_AXI_RVALID;
-  wire icn_ctrl_1_M00_AXI_WDATA;
-  wire icn_ctrl_1_M00_AXI_WREADY;
-  wire icn_ctrl_1_M00_AXI_WSTRB;
-  wire [0:0]icn_ctrl_1_M00_AXI_WVALID;
-  wire icn_ctrl_M00_AXI_ARADDR;
-  wire icn_ctrl_M00_AXI_ARREADY;
-  wire [0:0]icn_ctrl_M00_AXI_ARVALID;
-  wire icn_ctrl_M00_AXI_AWADDR;
-  wire icn_ctrl_M00_AXI_AWREADY;
-  wire [0:0]icn_ctrl_M00_AXI_AWVALID;
-  wire [0:0]icn_ctrl_M00_AXI_BREADY;
-  wire [1:0]icn_ctrl_M00_AXI_BRESP;
-  wire icn_ctrl_M00_AXI_BVALID;
-  wire [31:0]icn_ctrl_M00_AXI_RDATA;
-  wire [0:0]icn_ctrl_M00_AXI_RREADY;
-  wire [1:0]icn_ctrl_M00_AXI_RRESP;
-  wire icn_ctrl_M00_AXI_RVALID;
-  wire icn_ctrl_M00_AXI_WDATA;
-  wire icn_ctrl_M00_AXI_WREADY;
-  wire icn_ctrl_M00_AXI_WSTRB;
-  wire [0:0]icn_ctrl_M00_AXI_WVALID;
-  wire icn_ctrl_M01_AXI_ARADDR;
-  wire [1:0]icn_ctrl_M01_AXI_ARBURST;
-  wire [3:0]icn_ctrl_M01_AXI_ARCACHE;
-  wire icn_ctrl_M01_AXI_ARID;
-  wire icn_ctrl_M01_AXI_ARLEN;
-  wire icn_ctrl_M01_AXI_ARLOCK;
+  wire [7:0]icn_ctrl_M01_AXI_ARADDR;
   wire [2:0]icn_ctrl_M01_AXI_ARPROT;
-  wire [3:0]icn_ctrl_M01_AXI_ARQOS;
-  wire [0:0]icn_ctrl_M01_AXI_ARREADY;
-  wire [3:0]icn_ctrl_M01_AXI_ARREGION;
-  wire [2:0]icn_ctrl_M01_AXI_ARSIZE;
-  wire icn_ctrl_M01_AXI_ARUSER;
-  wire [0:0]icn_ctrl_M01_AXI_ARVALID;
-  wire icn_ctrl_M01_AXI_AWADDR;
-  wire [1:0]icn_ctrl_M01_AXI_AWBURST;
-  wire [3:0]icn_ctrl_M01_AXI_AWCACHE;
-  wire icn_ctrl_M01_AXI_AWID;
-  wire icn_ctrl_M01_AXI_AWLEN;
-  wire icn_ctrl_M01_AXI_AWLOCK;
+  wire icn_ctrl_M01_AXI_ARREADY;
+  wire icn_ctrl_M01_AXI_ARVALID;
+  wire [7:0]icn_ctrl_M01_AXI_AWADDR;
   wire [2:0]icn_ctrl_M01_AXI_AWPROT;
-  wire [3:0]icn_ctrl_M01_AXI_AWQOS;
-  wire [0:0]icn_ctrl_M01_AXI_AWREADY;
-  wire [3:0]icn_ctrl_M01_AXI_AWREGION;
-  wire [2:0]icn_ctrl_M01_AXI_AWSIZE;
-  wire icn_ctrl_M01_AXI_AWUSER;
-  wire [0:0]icn_ctrl_M01_AXI_AWVALID;
-  wire icn_ctrl_M01_AXI_BID;
-  wire [0:0]icn_ctrl_M01_AXI_BREADY;
+  wire icn_ctrl_M01_AXI_AWREADY;
+  wire icn_ctrl_M01_AXI_AWVALID;
+  wire icn_ctrl_M01_AXI_BREADY;
   wire [1:0]icn_ctrl_M01_AXI_BRESP;
-  wire icn_ctrl_M01_AXI_BUSER;
-  wire [0:0]icn_ctrl_M01_AXI_BVALID;
-  wire icn_ctrl_M01_AXI_RDATA;
-  wire icn_ctrl_M01_AXI_RID;
-  wire [0:0]icn_ctrl_M01_AXI_RLAST;
-  wire [0:0]icn_ctrl_M01_AXI_RREADY;
+  wire icn_ctrl_M01_AXI_BVALID;
+  wire [31:0]icn_ctrl_M01_AXI_RDATA;
+  wire icn_ctrl_M01_AXI_RREADY;
   wire [1:0]icn_ctrl_M01_AXI_RRESP;
-  wire icn_ctrl_M01_AXI_RUSER;
-  wire [0:0]icn_ctrl_M01_AXI_RVALID;
-  wire icn_ctrl_M01_AXI_WDATA;
-  wire icn_ctrl_M01_AXI_WID;
-  wire [0:0]icn_ctrl_M01_AXI_WLAST;
-  wire [0:0]icn_ctrl_M01_AXI_WREADY;
-  wire icn_ctrl_M01_AXI_WSTRB;
-  wire icn_ctrl_M01_AXI_WUSER;
-  wire [0:0]icn_ctrl_M01_AXI_WVALID;
-  wire icn_ctrl_M02_AXI_ARADDR;
-  wire [1:0]icn_ctrl_M02_AXI_ARBURST;
-  wire [3:0]icn_ctrl_M02_AXI_ARCACHE;
-  wire icn_ctrl_M02_AXI_ARID;
-  wire icn_ctrl_M02_AXI_ARLEN;
-  wire icn_ctrl_M02_AXI_ARLOCK;
-  wire [2:0]icn_ctrl_M02_AXI_ARPROT;
-  wire [3:0]icn_ctrl_M02_AXI_ARQOS;
-  wire [0:0]icn_ctrl_M02_AXI_ARREADY;
-  wire [3:0]icn_ctrl_M02_AXI_ARREGION;
-  wire [2:0]icn_ctrl_M02_AXI_ARSIZE;
-  wire icn_ctrl_M02_AXI_ARUSER;
-  wire [0:0]icn_ctrl_M02_AXI_ARVALID;
-  wire icn_ctrl_M02_AXI_AWADDR;
-  wire [1:0]icn_ctrl_M02_AXI_AWBURST;
-  wire [3:0]icn_ctrl_M02_AXI_AWCACHE;
-  wire icn_ctrl_M02_AXI_AWID;
-  wire icn_ctrl_M02_AXI_AWLEN;
-  wire icn_ctrl_M02_AXI_AWLOCK;
-  wire [2:0]icn_ctrl_M02_AXI_AWPROT;
-  wire [3:0]icn_ctrl_M02_AXI_AWQOS;
-  wire [0:0]icn_ctrl_M02_AXI_AWREADY;
-  wire [3:0]icn_ctrl_M02_AXI_AWREGION;
-  wire [2:0]icn_ctrl_M02_AXI_AWSIZE;
-  wire icn_ctrl_M02_AXI_AWUSER;
-  wire [0:0]icn_ctrl_M02_AXI_AWVALID;
-  wire icn_ctrl_M02_AXI_BID;
-  wire [0:0]icn_ctrl_M02_AXI_BREADY;
-  wire [1:0]icn_ctrl_M02_AXI_BRESP;
-  wire icn_ctrl_M02_AXI_BUSER;
-  wire [0:0]icn_ctrl_M02_AXI_BVALID;
-  wire icn_ctrl_M02_AXI_RDATA;
-  wire icn_ctrl_M02_AXI_RID;
-  wire [0:0]icn_ctrl_M02_AXI_RLAST;
-  wire [0:0]icn_ctrl_M02_AXI_RREADY;
-  wire [1:0]icn_ctrl_M02_AXI_RRESP;
-  wire icn_ctrl_M02_AXI_RUSER;
-  wire [0:0]icn_ctrl_M02_AXI_RVALID;
-  wire icn_ctrl_M02_AXI_WDATA;
-  wire icn_ctrl_M02_AXI_WID;
-  wire [0:0]icn_ctrl_M02_AXI_WLAST;
-  wire [0:0]icn_ctrl_M02_AXI_WREADY;
-  wire icn_ctrl_M02_AXI_WSTRB;
-  wire icn_ctrl_M02_AXI_WUSER;
-  wire [0:0]icn_ctrl_M02_AXI_WVALID;
-  wire icn_ctrl_M03_AXI_ARADDR;
+  wire icn_ctrl_M01_AXI_RVALID;
+  wire [31:0]icn_ctrl_M01_AXI_WDATA;
+  wire icn_ctrl_M01_AXI_WREADY;
+  wire [3:0]icn_ctrl_M01_AXI_WSTRB;
+  wire icn_ctrl_M01_AXI_WVALID;
+  wire [7:0]icn_ctrl_M03_AXI_ARADDR;
   wire [2:0]icn_ctrl_M03_AXI_ARPROT;
   wire icn_ctrl_M03_AXI_ARREADY;
-  wire [0:0]icn_ctrl_M03_AXI_ARVALID;
-  wire icn_ctrl_M03_AXI_AWADDR;
+  wire icn_ctrl_M03_AXI_ARVALID;
+  wire [7:0]icn_ctrl_M03_AXI_AWADDR;
   wire [2:0]icn_ctrl_M03_AXI_AWPROT;
   wire icn_ctrl_M03_AXI_AWREADY;
-  wire [0:0]icn_ctrl_M03_AXI_AWVALID;
-  wire [0:0]icn_ctrl_M03_AXI_BREADY;
+  wire icn_ctrl_M03_AXI_AWVALID;
+  wire icn_ctrl_M03_AXI_BREADY;
   wire [1:0]icn_ctrl_M03_AXI_BRESP;
   wire icn_ctrl_M03_AXI_BVALID;
   wire [31:0]icn_ctrl_M03_AXI_RDATA;
-  wire [0:0]icn_ctrl_M03_AXI_RREADY;
+  wire icn_ctrl_M03_AXI_RREADY;
   wire [1:0]icn_ctrl_M03_AXI_RRESP;
   wire icn_ctrl_M03_AXI_RVALID;
-  wire icn_ctrl_M03_AXI_WDATA;
+  wire [31:0]icn_ctrl_M03_AXI_WDATA;
   wire icn_ctrl_M03_AXI_WREADY;
-  wire icn_ctrl_M03_AXI_WSTRB;
-  wire [0:0]icn_ctrl_M03_AXI_WVALID;
-  wire icn_ctrl_M05_AXI_ARADDR;
-  wire [2:0]icn_ctrl_M05_AXI_ARPROT;
-  wire icn_ctrl_M05_AXI_ARREADY;
-  wire [0:0]icn_ctrl_M05_AXI_ARVALID;
-  wire icn_ctrl_M05_AXI_AWADDR;
-  wire [2:0]icn_ctrl_M05_AXI_AWPROT;
-  wire icn_ctrl_M05_AXI_AWREADY;
-  wire [0:0]icn_ctrl_M05_AXI_AWVALID;
-  wire [0:0]icn_ctrl_M05_AXI_BREADY;
-  wire [1:0]icn_ctrl_M05_AXI_BRESP;
-  wire icn_ctrl_M05_AXI_BVALID;
-  wire [31:0]icn_ctrl_M05_AXI_RDATA;
-  wire [0:0]icn_ctrl_M05_AXI_RREADY;
-  wire [1:0]icn_ctrl_M05_AXI_RRESP;
-  wire icn_ctrl_M05_AXI_RVALID;
-  wire icn_ctrl_M05_AXI_WDATA;
-  wire icn_ctrl_M05_AXI_WREADY;
-  wire icn_ctrl_M05_AXI_WSTRB;
-  wire [0:0]icn_ctrl_M05_AXI_WVALID;
-  wire icn_ctrl_M06_AXI_ARADDR;
-  wire [2:0]icn_ctrl_M06_AXI_ARPROT;
-  wire icn_ctrl_M06_AXI_ARREADY;
-  wire [0:0]icn_ctrl_M06_AXI_ARVALID;
-  wire icn_ctrl_M06_AXI_AWADDR;
-  wire [2:0]icn_ctrl_M06_AXI_AWPROT;
-  wire icn_ctrl_M06_AXI_AWREADY;
-  wire [0:0]icn_ctrl_M06_AXI_AWVALID;
-  wire [0:0]icn_ctrl_M06_AXI_BREADY;
-  wire [1:0]icn_ctrl_M06_AXI_BRESP;
-  wire icn_ctrl_M06_AXI_BVALID;
-  wire [31:0]icn_ctrl_M06_AXI_RDATA;
-  wire [0:0]icn_ctrl_M06_AXI_RREADY;
-  wire [1:0]icn_ctrl_M06_AXI_RRESP;
-  wire icn_ctrl_M06_AXI_RVALID;
-  wire icn_ctrl_M06_AXI_WDATA;
-  wire icn_ctrl_M06_AXI_WREADY;
-  wire icn_ctrl_M06_AXI_WSTRB;
-  wire [0:0]icn_ctrl_M06_AXI_WVALID;
-  wire [0:0]intr;
-  wire irq;
+  wire [3:0]icn_ctrl_M03_AXI_WSTRB;
+  wire icn_ctrl_M03_AXI_WVALID;
   wire [15:0]packet_config_idle_cycles;
   wire [15:0]packet_config_initial_value;
   wire [31:0]packet_config_packet_count;
@@ -2017,67 +1787,23 @@ module pl_rtl_imp_QFYSB7
   wire packet_gen_axis_out_TREADY;
   wire packet_gen_axis_out_TVALID;
   wire packet_gen_busy;
-  wire s_axi_1_ARADDR;
+  wire [31:0]s_axi_1_ARADDR;
   wire s_axi_1_ARREADY;
-  wire [0:0]s_axi_1_ARVALID;
-  wire s_axi_1_AWADDR;
+  wire s_axi_1_ARVALID;
+  wire [31:0]s_axi_1_AWADDR;
   wire s_axi_1_AWREADY;
-  wire [0:0]s_axi_1_AWVALID;
-  wire [0:0]s_axi_1_BREADY;
+  wire s_axi_1_AWVALID;
+  wire s_axi_1_BREADY;
   wire [1:0]s_axi_1_BRESP;
   wire s_axi_1_BVALID;
   wire [31:0]s_axi_1_RDATA;
-  wire [0:0]s_axi_1_RREADY;
+  wire s_axi_1_RREADY;
   wire [1:0]s_axi_1_RRESP;
   wire s_axi_1_RVALID;
-  wire s_axi_1_WDATA;
+  wire [31:0]s_axi_1_WDATA;
   wire s_axi_1_WREADY;
-  wire [0:0]s_axi_1_WVALID;
+  wire s_axi_1_WVALID;
 
-  top_level_axi_intc_0_0 axi_intc_0
-       (.intr(intr),
-        .irq(irq),
-        .s_axi_aclk(aclk),
-        .s_axi_araddr({icn_ctrl_M00_AXI_ARADDR,icn_ctrl_M00_AXI_ARADDR,icn_ctrl_M00_AXI_ARADDR,icn_ctrl_M00_AXI_ARADDR,icn_ctrl_M00_AXI_ARADDR,icn_ctrl_M00_AXI_ARADDR,icn_ctrl_M00_AXI_ARADDR,icn_ctrl_M00_AXI_ARADDR,icn_ctrl_M00_AXI_ARADDR}),
-        .s_axi_aresetn(aresetn),
-        .s_axi_arready(icn_ctrl_M00_AXI_ARREADY),
-        .s_axi_arvalid(icn_ctrl_M00_AXI_ARVALID),
-        .s_axi_awaddr({icn_ctrl_M00_AXI_AWADDR,icn_ctrl_M00_AXI_AWADDR,icn_ctrl_M00_AXI_AWADDR,icn_ctrl_M00_AXI_AWADDR,icn_ctrl_M00_AXI_AWADDR,icn_ctrl_M00_AXI_AWADDR,icn_ctrl_M00_AXI_AWADDR,icn_ctrl_M00_AXI_AWADDR,icn_ctrl_M00_AXI_AWADDR}),
-        .s_axi_awready(icn_ctrl_M00_AXI_AWREADY),
-        .s_axi_awvalid(icn_ctrl_M00_AXI_AWVALID),
-        .s_axi_bready(icn_ctrl_M00_AXI_BREADY),
-        .s_axi_bresp(icn_ctrl_M00_AXI_BRESP),
-        .s_axi_bvalid(icn_ctrl_M00_AXI_BVALID),
-        .s_axi_rdata(icn_ctrl_M00_AXI_RDATA),
-        .s_axi_rready(icn_ctrl_M00_AXI_RREADY),
-        .s_axi_rresp(icn_ctrl_M00_AXI_RRESP),
-        .s_axi_rvalid(icn_ctrl_M00_AXI_RVALID),
-        .s_axi_wdata({icn_ctrl_M00_AXI_WDATA,icn_ctrl_M00_AXI_WDATA,icn_ctrl_M00_AXI_WDATA,icn_ctrl_M00_AXI_WDATA,icn_ctrl_M00_AXI_WDATA,icn_ctrl_M00_AXI_WDATA,icn_ctrl_M00_AXI_WDATA,icn_ctrl_M00_AXI_WDATA,icn_ctrl_M00_AXI_WDATA,icn_ctrl_M00_AXI_WDATA,icn_ctrl_M00_AXI_WDATA,icn_ctrl_M00_AXI_WDATA,icn_ctrl_M00_AXI_WDATA,icn_ctrl_M00_AXI_WDATA,icn_ctrl_M00_AXI_WDATA,icn_ctrl_M00_AXI_WDATA,icn_ctrl_M00_AXI_WDATA,icn_ctrl_M00_AXI_WDATA,icn_ctrl_M00_AXI_WDATA,icn_ctrl_M00_AXI_WDATA,icn_ctrl_M00_AXI_WDATA,icn_ctrl_M00_AXI_WDATA,icn_ctrl_M00_AXI_WDATA,icn_ctrl_M00_AXI_WDATA,icn_ctrl_M00_AXI_WDATA,icn_ctrl_M00_AXI_WDATA,icn_ctrl_M00_AXI_WDATA,icn_ctrl_M00_AXI_WDATA,icn_ctrl_M00_AXI_WDATA,icn_ctrl_M00_AXI_WDATA,icn_ctrl_M00_AXI_WDATA,icn_ctrl_M00_AXI_WDATA}),
-        .s_axi_wready(icn_ctrl_M00_AXI_WREADY),
-        .s_axi_wstrb({icn_ctrl_M00_AXI_WSTRB,icn_ctrl_M00_AXI_WSTRB,icn_ctrl_M00_AXI_WSTRB,icn_ctrl_M00_AXI_WSTRB}),
-        .s_axi_wvalid(icn_ctrl_M00_AXI_WVALID));
-  top_level_axi_revision_0_0 axi_revision
-       (.AXI_ACLK(aclk),
-        .AXI_ARESETN(aresetn),
-        .S_AXI_ARADDR({icn_ctrl_M03_AXI_ARADDR,icn_ctrl_M03_AXI_ARADDR,icn_ctrl_M03_AXI_ARADDR,icn_ctrl_M03_AXI_ARADDR,icn_ctrl_M03_AXI_ARADDR,icn_ctrl_M03_AXI_ARADDR,icn_ctrl_M03_AXI_ARADDR}),
-        .S_AXI_ARPROT(icn_ctrl_M03_AXI_ARPROT),
-        .S_AXI_ARREADY(icn_ctrl_M03_AXI_ARREADY),
-        .S_AXI_ARVALID(icn_ctrl_M03_AXI_ARVALID),
-        .S_AXI_AWADDR({icn_ctrl_M03_AXI_AWADDR,icn_ctrl_M03_AXI_AWADDR,icn_ctrl_M03_AXI_AWADDR,icn_ctrl_M03_AXI_AWADDR,icn_ctrl_M03_AXI_AWADDR,icn_ctrl_M03_AXI_AWADDR,icn_ctrl_M03_AXI_AWADDR}),
-        .S_AXI_AWPROT(icn_ctrl_M03_AXI_AWPROT),
-        .S_AXI_AWREADY(icn_ctrl_M03_AXI_AWREADY),
-        .S_AXI_AWVALID(icn_ctrl_M03_AXI_AWVALID),
-        .S_AXI_BREADY(icn_ctrl_M03_AXI_BREADY),
-        .S_AXI_BRESP(icn_ctrl_M03_AXI_BRESP),
-        .S_AXI_BVALID(icn_ctrl_M03_AXI_BVALID),
-        .S_AXI_RDATA(icn_ctrl_M03_AXI_RDATA),
-        .S_AXI_RREADY(icn_ctrl_M03_AXI_RREADY),
-        .S_AXI_RRESP(icn_ctrl_M03_AXI_RRESP),
-        .S_AXI_RVALID(icn_ctrl_M03_AXI_RVALID),
-        .S_AXI_WDATA({icn_ctrl_M03_AXI_WDATA,icn_ctrl_M03_AXI_WDATA,icn_ctrl_M03_AXI_WDATA,icn_ctrl_M03_AXI_WDATA,icn_ctrl_M03_AXI_WDATA,icn_ctrl_M03_AXI_WDATA,icn_ctrl_M03_AXI_WDATA,icn_ctrl_M03_AXI_WDATA,icn_ctrl_M03_AXI_WDATA,icn_ctrl_M03_AXI_WDATA,icn_ctrl_M03_AXI_WDATA,icn_ctrl_M03_AXI_WDATA,icn_ctrl_M03_AXI_WDATA,icn_ctrl_M03_AXI_WDATA,icn_ctrl_M03_AXI_WDATA,icn_ctrl_M03_AXI_WDATA,icn_ctrl_M03_AXI_WDATA,icn_ctrl_M03_AXI_WDATA,icn_ctrl_M03_AXI_WDATA,icn_ctrl_M03_AXI_WDATA,icn_ctrl_M03_AXI_WDATA,icn_ctrl_M03_AXI_WDATA,icn_ctrl_M03_AXI_WDATA,icn_ctrl_M03_AXI_WDATA,icn_ctrl_M03_AXI_WDATA,icn_ctrl_M03_AXI_WDATA,icn_ctrl_M03_AXI_WDATA,icn_ctrl_M03_AXI_WDATA,icn_ctrl_M03_AXI_WDATA,icn_ctrl_M03_AXI_WDATA,icn_ctrl_M03_AXI_WDATA,icn_ctrl_M03_AXI_WDATA}),
-        .S_AXI_WREADY(icn_ctrl_M03_AXI_WREADY),
-        .S_AXI_WSTRB({icn_ctrl_M03_AXI_WSTRB,icn_ctrl_M03_AXI_WSTRB,icn_ctrl_M03_AXI_WSTRB,icn_ctrl_M03_AXI_WSTRB}),
-        .S_AXI_WVALID(icn_ctrl_M03_AXI_WVALID));
   axi_uart_bridge_imp_SLJY4W axi_uart_bridge
        (.M_AXI_araddr(axi_uart_bridge_M_AXI_ARADDR),
         .M_AXI_arready(axi_uart_bridge_M_AXI_ARREADY),
@@ -2100,81 +1826,32 @@ module pl_rtl_imp_QFYSB7
         .UART_txd(UART_txd),
         .aclk(aclk),
         .aresetn(aresetn));
-  top_level_axil_slave_0_0 axil_slave_0
-       (.S_AXI_ARADDR({icn_ctrl_0_M00_AXI_ARADDR,icn_ctrl_0_M00_AXI_ARADDR,icn_ctrl_0_M00_AXI_ARADDR,icn_ctrl_0_M00_AXI_ARADDR,icn_ctrl_0_M00_AXI_ARADDR,icn_ctrl_0_M00_AXI_ARADDR,icn_ctrl_0_M00_AXI_ARADDR,icn_ctrl_0_M00_AXI_ARADDR}),
-        .S_AXI_ARPROT(icn_ctrl_0_M00_AXI_ARPROT),
-        .S_AXI_ARREADY(icn_ctrl_0_M00_AXI_ARREADY),
-        .S_AXI_ARVALID(icn_ctrl_0_M00_AXI_ARVALID),
-        .S_AXI_AWADDR({icn_ctrl_0_M00_AXI_AWADDR,icn_ctrl_0_M00_AXI_AWADDR,icn_ctrl_0_M00_AXI_AWADDR,icn_ctrl_0_M00_AXI_AWADDR,icn_ctrl_0_M00_AXI_AWADDR,icn_ctrl_0_M00_AXI_AWADDR,icn_ctrl_0_M00_AXI_AWADDR,icn_ctrl_0_M00_AXI_AWADDR}),
-        .S_AXI_AWPROT(icn_ctrl_0_M00_AXI_AWPROT),
-        .S_AXI_AWREADY(icn_ctrl_0_M00_AXI_AWREADY),
-        .S_AXI_AWVALID(icn_ctrl_0_M00_AXI_AWVALID),
-        .S_AXI_BREADY(icn_ctrl_0_M00_AXI_BREADY),
-        .S_AXI_BRESP(icn_ctrl_0_M00_AXI_BRESP),
-        .S_AXI_BVALID(icn_ctrl_0_M00_AXI_BVALID),
-        .S_AXI_RDATA(icn_ctrl_0_M00_AXI_RDATA),
-        .S_AXI_RREADY(icn_ctrl_0_M00_AXI_RREADY),
-        .S_AXI_RRESP(icn_ctrl_0_M00_AXI_RRESP),
-        .S_AXI_RVALID(icn_ctrl_0_M00_AXI_RVALID),
-        .S_AXI_WDATA({icn_ctrl_0_M00_AXI_WDATA,icn_ctrl_0_M00_AXI_WDATA,icn_ctrl_0_M00_AXI_WDATA,icn_ctrl_0_M00_AXI_WDATA,icn_ctrl_0_M00_AXI_WDATA,icn_ctrl_0_M00_AXI_WDATA,icn_ctrl_0_M00_AXI_WDATA,icn_ctrl_0_M00_AXI_WDATA,icn_ctrl_0_M00_AXI_WDATA,icn_ctrl_0_M00_AXI_WDATA,icn_ctrl_0_M00_AXI_WDATA,icn_ctrl_0_M00_AXI_WDATA,icn_ctrl_0_M00_AXI_WDATA,icn_ctrl_0_M00_AXI_WDATA,icn_ctrl_0_M00_AXI_WDATA,icn_ctrl_0_M00_AXI_WDATA,icn_ctrl_0_M00_AXI_WDATA,icn_ctrl_0_M00_AXI_WDATA,icn_ctrl_0_M00_AXI_WDATA,icn_ctrl_0_M00_AXI_WDATA,icn_ctrl_0_M00_AXI_WDATA,icn_ctrl_0_M00_AXI_WDATA,icn_ctrl_0_M00_AXI_WDATA,icn_ctrl_0_M00_AXI_WDATA,icn_ctrl_0_M00_AXI_WDATA,icn_ctrl_0_M00_AXI_WDATA,icn_ctrl_0_M00_AXI_WDATA,icn_ctrl_0_M00_AXI_WDATA,icn_ctrl_0_M00_AXI_WDATA,icn_ctrl_0_M00_AXI_WDATA,icn_ctrl_0_M00_AXI_WDATA,icn_ctrl_0_M00_AXI_WDATA}),
-        .S_AXI_WREADY(icn_ctrl_0_M00_AXI_WREADY),
-        .S_AXI_WSTRB({icn_ctrl_0_M00_AXI_WSTRB,icn_ctrl_0_M00_AXI_WSTRB,icn_ctrl_0_M00_AXI_WSTRB,icn_ctrl_0_M00_AXI_WSTRB}),
-        .S_AXI_WVALID(icn_ctrl_0_M00_AXI_WVALID),
-        .clk(aclk),
-        .resetn(aresetn));
-  top_level_axil_slave_1_0 axil_slave_1
-       (.S_AXI_ARADDR({icn_ctrl_1_M00_AXI_ARADDR,icn_ctrl_1_M00_AXI_ARADDR,icn_ctrl_1_M00_AXI_ARADDR,icn_ctrl_1_M00_AXI_ARADDR,icn_ctrl_1_M00_AXI_ARADDR,icn_ctrl_1_M00_AXI_ARADDR,icn_ctrl_1_M00_AXI_ARADDR,icn_ctrl_1_M00_AXI_ARADDR}),
-        .S_AXI_ARPROT(icn_ctrl_1_M00_AXI_ARPROT),
-        .S_AXI_ARREADY(icn_ctrl_1_M00_AXI_ARREADY),
-        .S_AXI_ARVALID(icn_ctrl_1_M00_AXI_ARVALID),
-        .S_AXI_AWADDR({icn_ctrl_1_M00_AXI_AWADDR,icn_ctrl_1_M00_AXI_AWADDR,icn_ctrl_1_M00_AXI_AWADDR,icn_ctrl_1_M00_AXI_AWADDR,icn_ctrl_1_M00_AXI_AWADDR,icn_ctrl_1_M00_AXI_AWADDR,icn_ctrl_1_M00_AXI_AWADDR,icn_ctrl_1_M00_AXI_AWADDR}),
-        .S_AXI_AWPROT(icn_ctrl_1_M00_AXI_AWPROT),
-        .S_AXI_AWREADY(icn_ctrl_1_M00_AXI_AWREADY),
-        .S_AXI_AWVALID(icn_ctrl_1_M00_AXI_AWVALID),
-        .S_AXI_BREADY(icn_ctrl_1_M00_AXI_BREADY),
-        .S_AXI_BRESP(icn_ctrl_1_M00_AXI_BRESP),
-        .S_AXI_BVALID(icn_ctrl_1_M00_AXI_BVALID),
-        .S_AXI_RDATA(icn_ctrl_1_M00_AXI_RDATA),
-        .S_AXI_RREADY(icn_ctrl_1_M00_AXI_RREADY),
-        .S_AXI_RRESP(icn_ctrl_1_M00_AXI_RRESP),
-        .S_AXI_RVALID(icn_ctrl_1_M00_AXI_RVALID),
-        .S_AXI_WDATA({icn_ctrl_1_M00_AXI_WDATA,icn_ctrl_1_M00_AXI_WDATA,icn_ctrl_1_M00_AXI_WDATA,icn_ctrl_1_M00_AXI_WDATA,icn_ctrl_1_M00_AXI_WDATA,icn_ctrl_1_M00_AXI_WDATA,icn_ctrl_1_M00_AXI_WDATA,icn_ctrl_1_M00_AXI_WDATA,icn_ctrl_1_M00_AXI_WDATA,icn_ctrl_1_M00_AXI_WDATA,icn_ctrl_1_M00_AXI_WDATA,icn_ctrl_1_M00_AXI_WDATA,icn_ctrl_1_M00_AXI_WDATA,icn_ctrl_1_M00_AXI_WDATA,icn_ctrl_1_M00_AXI_WDATA,icn_ctrl_1_M00_AXI_WDATA,icn_ctrl_1_M00_AXI_WDATA,icn_ctrl_1_M00_AXI_WDATA,icn_ctrl_1_M00_AXI_WDATA,icn_ctrl_1_M00_AXI_WDATA,icn_ctrl_1_M00_AXI_WDATA,icn_ctrl_1_M00_AXI_WDATA,icn_ctrl_1_M00_AXI_WDATA,icn_ctrl_1_M00_AXI_WDATA,icn_ctrl_1_M00_AXI_WDATA,icn_ctrl_1_M00_AXI_WDATA,icn_ctrl_1_M00_AXI_WDATA,icn_ctrl_1_M00_AXI_WDATA,icn_ctrl_1_M00_AXI_WDATA,icn_ctrl_1_M00_AXI_WDATA,icn_ctrl_1_M00_AXI_WDATA,icn_ctrl_1_M00_AXI_WDATA}),
-        .S_AXI_WREADY(icn_ctrl_1_M00_AXI_WREADY),
-        .S_AXI_WSTRB({icn_ctrl_1_M00_AXI_WSTRB,icn_ctrl_1_M00_AXI_WSTRB,icn_ctrl_1_M00_AXI_WSTRB,icn_ctrl_1_M00_AXI_WSTRB}),
-        .S_AXI_WVALID(icn_ctrl_1_M00_AXI_WVALID),
-        .clk(aclk),
-        .resetn(aresetn));
-  top_level_dcmac_ctrl_0_0 dcmac_ctrl
-       (.S_AXI_ARADDR({icn_ctrl_M06_AXI_ARADDR,icn_ctrl_M06_AXI_ARADDR,icn_ctrl_M06_AXI_ARADDR,icn_ctrl_M06_AXI_ARADDR,icn_ctrl_M06_AXI_ARADDR,icn_ctrl_M06_AXI_ARADDR,icn_ctrl_M06_AXI_ARADDR,icn_ctrl_M06_AXI_ARADDR}),
-        .S_AXI_ARPROT(icn_ctrl_M06_AXI_ARPROT),
-        .S_AXI_ARREADY(icn_ctrl_M06_AXI_ARREADY),
-        .S_AXI_ARVALID(icn_ctrl_M06_AXI_ARVALID),
-        .S_AXI_AWADDR({icn_ctrl_M06_AXI_AWADDR,icn_ctrl_M06_AXI_AWADDR,icn_ctrl_M06_AXI_AWADDR,icn_ctrl_M06_AXI_AWADDR,icn_ctrl_M06_AXI_AWADDR,icn_ctrl_M06_AXI_AWADDR,icn_ctrl_M06_AXI_AWADDR,icn_ctrl_M06_AXI_AWADDR}),
-        .S_AXI_AWPROT(icn_ctrl_M06_AXI_AWPROT),
-        .S_AXI_AWREADY(icn_ctrl_M06_AXI_AWREADY),
-        .S_AXI_AWVALID(icn_ctrl_M06_AXI_AWVALID),
-        .S_AXI_BREADY(icn_ctrl_M06_AXI_BREADY),
-        .S_AXI_BRESP(icn_ctrl_M06_AXI_BRESP),
-        .S_AXI_BVALID(icn_ctrl_M06_AXI_BVALID),
-        .S_AXI_RDATA(icn_ctrl_M06_AXI_RDATA),
-        .S_AXI_RREADY(icn_ctrl_M06_AXI_RREADY),
-        .S_AXI_RRESP(icn_ctrl_M06_AXI_RRESP),
-        .S_AXI_RVALID(icn_ctrl_M06_AXI_RVALID),
-        .S_AXI_WDATA({icn_ctrl_M06_AXI_WDATA,icn_ctrl_M06_AXI_WDATA,icn_ctrl_M06_AXI_WDATA,icn_ctrl_M06_AXI_WDATA,icn_ctrl_M06_AXI_WDATA,icn_ctrl_M06_AXI_WDATA,icn_ctrl_M06_AXI_WDATA,icn_ctrl_M06_AXI_WDATA,icn_ctrl_M06_AXI_WDATA,icn_ctrl_M06_AXI_WDATA,icn_ctrl_M06_AXI_WDATA,icn_ctrl_M06_AXI_WDATA,icn_ctrl_M06_AXI_WDATA,icn_ctrl_M06_AXI_WDATA,icn_ctrl_M06_AXI_WDATA,icn_ctrl_M06_AXI_WDATA,icn_ctrl_M06_AXI_WDATA,icn_ctrl_M06_AXI_WDATA,icn_ctrl_M06_AXI_WDATA,icn_ctrl_M06_AXI_WDATA,icn_ctrl_M06_AXI_WDATA,icn_ctrl_M06_AXI_WDATA,icn_ctrl_M06_AXI_WDATA,icn_ctrl_M06_AXI_WDATA,icn_ctrl_M06_AXI_WDATA,icn_ctrl_M06_AXI_WDATA,icn_ctrl_M06_AXI_WDATA,icn_ctrl_M06_AXI_WDATA,icn_ctrl_M06_AXI_WDATA,icn_ctrl_M06_AXI_WDATA,icn_ctrl_M06_AXI_WDATA,icn_ctrl_M06_AXI_WDATA}),
-        .S_AXI_WREADY(icn_ctrl_M06_AXI_WREADY),
-        .S_AXI_WSTRB({icn_ctrl_M06_AXI_WSTRB,icn_ctrl_M06_AXI_WSTRB,icn_ctrl_M06_AXI_WSTRB,icn_ctrl_M06_AXI_WSTRB}),
-        .S_AXI_WVALID(icn_ctrl_M06_AXI_WVALID),
+  top_level_dcmac_ctrl_0_0 dcmac_ctrl_0
+       (.S_AXI_ARADDR(icn_ctrl_M03_AXI_ARADDR),
+        .S_AXI_ARPROT(icn_ctrl_M03_AXI_ARPROT),
+        .S_AXI_ARREADY(icn_ctrl_M03_AXI_ARREADY),
+        .S_AXI_ARVALID(icn_ctrl_M03_AXI_ARVALID),
+        .S_AXI_AWADDR(icn_ctrl_M03_AXI_AWADDR),
+        .S_AXI_AWPROT(icn_ctrl_M03_AXI_AWPROT),
+        .S_AXI_AWREADY(icn_ctrl_M03_AXI_AWREADY),
+        .S_AXI_AWVALID(icn_ctrl_M03_AXI_AWVALID),
+        .S_AXI_BREADY(icn_ctrl_M03_AXI_BREADY),
+        .S_AXI_BRESP(icn_ctrl_M03_AXI_BRESP),
+        .S_AXI_BVALID(icn_ctrl_M03_AXI_BVALID),
+        .S_AXI_RDATA(icn_ctrl_M03_AXI_RDATA),
+        .S_AXI_RREADY(icn_ctrl_M03_AXI_RREADY),
+        .S_AXI_RRESP(icn_ctrl_M03_AXI_RRESP),
+        .S_AXI_RVALID(icn_ctrl_M03_AXI_RVALID),
+        .S_AXI_WDATA(icn_ctrl_M03_AXI_WDATA),
+        .S_AXI_WREADY(icn_ctrl_M03_AXI_WREADY),
+        .S_AXI_WSTRB(icn_ctrl_M03_AXI_WSTRB),
+        .S_AXI_WVALID(icn_ctrl_M03_AXI_WVALID),
         .clk(aclk),
         .gt_reset_all(dcmac_ctrl_0_gt_reset_all),
         .gt_reset_rx_datapath(dcmac_ctrl_0_gt_reset_rx_datapath),
-        .gt_reset_tx_datapath(dcmac_ctrl_0_gt_reset_tx_datapath),
         .resetn(aresetn),
-        .rx_core_reset(dcmac_ctrl_0_rx_core_reset),
         .rx_reset_done(ethernet_gt_rx_reset_done),
-        .rx_serdes_reset(dcmac_ctrl_0_rx_serdes_reset),
-        .tx_core_reset(dcmac_ctrl_0_tx_core_reset),
-        .tx_reset_done(ethernet_gt_tx_reset_done),
-        .tx_serdes_reset(dcmac_ctrl_0_tx_serdes_reset));
+        .tx_reset_done(ethernet_gt_tx_reset_done));
   ethernet_imp_1TO1EDN ethernet
        (.DCMAC_GT_REFCLK_clk_n(DCMAC_GT_REFCLK_clk_n),
         .DCMAC_GT_REFCLK_clk_p(DCMAC_GT_REFCLK_clk_p),
@@ -2191,6 +1868,7 @@ module pl_rtl_imp_QFYSB7
         .axis_resetn(ethernet_axis_resetn),
         .gt_rx_reset_done(ethernet_gt_rx_reset_done),
         .gt_tx_reset_done(ethernet_gt_tx_reset_done),
+        .porta_gt_reset_rx_datapath(dcmac_ctrl_0_gt_reset_rx_datapath),
         .s_axi_aclk(aclk),
         .s_axi_araddr(s_axi_1_ARADDR),
         .s_axi_aresetn(aresetn),
@@ -2209,126 +1887,56 @@ module pl_rtl_imp_QFYSB7
         .s_axi_wdata(s_axi_1_WDATA),
         .s_axi_wready(s_axi_1_WREADY),
         .s_axi_wvalid(s_axi_1_WVALID),
-        .user_gt_reset_all(dcmac_ctrl_0_gt_reset_all),
-        .user_gt_reset_rx_datapath(dcmac_ctrl_0_gt_reset_rx_datapath),
-        .user_gt_reset_tx_datapath(dcmac_ctrl_0_gt_reset_tx_datapath),
-        .user_rx_core_reset(dcmac_ctrl_0_rx_core_reset),
-        .user_rx_serdes_reset(dcmac_ctrl_0_rx_serdes_reset),
-        .user_tx_core_reset(dcmac_ctrl_0_tx_core_reset),
-        .user_tx_serdes_reset(dcmac_ctrl_0_tx_serdes_reset));
+        .user_gt_reset_all(dcmac_ctrl_0_gt_reset_all));
   top_level_icn_ctrl_0 icn_ctrl
-       (.M00_AXI_araddr(icn_ctrl_M00_AXI_ARADDR),
-        .M00_AXI_arready(icn_ctrl_M00_AXI_ARREADY),
-        .M00_AXI_arvalid(icn_ctrl_M00_AXI_ARVALID),
-        .M00_AXI_awaddr(icn_ctrl_M00_AXI_AWADDR),
-        .M00_AXI_awready(icn_ctrl_M00_AXI_AWREADY),
-        .M00_AXI_awvalid(icn_ctrl_M00_AXI_AWVALID),
-        .M00_AXI_bid(1'b0),
-        .M00_AXI_bready(icn_ctrl_M00_AXI_BREADY),
-        .M00_AXI_bresp(icn_ctrl_M00_AXI_BRESP),
-        .M00_AXI_buser(1'b0),
-        .M00_AXI_bvalid(icn_ctrl_M00_AXI_BVALID),
-        .M00_AXI_rdata(icn_ctrl_M00_AXI_RDATA[0]),
-        .M00_AXI_rid(1'b0),
-        .M00_AXI_rlast(1'b0),
-        .M00_AXI_rready(icn_ctrl_M00_AXI_RREADY),
-        .M00_AXI_rresp(icn_ctrl_M00_AXI_RRESP),
-        .M00_AXI_ruser(1'b0),
-        .M00_AXI_rvalid(icn_ctrl_M00_AXI_RVALID),
-        .M00_AXI_wdata(icn_ctrl_M00_AXI_WDATA),
-        .M00_AXI_wready(icn_ctrl_M00_AXI_WREADY),
-        .M00_AXI_wstrb(icn_ctrl_M00_AXI_WSTRB),
-        .M00_AXI_wvalid(icn_ctrl_M00_AXI_WVALID),
+       (.M00_AXI_araddr(s_axi_1_ARADDR),
+        .M00_AXI_arready(s_axi_1_ARREADY),
+        .M00_AXI_arvalid(s_axi_1_ARVALID),
+        .M00_AXI_awaddr(s_axi_1_AWADDR),
+        .M00_AXI_awready(s_axi_1_AWREADY),
+        .M00_AXI_awvalid(s_axi_1_AWVALID),
+        .M00_AXI_bready(s_axi_1_BREADY),
+        .M00_AXI_bresp(s_axi_1_BRESP),
+        .M00_AXI_bvalid(s_axi_1_BVALID),
+        .M00_AXI_rdata(s_axi_1_RDATA),
+        .M00_AXI_rready(s_axi_1_RREADY),
+        .M00_AXI_rresp(s_axi_1_RRESP),
+        .M00_AXI_rvalid(s_axi_1_RVALID),
+        .M00_AXI_wdata(s_axi_1_WDATA),
+        .M00_AXI_wready(s_axi_1_WREADY),
+        .M00_AXI_wvalid(s_axi_1_WVALID),
         .M01_AXI_araddr(icn_ctrl_M01_AXI_ARADDR),
-        .M01_AXI_arburst(icn_ctrl_M01_AXI_ARBURST),
-        .M01_AXI_arcache(icn_ctrl_M01_AXI_ARCACHE),
-        .M01_AXI_arid(icn_ctrl_M01_AXI_ARID),
-        .M01_AXI_arlen(icn_ctrl_M01_AXI_ARLEN),
-        .M01_AXI_arlock(icn_ctrl_M01_AXI_ARLOCK),
         .M01_AXI_arprot(icn_ctrl_M01_AXI_ARPROT),
-        .M01_AXI_arqos(icn_ctrl_M01_AXI_ARQOS),
         .M01_AXI_arready(icn_ctrl_M01_AXI_ARREADY),
-        .M01_AXI_arregion(icn_ctrl_M01_AXI_ARREGION),
-        .M01_AXI_arsize(icn_ctrl_M01_AXI_ARSIZE),
-        .M01_AXI_aruser(icn_ctrl_M01_AXI_ARUSER),
         .M01_AXI_arvalid(icn_ctrl_M01_AXI_ARVALID),
         .M01_AXI_awaddr(icn_ctrl_M01_AXI_AWADDR),
-        .M01_AXI_awburst(icn_ctrl_M01_AXI_AWBURST),
-        .M01_AXI_awcache(icn_ctrl_M01_AXI_AWCACHE),
-        .M01_AXI_awid(icn_ctrl_M01_AXI_AWID),
-        .M01_AXI_awlen(icn_ctrl_M01_AXI_AWLEN),
-        .M01_AXI_awlock(icn_ctrl_M01_AXI_AWLOCK),
         .M01_AXI_awprot(icn_ctrl_M01_AXI_AWPROT),
-        .M01_AXI_awqos(icn_ctrl_M01_AXI_AWQOS),
         .M01_AXI_awready(icn_ctrl_M01_AXI_AWREADY),
-        .M01_AXI_awregion(icn_ctrl_M01_AXI_AWREGION),
-        .M01_AXI_awsize(icn_ctrl_M01_AXI_AWSIZE),
-        .M01_AXI_awuser(icn_ctrl_M01_AXI_AWUSER),
         .M01_AXI_awvalid(icn_ctrl_M01_AXI_AWVALID),
-        .M01_AXI_bid(icn_ctrl_M01_AXI_BID),
         .M01_AXI_bready(icn_ctrl_M01_AXI_BREADY),
         .M01_AXI_bresp(icn_ctrl_M01_AXI_BRESP),
-        .M01_AXI_buser(icn_ctrl_M01_AXI_BUSER),
         .M01_AXI_bvalid(icn_ctrl_M01_AXI_BVALID),
         .M01_AXI_rdata(icn_ctrl_M01_AXI_RDATA),
-        .M01_AXI_rid(icn_ctrl_M01_AXI_RID),
-        .M01_AXI_rlast(icn_ctrl_M01_AXI_RLAST),
         .M01_AXI_rready(icn_ctrl_M01_AXI_RREADY),
         .M01_AXI_rresp(icn_ctrl_M01_AXI_RRESP),
-        .M01_AXI_ruser(icn_ctrl_M01_AXI_RUSER),
         .M01_AXI_rvalid(icn_ctrl_M01_AXI_RVALID),
         .M01_AXI_wdata(icn_ctrl_M01_AXI_WDATA),
-        .M01_AXI_wid(icn_ctrl_M01_AXI_WID),
-        .M01_AXI_wlast(icn_ctrl_M01_AXI_WLAST),
         .M01_AXI_wready(icn_ctrl_M01_AXI_WREADY),
         .M01_AXI_wstrb(icn_ctrl_M01_AXI_WSTRB),
-        .M01_AXI_wuser(icn_ctrl_M01_AXI_WUSER),
         .M01_AXI_wvalid(icn_ctrl_M01_AXI_WVALID),
-        .M02_AXI_araddr(icn_ctrl_M02_AXI_ARADDR),
-        .M02_AXI_arburst(icn_ctrl_M02_AXI_ARBURST),
-        .M02_AXI_arcache(icn_ctrl_M02_AXI_ARCACHE),
-        .M02_AXI_arid(icn_ctrl_M02_AXI_ARID),
-        .M02_AXI_arlen(icn_ctrl_M02_AXI_ARLEN),
-        .M02_AXI_arlock(icn_ctrl_M02_AXI_ARLOCK),
-        .M02_AXI_arprot(icn_ctrl_M02_AXI_ARPROT),
-        .M02_AXI_arqos(icn_ctrl_M02_AXI_ARQOS),
-        .M02_AXI_arready(icn_ctrl_M02_AXI_ARREADY),
-        .M02_AXI_arregion(icn_ctrl_M02_AXI_ARREGION),
-        .M02_AXI_arsize(icn_ctrl_M02_AXI_ARSIZE),
-        .M02_AXI_aruser(icn_ctrl_M02_AXI_ARUSER),
-        .M02_AXI_arvalid(icn_ctrl_M02_AXI_ARVALID),
-        .M02_AXI_awaddr(icn_ctrl_M02_AXI_AWADDR),
-        .M02_AXI_awburst(icn_ctrl_M02_AXI_AWBURST),
-        .M02_AXI_awcache(icn_ctrl_M02_AXI_AWCACHE),
-        .M02_AXI_awid(icn_ctrl_M02_AXI_AWID),
-        .M02_AXI_awlen(icn_ctrl_M02_AXI_AWLEN),
-        .M02_AXI_awlock(icn_ctrl_M02_AXI_AWLOCK),
-        .M02_AXI_awprot(icn_ctrl_M02_AXI_AWPROT),
-        .M02_AXI_awqos(icn_ctrl_M02_AXI_AWQOS),
-        .M02_AXI_awready(icn_ctrl_M02_AXI_AWREADY),
-        .M02_AXI_awregion(icn_ctrl_M02_AXI_AWREGION),
-        .M02_AXI_awsize(icn_ctrl_M02_AXI_AWSIZE),
-        .M02_AXI_awuser(icn_ctrl_M02_AXI_AWUSER),
-        .M02_AXI_awvalid(icn_ctrl_M02_AXI_AWVALID),
-        .M02_AXI_bid(icn_ctrl_M02_AXI_BID),
-        .M02_AXI_bready(icn_ctrl_M02_AXI_BREADY),
-        .M02_AXI_bresp(icn_ctrl_M02_AXI_BRESP),
-        .M02_AXI_buser(icn_ctrl_M02_AXI_BUSER),
-        .M02_AXI_bvalid(icn_ctrl_M02_AXI_BVALID),
-        .M02_AXI_rdata(icn_ctrl_M02_AXI_RDATA),
-        .M02_AXI_rid(icn_ctrl_M02_AXI_RID),
-        .M02_AXI_rlast(icn_ctrl_M02_AXI_RLAST),
-        .M02_AXI_rready(icn_ctrl_M02_AXI_RREADY),
-        .M02_AXI_rresp(icn_ctrl_M02_AXI_RRESP),
-        .M02_AXI_ruser(icn_ctrl_M02_AXI_RUSER),
-        .M02_AXI_rvalid(icn_ctrl_M02_AXI_RVALID),
-        .M02_AXI_wdata(icn_ctrl_M02_AXI_WDATA),
-        .M02_AXI_wid(icn_ctrl_M02_AXI_WID),
-        .M02_AXI_wlast(icn_ctrl_M02_AXI_WLAST),
-        .M02_AXI_wready(icn_ctrl_M02_AXI_WREADY),
-        .M02_AXI_wstrb(icn_ctrl_M02_AXI_WSTRB),
-        .M02_AXI_wuser(icn_ctrl_M02_AXI_WUSER),
-        .M02_AXI_wvalid(icn_ctrl_M02_AXI_WVALID),
+        .M02_AXI_arready(1'b0),
+        .M02_AXI_awready(1'b0),
+        .M02_AXI_bid(1'b0),
+        .M02_AXI_bresp({1'b0,1'b0}),
+        .M02_AXI_buser(1'b0),
+        .M02_AXI_bvalid(1'b0),
+        .M02_AXI_rdata(1'b0),
+        .M02_AXI_rid(1'b0),
+        .M02_AXI_rlast(1'b0),
+        .M02_AXI_rresp({1'b0,1'b0}),
+        .M02_AXI_ruser(1'b0),
+        .M02_AXI_rvalid(1'b0),
+        .M02_AXI_wready(1'b0),
         .M03_AXI_araddr(icn_ctrl_M03_AXI_ARADDR),
         .M03_AXI_arprot(icn_ctrl_M03_AXI_ARPROT),
         .M03_AXI_arready(icn_ctrl_M03_AXI_ARREADY),
@@ -2337,91 +1945,17 @@ module pl_rtl_imp_QFYSB7
         .M03_AXI_awprot(icn_ctrl_M03_AXI_AWPROT),
         .M03_AXI_awready(icn_ctrl_M03_AXI_AWREADY),
         .M03_AXI_awvalid(icn_ctrl_M03_AXI_AWVALID),
-        .M03_AXI_bid(1'b0),
         .M03_AXI_bready(icn_ctrl_M03_AXI_BREADY),
         .M03_AXI_bresp(icn_ctrl_M03_AXI_BRESP),
-        .M03_AXI_buser(1'b0),
         .M03_AXI_bvalid(icn_ctrl_M03_AXI_BVALID),
-        .M03_AXI_rdata(icn_ctrl_M03_AXI_RDATA[0]),
-        .M03_AXI_rid(1'b0),
-        .M03_AXI_rlast(1'b0),
+        .M03_AXI_rdata(icn_ctrl_M03_AXI_RDATA),
         .M03_AXI_rready(icn_ctrl_M03_AXI_RREADY),
         .M03_AXI_rresp(icn_ctrl_M03_AXI_RRESP),
-        .M03_AXI_ruser(1'b0),
         .M03_AXI_rvalid(icn_ctrl_M03_AXI_RVALID),
         .M03_AXI_wdata(icn_ctrl_M03_AXI_WDATA),
         .M03_AXI_wready(icn_ctrl_M03_AXI_WREADY),
         .M03_AXI_wstrb(icn_ctrl_M03_AXI_WSTRB),
         .M03_AXI_wvalid(icn_ctrl_M03_AXI_WVALID),
-        .M04_AXI_araddr(s_axi_1_ARADDR),
-        .M04_AXI_arready(s_axi_1_ARREADY),
-        .M04_AXI_arvalid(s_axi_1_ARVALID),
-        .M04_AXI_awaddr(s_axi_1_AWADDR),
-        .M04_AXI_awready(s_axi_1_AWREADY),
-        .M04_AXI_awvalid(s_axi_1_AWVALID),
-        .M04_AXI_bid(1'b0),
-        .M04_AXI_bready(s_axi_1_BREADY),
-        .M04_AXI_bresp(s_axi_1_BRESP),
-        .M04_AXI_buser(1'b0),
-        .M04_AXI_bvalid(s_axi_1_BVALID),
-        .M04_AXI_rdata(s_axi_1_RDATA[0]),
-        .M04_AXI_rid(1'b0),
-        .M04_AXI_rlast(1'b0),
-        .M04_AXI_rready(s_axi_1_RREADY),
-        .M04_AXI_rresp(s_axi_1_RRESP),
-        .M04_AXI_ruser(1'b0),
-        .M04_AXI_rvalid(s_axi_1_RVALID),
-        .M04_AXI_wdata(s_axi_1_WDATA),
-        .M04_AXI_wready(s_axi_1_WREADY),
-        .M04_AXI_wvalid(s_axi_1_WVALID),
-        .M05_AXI_araddr(icn_ctrl_M05_AXI_ARADDR),
-        .M05_AXI_arprot(icn_ctrl_M05_AXI_ARPROT),
-        .M05_AXI_arready(icn_ctrl_M05_AXI_ARREADY),
-        .M05_AXI_arvalid(icn_ctrl_M05_AXI_ARVALID),
-        .M05_AXI_awaddr(icn_ctrl_M05_AXI_AWADDR),
-        .M05_AXI_awprot(icn_ctrl_M05_AXI_AWPROT),
-        .M05_AXI_awready(icn_ctrl_M05_AXI_AWREADY),
-        .M05_AXI_awvalid(icn_ctrl_M05_AXI_AWVALID),
-        .M05_AXI_bid(1'b0),
-        .M05_AXI_bready(icn_ctrl_M05_AXI_BREADY),
-        .M05_AXI_bresp(icn_ctrl_M05_AXI_BRESP),
-        .M05_AXI_buser(1'b0),
-        .M05_AXI_bvalid(icn_ctrl_M05_AXI_BVALID),
-        .M05_AXI_rdata(icn_ctrl_M05_AXI_RDATA[0]),
-        .M05_AXI_rid(1'b0),
-        .M05_AXI_rlast(1'b0),
-        .M05_AXI_rready(icn_ctrl_M05_AXI_RREADY),
-        .M05_AXI_rresp(icn_ctrl_M05_AXI_RRESP),
-        .M05_AXI_ruser(1'b0),
-        .M05_AXI_rvalid(icn_ctrl_M05_AXI_RVALID),
-        .M05_AXI_wdata(icn_ctrl_M05_AXI_WDATA),
-        .M05_AXI_wready(icn_ctrl_M05_AXI_WREADY),
-        .M05_AXI_wstrb(icn_ctrl_M05_AXI_WSTRB),
-        .M05_AXI_wvalid(icn_ctrl_M05_AXI_WVALID),
-        .M06_AXI_araddr(icn_ctrl_M06_AXI_ARADDR),
-        .M06_AXI_arprot(icn_ctrl_M06_AXI_ARPROT),
-        .M06_AXI_arready(icn_ctrl_M06_AXI_ARREADY),
-        .M06_AXI_arvalid(icn_ctrl_M06_AXI_ARVALID),
-        .M06_AXI_awaddr(icn_ctrl_M06_AXI_AWADDR),
-        .M06_AXI_awprot(icn_ctrl_M06_AXI_AWPROT),
-        .M06_AXI_awready(icn_ctrl_M06_AXI_AWREADY),
-        .M06_AXI_awvalid(icn_ctrl_M06_AXI_AWVALID),
-        .M06_AXI_bid(1'b0),
-        .M06_AXI_bready(icn_ctrl_M06_AXI_BREADY),
-        .M06_AXI_bresp(icn_ctrl_M06_AXI_BRESP),
-        .M06_AXI_buser(1'b0),
-        .M06_AXI_bvalid(icn_ctrl_M06_AXI_BVALID),
-        .M06_AXI_rdata(icn_ctrl_M06_AXI_RDATA[0]),
-        .M06_AXI_rid(1'b0),
-        .M06_AXI_rlast(1'b0),
-        .M06_AXI_rready(icn_ctrl_M06_AXI_RREADY),
-        .M06_AXI_rresp(icn_ctrl_M06_AXI_RRESP),
-        .M06_AXI_ruser(1'b0),
-        .M06_AXI_rvalid(icn_ctrl_M06_AXI_RVALID),
-        .M06_AXI_wdata(icn_ctrl_M06_AXI_WDATA),
-        .M06_AXI_wready(icn_ctrl_M06_AXI_WREADY),
-        .M06_AXI_wstrb(icn_ctrl_M06_AXI_WSTRB),
-        .M06_AXI_wvalid(icn_ctrl_M06_AXI_WVALID),
         .S00_AXI_araddr(S00_AXI_araddr),
         .S00_AXI_arburst(S00_AXI_arburst),
         .S00_AXI_arcache(S00_AXI_arcache),
@@ -2431,7 +1965,6 @@ module pl_rtl_imp_QFYSB7
         .S00_AXI_arprot(S00_AXI_arprot),
         .S00_AXI_arqos(S00_AXI_arqos),
         .S00_AXI_arready(S00_AXI_arready),
-        .S00_AXI_arregion({1'b0,1'b0,1'b0,1'b0}),
         .S00_AXI_arsize(S00_AXI_arsize),
         .S00_AXI_aruser(S00_AXI_aruser),
         .S00_AXI_arvalid(S00_AXI_arvalid),
@@ -2444,7 +1977,6 @@ module pl_rtl_imp_QFYSB7
         .S00_AXI_awprot(S00_AXI_awprot),
         .S00_AXI_awqos(S00_AXI_awqos),
         .S00_AXI_awready(S00_AXI_awready),
-        .S00_AXI_awregion({1'b0,1'b0,1'b0,1'b0}),
         .S00_AXI_awsize(S00_AXI_awsize),
         .S00_AXI_awuser(S00_AXI_awuser),
         .S00_AXI_awvalid(S00_AXI_awvalid),
@@ -2459,37 +1991,17 @@ module pl_rtl_imp_QFYSB7
         .S00_AXI_rresp(S00_AXI_rresp),
         .S00_AXI_rvalid(S00_AXI_rvalid),
         .S00_AXI_wdata(S00_AXI_wdata),
-        .S00_AXI_wid(1'b0),
         .S00_AXI_wlast(S00_AXI_wlast),
         .S00_AXI_wready(S00_AXI_wready),
         .S00_AXI_wstrb(S00_AXI_wstrb),
-        .S00_AXI_wuser(1'b0),
         .S00_AXI_wvalid(S00_AXI_wvalid),
-        .S01_AXI_araddr(axi_uart_bridge_M_AXI_ARADDR[0]),
-        .S01_AXI_arburst({1'b0,1'b1}),
-        .S01_AXI_arcache({1'b0,1'b0,1'b1,1'b1}),
-        .S01_AXI_arid(1'b0),
-        .S01_AXI_arlen(1'b0),
-        .S01_AXI_arlock(1'b0),
+        .S01_AXI_araddr(axi_uart_bridge_M_AXI_ARADDR),
         .S01_AXI_arprot({1'b0,1'b0,1'b0}),
-        .S01_AXI_arqos({1'b0,1'b0,1'b0,1'b0}),
         .S01_AXI_arready(axi_uart_bridge_M_AXI_ARREADY),
-        .S01_AXI_arregion({1'b0,1'b0,1'b0,1'b0}),
-        .S01_AXI_arsize({1'b0,1'b1,1'b0}),
-        .S01_AXI_aruser(1'b0),
         .S01_AXI_arvalid(axi_uart_bridge_M_AXI_ARVALID),
-        .S01_AXI_awaddr(axi_uart_bridge_M_AXI_AWADDR[0]),
-        .S01_AXI_awburst({1'b0,1'b1}),
-        .S01_AXI_awcache({1'b0,1'b0,1'b1,1'b1}),
-        .S01_AXI_awid(1'b0),
-        .S01_AXI_awlen(1'b0),
-        .S01_AXI_awlock(1'b0),
+        .S01_AXI_awaddr(axi_uart_bridge_M_AXI_AWADDR),
         .S01_AXI_awprot({1'b0,1'b0,1'b0}),
-        .S01_AXI_awqos({1'b0,1'b0,1'b0,1'b0}),
         .S01_AXI_awready(axi_uart_bridge_M_AXI_AWREADY),
-        .S01_AXI_awregion({1'b0,1'b0,1'b0,1'b0}),
-        .S01_AXI_awsize({1'b0,1'b1,1'b0}),
-        .S01_AXI_awuser(1'b0),
         .S01_AXI_awvalid(axi_uart_bridge_M_AXI_AWVALID),
         .S01_AXI_bready(axi_uart_bridge_M_AXI_BREADY),
         .S01_AXI_bresp(axi_uart_bridge_M_AXI_BRESP),
@@ -2498,180 +2010,33 @@ module pl_rtl_imp_QFYSB7
         .S01_AXI_rready(axi_uart_bridge_M_AXI_RREADY),
         .S01_AXI_rresp(axi_uart_bridge_M_AXI_RRESP),
         .S01_AXI_rvalid(axi_uart_bridge_M_AXI_RVALID),
-        .S01_AXI_wdata(axi_uart_bridge_M_AXI_WDATA[0]),
-        .S01_AXI_wid(1'b0),
-        .S01_AXI_wlast(1'b0),
+        .S01_AXI_wdata(axi_uart_bridge_M_AXI_WDATA),
         .S01_AXI_wready(axi_uart_bridge_M_AXI_WREADY),
-        .S01_AXI_wstrb(axi_uart_bridge_M_AXI_WSTRB[0]),
-        .S01_AXI_wuser(1'b0),
+        .S01_AXI_wstrb(axi_uart_bridge_M_AXI_WSTRB),
         .S01_AXI_wvalid(axi_uart_bridge_M_AXI_WVALID),
         .aclk(aclk),
         .aclk1(ethernet_axis_clk),
         .aresetn(aresetn));
-  top_level_icn_ctrl_0_0 icn_ctrl_0
-       (.M00_AXI_araddr(icn_ctrl_0_M00_AXI_ARADDR),
-        .M00_AXI_arprot(icn_ctrl_0_M00_AXI_ARPROT),
-        .M00_AXI_arready(icn_ctrl_0_M00_AXI_ARREADY),
-        .M00_AXI_arvalid(icn_ctrl_0_M00_AXI_ARVALID),
-        .M00_AXI_awaddr(icn_ctrl_0_M00_AXI_AWADDR),
-        .M00_AXI_awprot(icn_ctrl_0_M00_AXI_AWPROT),
-        .M00_AXI_awready(icn_ctrl_0_M00_AXI_AWREADY),
-        .M00_AXI_awvalid(icn_ctrl_0_M00_AXI_AWVALID),
-        .M00_AXI_bid(1'b0),
-        .M00_AXI_bready(icn_ctrl_0_M00_AXI_BREADY),
-        .M00_AXI_bresp(icn_ctrl_0_M00_AXI_BRESP),
-        .M00_AXI_buser(1'b0),
-        .M00_AXI_bvalid(icn_ctrl_0_M00_AXI_BVALID),
-        .M00_AXI_rdata(icn_ctrl_0_M00_AXI_RDATA[0]),
-        .M00_AXI_rid(1'b0),
-        .M00_AXI_rlast(1'b0),
-        .M00_AXI_rready(icn_ctrl_0_M00_AXI_RREADY),
-        .M00_AXI_rresp(icn_ctrl_0_M00_AXI_RRESP),
-        .M00_AXI_ruser(1'b0),
-        .M00_AXI_rvalid(icn_ctrl_0_M00_AXI_RVALID),
-        .M00_AXI_wdata(icn_ctrl_0_M00_AXI_WDATA),
-        .M00_AXI_wready(icn_ctrl_0_M00_AXI_WREADY),
-        .M00_AXI_wstrb(icn_ctrl_0_M00_AXI_WSTRB),
-        .M00_AXI_wvalid(icn_ctrl_0_M00_AXI_WVALID),
-        .S00_AXI_araddr(icn_ctrl_M01_AXI_ARADDR),
-        .S00_AXI_arburst(icn_ctrl_M01_AXI_ARBURST),
-        .S00_AXI_arcache(icn_ctrl_M01_AXI_ARCACHE),
-        .S00_AXI_arid(icn_ctrl_M01_AXI_ARID),
-        .S00_AXI_arlen(icn_ctrl_M01_AXI_ARLEN),
-        .S00_AXI_arlock(icn_ctrl_M01_AXI_ARLOCK),
-        .S00_AXI_arprot(icn_ctrl_M01_AXI_ARPROT),
-        .S00_AXI_arqos(icn_ctrl_M01_AXI_ARQOS),
-        .S00_AXI_arready(icn_ctrl_M01_AXI_ARREADY),
-        .S00_AXI_arregion(icn_ctrl_M01_AXI_ARREGION),
-        .S00_AXI_arsize(icn_ctrl_M01_AXI_ARSIZE),
-        .S00_AXI_aruser(icn_ctrl_M01_AXI_ARUSER),
-        .S00_AXI_arvalid(icn_ctrl_M01_AXI_ARVALID),
-        .S00_AXI_awaddr(icn_ctrl_M01_AXI_AWADDR),
-        .S00_AXI_awburst(icn_ctrl_M01_AXI_AWBURST),
-        .S00_AXI_awcache(icn_ctrl_M01_AXI_AWCACHE),
-        .S00_AXI_awid(icn_ctrl_M01_AXI_AWID),
-        .S00_AXI_awlen(icn_ctrl_M01_AXI_AWLEN),
-        .S00_AXI_awlock(icn_ctrl_M01_AXI_AWLOCK),
-        .S00_AXI_awprot(icn_ctrl_M01_AXI_AWPROT),
-        .S00_AXI_awqos(icn_ctrl_M01_AXI_AWQOS),
-        .S00_AXI_awready(icn_ctrl_M01_AXI_AWREADY),
-        .S00_AXI_awregion(icn_ctrl_M01_AXI_AWREGION),
-        .S00_AXI_awsize(icn_ctrl_M01_AXI_AWSIZE),
-        .S00_AXI_awuser(icn_ctrl_M01_AXI_AWUSER),
-        .S00_AXI_awvalid(icn_ctrl_M01_AXI_AWVALID),
-        .S00_AXI_bid(icn_ctrl_M01_AXI_BID),
-        .S00_AXI_bready(icn_ctrl_M01_AXI_BREADY),
-        .S00_AXI_bresp(icn_ctrl_M01_AXI_BRESP),
-        .S00_AXI_buser(icn_ctrl_M01_AXI_BUSER),
-        .S00_AXI_bvalid(icn_ctrl_M01_AXI_BVALID),
-        .S00_AXI_rdata(icn_ctrl_M01_AXI_RDATA),
-        .S00_AXI_rid(icn_ctrl_M01_AXI_RID),
-        .S00_AXI_rlast(icn_ctrl_M01_AXI_RLAST),
-        .S00_AXI_rready(icn_ctrl_M01_AXI_RREADY),
-        .S00_AXI_rresp(icn_ctrl_M01_AXI_RRESP),
-        .S00_AXI_ruser(icn_ctrl_M01_AXI_RUSER),
-        .S00_AXI_rvalid(icn_ctrl_M01_AXI_RVALID),
-        .S00_AXI_wdata(icn_ctrl_M01_AXI_WDATA),
-        .S00_AXI_wid(icn_ctrl_M01_AXI_WID),
-        .S00_AXI_wlast(icn_ctrl_M01_AXI_WLAST),
-        .S00_AXI_wready(icn_ctrl_M01_AXI_WREADY),
-        .S00_AXI_wstrb(icn_ctrl_M01_AXI_WSTRB),
-        .S00_AXI_wuser(icn_ctrl_M01_AXI_WUSER),
-        .S00_AXI_wvalid(icn_ctrl_M01_AXI_WVALID),
-        .aclk(aclk),
-        .aresetn(aresetn));
-  top_level_icn_ctrl_1_0 icn_ctrl_1
-       (.M00_AXI_araddr(icn_ctrl_1_M00_AXI_ARADDR),
-        .M00_AXI_arprot(icn_ctrl_1_M00_AXI_ARPROT),
-        .M00_AXI_arready(icn_ctrl_1_M00_AXI_ARREADY),
-        .M00_AXI_arvalid(icn_ctrl_1_M00_AXI_ARVALID),
-        .M00_AXI_awaddr(icn_ctrl_1_M00_AXI_AWADDR),
-        .M00_AXI_awprot(icn_ctrl_1_M00_AXI_AWPROT),
-        .M00_AXI_awready(icn_ctrl_1_M00_AXI_AWREADY),
-        .M00_AXI_awvalid(icn_ctrl_1_M00_AXI_AWVALID),
-        .M00_AXI_bid(1'b0),
-        .M00_AXI_bready(icn_ctrl_1_M00_AXI_BREADY),
-        .M00_AXI_bresp(icn_ctrl_1_M00_AXI_BRESP),
-        .M00_AXI_buser(1'b0),
-        .M00_AXI_bvalid(icn_ctrl_1_M00_AXI_BVALID),
-        .M00_AXI_rdata(icn_ctrl_1_M00_AXI_RDATA[0]),
-        .M00_AXI_rid(1'b0),
-        .M00_AXI_rlast(1'b0),
-        .M00_AXI_rready(icn_ctrl_1_M00_AXI_RREADY),
-        .M00_AXI_rresp(icn_ctrl_1_M00_AXI_RRESP),
-        .M00_AXI_ruser(1'b0),
-        .M00_AXI_rvalid(icn_ctrl_1_M00_AXI_RVALID),
-        .M00_AXI_wdata(icn_ctrl_1_M00_AXI_WDATA),
-        .M00_AXI_wready(icn_ctrl_1_M00_AXI_WREADY),
-        .M00_AXI_wstrb(icn_ctrl_1_M00_AXI_WSTRB),
-        .M00_AXI_wvalid(icn_ctrl_1_M00_AXI_WVALID),
-        .S00_AXI_araddr(icn_ctrl_M02_AXI_ARADDR),
-        .S00_AXI_arburst(icn_ctrl_M02_AXI_ARBURST),
-        .S00_AXI_arcache(icn_ctrl_M02_AXI_ARCACHE),
-        .S00_AXI_arid(icn_ctrl_M02_AXI_ARID),
-        .S00_AXI_arlen(icn_ctrl_M02_AXI_ARLEN),
-        .S00_AXI_arlock(icn_ctrl_M02_AXI_ARLOCK),
-        .S00_AXI_arprot(icn_ctrl_M02_AXI_ARPROT),
-        .S00_AXI_arqos(icn_ctrl_M02_AXI_ARQOS),
-        .S00_AXI_arready(icn_ctrl_M02_AXI_ARREADY),
-        .S00_AXI_arregion(icn_ctrl_M02_AXI_ARREGION),
-        .S00_AXI_arsize(icn_ctrl_M02_AXI_ARSIZE),
-        .S00_AXI_aruser(icn_ctrl_M02_AXI_ARUSER),
-        .S00_AXI_arvalid(icn_ctrl_M02_AXI_ARVALID),
-        .S00_AXI_awaddr(icn_ctrl_M02_AXI_AWADDR),
-        .S00_AXI_awburst(icn_ctrl_M02_AXI_AWBURST),
-        .S00_AXI_awcache(icn_ctrl_M02_AXI_AWCACHE),
-        .S00_AXI_awid(icn_ctrl_M02_AXI_AWID),
-        .S00_AXI_awlen(icn_ctrl_M02_AXI_AWLEN),
-        .S00_AXI_awlock(icn_ctrl_M02_AXI_AWLOCK),
-        .S00_AXI_awprot(icn_ctrl_M02_AXI_AWPROT),
-        .S00_AXI_awqos(icn_ctrl_M02_AXI_AWQOS),
-        .S00_AXI_awready(icn_ctrl_M02_AXI_AWREADY),
-        .S00_AXI_awregion(icn_ctrl_M02_AXI_AWREGION),
-        .S00_AXI_awsize(icn_ctrl_M02_AXI_AWSIZE),
-        .S00_AXI_awuser(icn_ctrl_M02_AXI_AWUSER),
-        .S00_AXI_awvalid(icn_ctrl_M02_AXI_AWVALID),
-        .S00_AXI_bid(icn_ctrl_M02_AXI_BID),
-        .S00_AXI_bready(icn_ctrl_M02_AXI_BREADY),
-        .S00_AXI_bresp(icn_ctrl_M02_AXI_BRESP),
-        .S00_AXI_buser(icn_ctrl_M02_AXI_BUSER),
-        .S00_AXI_bvalid(icn_ctrl_M02_AXI_BVALID),
-        .S00_AXI_rdata(icn_ctrl_M02_AXI_RDATA),
-        .S00_AXI_rid(icn_ctrl_M02_AXI_RID),
-        .S00_AXI_rlast(icn_ctrl_M02_AXI_RLAST),
-        .S00_AXI_rready(icn_ctrl_M02_AXI_RREADY),
-        .S00_AXI_rresp(icn_ctrl_M02_AXI_RRESP),
-        .S00_AXI_ruser(icn_ctrl_M02_AXI_RUSER),
-        .S00_AXI_rvalid(icn_ctrl_M02_AXI_RVALID),
-        .S00_AXI_wdata(icn_ctrl_M02_AXI_WDATA),
-        .S00_AXI_wid(icn_ctrl_M02_AXI_WID),
-        .S00_AXI_wlast(icn_ctrl_M02_AXI_WLAST),
-        .S00_AXI_wready(icn_ctrl_M02_AXI_WREADY),
-        .S00_AXI_wstrb(icn_ctrl_M02_AXI_WSTRB),
-        .S00_AXI_wuser(icn_ctrl_M02_AXI_WUSER),
-        .S00_AXI_wvalid(icn_ctrl_M02_AXI_WVALID),
-        .aclk(aclk),
-        .aresetn(aresetn));
   top_level_packet_config_0_0 packet_config
-       (.S_AXI_ARADDR({icn_ctrl_M05_AXI_ARADDR,icn_ctrl_M05_AXI_ARADDR,icn_ctrl_M05_AXI_ARADDR,icn_ctrl_M05_AXI_ARADDR,icn_ctrl_M05_AXI_ARADDR,icn_ctrl_M05_AXI_ARADDR,icn_ctrl_M05_AXI_ARADDR,icn_ctrl_M05_AXI_ARADDR}),
-        .S_AXI_ARPROT(icn_ctrl_M05_AXI_ARPROT),
-        .S_AXI_ARREADY(icn_ctrl_M05_AXI_ARREADY),
-        .S_AXI_ARVALID(icn_ctrl_M05_AXI_ARVALID),
-        .S_AXI_AWADDR({icn_ctrl_M05_AXI_AWADDR,icn_ctrl_M05_AXI_AWADDR,icn_ctrl_M05_AXI_AWADDR,icn_ctrl_M05_AXI_AWADDR,icn_ctrl_M05_AXI_AWADDR,icn_ctrl_M05_AXI_AWADDR,icn_ctrl_M05_AXI_AWADDR,icn_ctrl_M05_AXI_AWADDR}),
-        .S_AXI_AWPROT(icn_ctrl_M05_AXI_AWPROT),
-        .S_AXI_AWREADY(icn_ctrl_M05_AXI_AWREADY),
-        .S_AXI_AWVALID(icn_ctrl_M05_AXI_AWVALID),
-        .S_AXI_BREADY(icn_ctrl_M05_AXI_BREADY),
-        .S_AXI_BRESP(icn_ctrl_M05_AXI_BRESP),
-        .S_AXI_BVALID(icn_ctrl_M05_AXI_BVALID),
-        .S_AXI_RDATA(icn_ctrl_M05_AXI_RDATA),
-        .S_AXI_RREADY(icn_ctrl_M05_AXI_RREADY),
-        .S_AXI_RRESP(icn_ctrl_M05_AXI_RRESP),
-        .S_AXI_RVALID(icn_ctrl_M05_AXI_RVALID),
-        .S_AXI_WDATA({icn_ctrl_M05_AXI_WDATA,icn_ctrl_M05_AXI_WDATA,icn_ctrl_M05_AXI_WDATA,icn_ctrl_M05_AXI_WDATA,icn_ctrl_M05_AXI_WDATA,icn_ctrl_M05_AXI_WDATA,icn_ctrl_M05_AXI_WDATA,icn_ctrl_M05_AXI_WDATA,icn_ctrl_M05_AXI_WDATA,icn_ctrl_M05_AXI_WDATA,icn_ctrl_M05_AXI_WDATA,icn_ctrl_M05_AXI_WDATA,icn_ctrl_M05_AXI_WDATA,icn_ctrl_M05_AXI_WDATA,icn_ctrl_M05_AXI_WDATA,icn_ctrl_M05_AXI_WDATA,icn_ctrl_M05_AXI_WDATA,icn_ctrl_M05_AXI_WDATA,icn_ctrl_M05_AXI_WDATA,icn_ctrl_M05_AXI_WDATA,icn_ctrl_M05_AXI_WDATA,icn_ctrl_M05_AXI_WDATA,icn_ctrl_M05_AXI_WDATA,icn_ctrl_M05_AXI_WDATA,icn_ctrl_M05_AXI_WDATA,icn_ctrl_M05_AXI_WDATA,icn_ctrl_M05_AXI_WDATA,icn_ctrl_M05_AXI_WDATA,icn_ctrl_M05_AXI_WDATA,icn_ctrl_M05_AXI_WDATA,icn_ctrl_M05_AXI_WDATA,icn_ctrl_M05_AXI_WDATA}),
-        .S_AXI_WREADY(icn_ctrl_M05_AXI_WREADY),
-        .S_AXI_WSTRB({icn_ctrl_M05_AXI_WSTRB,icn_ctrl_M05_AXI_WSTRB,icn_ctrl_M05_AXI_WSTRB,icn_ctrl_M05_AXI_WSTRB}),
-        .S_AXI_WVALID(icn_ctrl_M05_AXI_WVALID),
+       (.S_AXI_ARADDR(icn_ctrl_M01_AXI_ARADDR),
+        .S_AXI_ARPROT(icn_ctrl_M01_AXI_ARPROT),
+        .S_AXI_ARREADY(icn_ctrl_M01_AXI_ARREADY),
+        .S_AXI_ARVALID(icn_ctrl_M01_AXI_ARVALID),
+        .S_AXI_AWADDR(icn_ctrl_M01_AXI_AWADDR),
+        .S_AXI_AWPROT(icn_ctrl_M01_AXI_AWPROT),
+        .S_AXI_AWREADY(icn_ctrl_M01_AXI_AWREADY),
+        .S_AXI_AWVALID(icn_ctrl_M01_AXI_AWVALID),
+        .S_AXI_BREADY(icn_ctrl_M01_AXI_BREADY),
+        .S_AXI_BRESP(icn_ctrl_M01_AXI_BRESP),
+        .S_AXI_BVALID(icn_ctrl_M01_AXI_BVALID),
+        .S_AXI_RDATA(icn_ctrl_M01_AXI_RDATA),
+        .S_AXI_RREADY(icn_ctrl_M01_AXI_RREADY),
+        .S_AXI_RRESP(icn_ctrl_M01_AXI_RRESP),
+        .S_AXI_RVALID(icn_ctrl_M01_AXI_RVALID),
+        .S_AXI_WDATA(icn_ctrl_M01_AXI_WDATA),
+        .S_AXI_WREADY(icn_ctrl_M01_AXI_WREADY),
+        .S_AXI_WSTRB(icn_ctrl_M01_AXI_WSTRB),
+        .S_AXI_WVALID(icn_ctrl_M01_AXI_WVALID),
         .clk(ethernet_axis_clk),
         .idle_cycles(packet_config_idle_cycles),
         .initial_value(packet_config_initial_value),
@@ -2696,12 +2061,14 @@ module pl_rtl_imp_QFYSB7
         .start(packet_config_start));
 endmodule
 
-(* CORE_GENERATION_INFO = "top_level,IP_Integrator,{x_ipVendor=xilinx.com,x_ipLibrary=BlockDiagram,x_ipName=top_level,x_ipVersion=1.00.a,x_ipLanguage=VERILOG,numBlks=34,numReposBlks=30,numNonXlnxBlks=0,numHierBlks=4,maxHierDepth=3,numSysgenBlks=0,numHlsBlks=0,numHdlrefBlks=8,numPkgbdBlks=0,bdsource=USER,da_dcmac_cnt=1,synth_mode=Hierarchical}" *) (* HW_HANDOFF = "top_level.hwdef" *) 
+(* CORE_GENERATION_INFO = "top_level,IP_Integrator,{x_ipVendor=xilinx.com,x_ipLibrary=BlockDiagram,x_ipName=top_level,x_ipVersion=1.00.a,x_ipLanguage=VERILOG,numBlks=28,numReposBlks=24,numNonXlnxBlks=0,numHierBlks=4,maxHierDepth=3,numSysgenBlks=0,numHlsBlks=0,numHdlrefBlks=5,numPkgbdBlks=0,bdsource=USER,da_dcmac_cnt=1,synth_mode=Hierarchical}" *) (* HW_HANDOFF = "top_level.hwdef" *) 
 module top_level
    (GT_Serial_grx_n,
     GT_Serial_grx_p,
     GT_Serial_gtx_n,
     GT_Serial_gtx_p,
+    QSFPDD1_LPMODE,
+    QSFPDD1_RESETL,
     QSFPDD2_LPMODE,
     QSFPDD2_RESETL,
     UART_rxd,
@@ -2832,6 +2199,8 @@ module top_level
   (* X_INTERFACE_INFO = "xilinx.com:interface:gt:1.0 GT_Serial GRX_P" *) input [3:0]GT_Serial_grx_p;
   (* X_INTERFACE_INFO = "xilinx.com:interface:gt:1.0 GT_Serial GTX_N" *) output [3:0]GT_Serial_gtx_n;
   (* X_INTERFACE_INFO = "xilinx.com:interface:gt:1.0 GT_Serial GTX_P" *) output [3:0]GT_Serial_gtx_p;
+  output [0:0]QSFPDD1_LPMODE;
+  output [0:0]QSFPDD1_RESETL;
   output [0:0]QSFPDD2_LPMODE;
   output [0:0]QSFPDD2_RESETL;
   (* X_INTERFACE_INFO = "xilinx.com:interface:uart:1.0 UART RxD" *) (* X_INTERFACE_MODE = "Master" *) input UART_rxd;
@@ -2983,12 +2352,12 @@ module top_level
   (* HARD_CONN = "true" *) wire [2:0]CIPS_0_FPD_AXI_NOC_0_AWSIZE;
   (* HARD_CONN = "true" *) wire [17:0]CIPS_0_FPD_AXI_NOC_0_AWUSER;
   (* HARD_CONN = "true" *) wire CIPS_0_FPD_AXI_NOC_0_AWVALID;
-  (* HARD_CONN = "true" *) wire CIPS_0_FPD_AXI_NOC_0_BID;
+  (* HARD_CONN = "true" *) wire [15:0]CIPS_0_FPD_AXI_NOC_0_BID;
   (* HARD_CONN = "true" *) wire CIPS_0_FPD_AXI_NOC_0_BREADY;
   (* HARD_CONN = "true" *) wire [1:0]CIPS_0_FPD_AXI_NOC_0_BRESP;
   (* HARD_CONN = "true" *) wire [0:0]CIPS_0_FPD_AXI_NOC_0_BVALID;
-  (* HARD_CONN = "true" *) wire CIPS_0_FPD_AXI_NOC_0_RDATA;
-  (* HARD_CONN = "true" *) wire CIPS_0_FPD_AXI_NOC_0_RID;
+  (* HARD_CONN = "true" *) wire [127:0]CIPS_0_FPD_AXI_NOC_0_RDATA;
+  (* HARD_CONN = "true" *) wire [15:0]CIPS_0_FPD_AXI_NOC_0_RID;
   (* HARD_CONN = "true" *) wire [0:0]CIPS_0_FPD_AXI_NOC_0_RLAST;
   (* HARD_CONN = "true" *) wire CIPS_0_FPD_AXI_NOC_0_RREADY;
   (* HARD_CONN = "true" *) wire [1:0]CIPS_0_FPD_AXI_NOC_0_RRESP;
@@ -3022,12 +2391,12 @@ module top_level
   (* HARD_CONN = "true" *) wire [2:0]CIPS_0_FPD_AXI_NOC_1_AWSIZE;
   (* HARD_CONN = "true" *) wire [17:0]CIPS_0_FPD_AXI_NOC_1_AWUSER;
   (* HARD_CONN = "true" *) wire CIPS_0_FPD_AXI_NOC_1_AWVALID;
-  (* HARD_CONN = "true" *) wire CIPS_0_FPD_AXI_NOC_1_BID;
+  (* HARD_CONN = "true" *) wire [15:0]CIPS_0_FPD_AXI_NOC_1_BID;
   (* HARD_CONN = "true" *) wire CIPS_0_FPD_AXI_NOC_1_BREADY;
   (* HARD_CONN = "true" *) wire [1:0]CIPS_0_FPD_AXI_NOC_1_BRESP;
   (* HARD_CONN = "true" *) wire [0:0]CIPS_0_FPD_AXI_NOC_1_BVALID;
-  (* HARD_CONN = "true" *) wire CIPS_0_FPD_AXI_NOC_1_RDATA;
-  (* HARD_CONN = "true" *) wire CIPS_0_FPD_AXI_NOC_1_RID;
+  (* HARD_CONN = "true" *) wire [127:0]CIPS_0_FPD_AXI_NOC_1_RDATA;
+  (* HARD_CONN = "true" *) wire [15:0]CIPS_0_FPD_AXI_NOC_1_RID;
   (* HARD_CONN = "true" *) wire [0:0]CIPS_0_FPD_AXI_NOC_1_RLAST;
   (* HARD_CONN = "true" *) wire CIPS_0_FPD_AXI_NOC_1_RREADY;
   (* HARD_CONN = "true" *) wire [1:0]CIPS_0_FPD_AXI_NOC_1_RRESP;
@@ -3061,12 +2430,12 @@ module top_level
   (* HARD_CONN = "true" *) wire [2:0]CIPS_0_FPD_CCI_NOC_0_AWSIZE;
   (* HARD_CONN = "true" *) wire [17:0]CIPS_0_FPD_CCI_NOC_0_AWUSER;
   (* HARD_CONN = "true" *) wire CIPS_0_FPD_CCI_NOC_0_AWVALID;
-  (* HARD_CONN = "true" *) wire CIPS_0_FPD_CCI_NOC_0_BID;
+  (* HARD_CONN = "true" *) wire [15:0]CIPS_0_FPD_CCI_NOC_0_BID;
   (* HARD_CONN = "true" *) wire CIPS_0_FPD_CCI_NOC_0_BREADY;
   (* HARD_CONN = "true" *) wire [1:0]CIPS_0_FPD_CCI_NOC_0_BRESP;
   (* HARD_CONN = "true" *) wire [0:0]CIPS_0_FPD_CCI_NOC_0_BVALID;
-  (* HARD_CONN = "true" *) wire CIPS_0_FPD_CCI_NOC_0_RDATA;
-  (* HARD_CONN = "true" *) wire CIPS_0_FPD_CCI_NOC_0_RID;
+  (* HARD_CONN = "true" *) wire [127:0]CIPS_0_FPD_CCI_NOC_0_RDATA;
+  (* HARD_CONN = "true" *) wire [15:0]CIPS_0_FPD_CCI_NOC_0_RID;
   (* HARD_CONN = "true" *) wire [0:0]CIPS_0_FPD_CCI_NOC_0_RLAST;
   (* HARD_CONN = "true" *) wire CIPS_0_FPD_CCI_NOC_0_RREADY;
   (* HARD_CONN = "true" *) wire [1:0]CIPS_0_FPD_CCI_NOC_0_RRESP;
@@ -3101,12 +2470,12 @@ module top_level
   (* HARD_CONN = "true" *) wire [2:0]CIPS_0_FPD_CCI_NOC_1_AWSIZE;
   (* HARD_CONN = "true" *) wire [17:0]CIPS_0_FPD_CCI_NOC_1_AWUSER;
   (* HARD_CONN = "true" *) wire CIPS_0_FPD_CCI_NOC_1_AWVALID;
-  (* HARD_CONN = "true" *) wire CIPS_0_FPD_CCI_NOC_1_BID;
+  (* HARD_CONN = "true" *) wire [15:0]CIPS_0_FPD_CCI_NOC_1_BID;
   (* HARD_CONN = "true" *) wire CIPS_0_FPD_CCI_NOC_1_BREADY;
   (* HARD_CONN = "true" *) wire [1:0]CIPS_0_FPD_CCI_NOC_1_BRESP;
   (* HARD_CONN = "true" *) wire [0:0]CIPS_0_FPD_CCI_NOC_1_BVALID;
-  (* HARD_CONN = "true" *) wire CIPS_0_FPD_CCI_NOC_1_RDATA;
-  (* HARD_CONN = "true" *) wire CIPS_0_FPD_CCI_NOC_1_RID;
+  (* HARD_CONN = "true" *) wire [127:0]CIPS_0_FPD_CCI_NOC_1_RDATA;
+  (* HARD_CONN = "true" *) wire [15:0]CIPS_0_FPD_CCI_NOC_1_RID;
   (* HARD_CONN = "true" *) wire [0:0]CIPS_0_FPD_CCI_NOC_1_RLAST;
   (* HARD_CONN = "true" *) wire CIPS_0_FPD_CCI_NOC_1_RREADY;
   (* HARD_CONN = "true" *) wire [1:0]CIPS_0_FPD_CCI_NOC_1_RRESP;
@@ -3141,12 +2510,12 @@ module top_level
   (* HARD_CONN = "true" *) wire [2:0]CIPS_0_FPD_CCI_NOC_2_AWSIZE;
   (* HARD_CONN = "true" *) wire [17:0]CIPS_0_FPD_CCI_NOC_2_AWUSER;
   (* HARD_CONN = "true" *) wire CIPS_0_FPD_CCI_NOC_2_AWVALID;
-  (* HARD_CONN = "true" *) wire CIPS_0_FPD_CCI_NOC_2_BID;
+  (* HARD_CONN = "true" *) wire [15:0]CIPS_0_FPD_CCI_NOC_2_BID;
   (* HARD_CONN = "true" *) wire CIPS_0_FPD_CCI_NOC_2_BREADY;
   (* HARD_CONN = "true" *) wire [1:0]CIPS_0_FPD_CCI_NOC_2_BRESP;
   (* HARD_CONN = "true" *) wire [0:0]CIPS_0_FPD_CCI_NOC_2_BVALID;
-  (* HARD_CONN = "true" *) wire CIPS_0_FPD_CCI_NOC_2_RDATA;
-  (* HARD_CONN = "true" *) wire CIPS_0_FPD_CCI_NOC_2_RID;
+  (* HARD_CONN = "true" *) wire [127:0]CIPS_0_FPD_CCI_NOC_2_RDATA;
+  (* HARD_CONN = "true" *) wire [15:0]CIPS_0_FPD_CCI_NOC_2_RID;
   (* HARD_CONN = "true" *) wire [0:0]CIPS_0_FPD_CCI_NOC_2_RLAST;
   (* HARD_CONN = "true" *) wire CIPS_0_FPD_CCI_NOC_2_RREADY;
   (* HARD_CONN = "true" *) wire [1:0]CIPS_0_FPD_CCI_NOC_2_RRESP;
@@ -3181,12 +2550,12 @@ module top_level
   (* HARD_CONN = "true" *) wire [2:0]CIPS_0_FPD_CCI_NOC_3_AWSIZE;
   (* HARD_CONN = "true" *) wire [17:0]CIPS_0_FPD_CCI_NOC_3_AWUSER;
   (* HARD_CONN = "true" *) wire CIPS_0_FPD_CCI_NOC_3_AWVALID;
-  (* HARD_CONN = "true" *) wire CIPS_0_FPD_CCI_NOC_3_BID;
+  (* HARD_CONN = "true" *) wire [15:0]CIPS_0_FPD_CCI_NOC_3_BID;
   (* HARD_CONN = "true" *) wire CIPS_0_FPD_CCI_NOC_3_BREADY;
   (* HARD_CONN = "true" *) wire [1:0]CIPS_0_FPD_CCI_NOC_3_BRESP;
   (* HARD_CONN = "true" *) wire [0:0]CIPS_0_FPD_CCI_NOC_3_BVALID;
-  (* HARD_CONN = "true" *) wire CIPS_0_FPD_CCI_NOC_3_RDATA;
-  (* HARD_CONN = "true" *) wire CIPS_0_FPD_CCI_NOC_3_RID;
+  (* HARD_CONN = "true" *) wire [127:0]CIPS_0_FPD_CCI_NOC_3_RDATA;
+  (* HARD_CONN = "true" *) wire [15:0]CIPS_0_FPD_CCI_NOC_3_RID;
   (* HARD_CONN = "true" *) wire [0:0]CIPS_0_FPD_CCI_NOC_3_RLAST;
   (* HARD_CONN = "true" *) wire CIPS_0_FPD_CCI_NOC_3_RREADY;
   (* HARD_CONN = "true" *) wire [1:0]CIPS_0_FPD_CCI_NOC_3_RRESP;
@@ -3221,12 +2590,12 @@ module top_level
   (* HARD_CONN = "true" *) wire [2:0]CIPS_0_LPD_AXI_NOC_0_AWSIZE;
   (* HARD_CONN = "true" *) wire [17:0]CIPS_0_LPD_AXI_NOC_0_AWUSER;
   (* HARD_CONN = "true" *) wire CIPS_0_LPD_AXI_NOC_0_AWVALID;
-  (* HARD_CONN = "true" *) wire CIPS_0_LPD_AXI_NOC_0_BID;
+  (* HARD_CONN = "true" *) wire [15:0]CIPS_0_LPD_AXI_NOC_0_BID;
   (* HARD_CONN = "true" *) wire CIPS_0_LPD_AXI_NOC_0_BREADY;
   (* HARD_CONN = "true" *) wire [1:0]CIPS_0_LPD_AXI_NOC_0_BRESP;
   (* HARD_CONN = "true" *) wire [0:0]CIPS_0_LPD_AXI_NOC_0_BVALID;
-  (* HARD_CONN = "true" *) wire CIPS_0_LPD_AXI_NOC_0_RDATA;
-  (* HARD_CONN = "true" *) wire CIPS_0_LPD_AXI_NOC_0_RID;
+  (* HARD_CONN = "true" *) wire [127:0]CIPS_0_LPD_AXI_NOC_0_RDATA;
+  (* HARD_CONN = "true" *) wire [15:0]CIPS_0_LPD_AXI_NOC_0_RID;
   (* HARD_CONN = "true" *) wire [0:0]CIPS_0_LPD_AXI_NOC_0_RLAST;
   (* HARD_CONN = "true" *) wire CIPS_0_LPD_AXI_NOC_0_RREADY;
   (* HARD_CONN = "true" *) wire [1:0]CIPS_0_LPD_AXI_NOC_0_RRESP;
@@ -3244,7 +2613,7 @@ module top_level
   wire CIPS_0_M_AXI_GP0_ARLOCK;
   wire [2:0]CIPS_0_M_AXI_GP0_ARPROT;
   wire [3:0]CIPS_0_M_AXI_GP0_ARQOS;
-  wire [0:0]CIPS_0_M_AXI_GP0_ARREADY;
+  wire CIPS_0_M_AXI_GP0_ARREADY;
   wire [2:0]CIPS_0_M_AXI_GP0_ARSIZE;
   wire [15:0]CIPS_0_M_AXI_GP0_ARUSER;
   wire CIPS_0_M_AXI_GP0_ARVALID;
@@ -3256,23 +2625,23 @@ module top_level
   wire CIPS_0_M_AXI_GP0_AWLOCK;
   wire [2:0]CIPS_0_M_AXI_GP0_AWPROT;
   wire [3:0]CIPS_0_M_AXI_GP0_AWQOS;
-  wire [0:0]CIPS_0_M_AXI_GP0_AWREADY;
+  wire CIPS_0_M_AXI_GP0_AWREADY;
   wire [2:0]CIPS_0_M_AXI_GP0_AWSIZE;
   wire [15:0]CIPS_0_M_AXI_GP0_AWUSER;
   wire CIPS_0_M_AXI_GP0_AWVALID;
-  wire CIPS_0_M_AXI_GP0_BID;
+  wire [15:0]CIPS_0_M_AXI_GP0_BID;
   wire CIPS_0_M_AXI_GP0_BREADY;
   wire [1:0]CIPS_0_M_AXI_GP0_BRESP;
-  wire [0:0]CIPS_0_M_AXI_GP0_BVALID;
-  wire CIPS_0_M_AXI_GP0_RDATA;
-  wire CIPS_0_M_AXI_GP0_RID;
-  wire [0:0]CIPS_0_M_AXI_GP0_RLAST;
+  wire CIPS_0_M_AXI_GP0_BVALID;
+  wire [127:0]CIPS_0_M_AXI_GP0_RDATA;
+  wire [15:0]CIPS_0_M_AXI_GP0_RID;
+  wire CIPS_0_M_AXI_GP0_RLAST;
   wire CIPS_0_M_AXI_GP0_RREADY;
   wire [1:0]CIPS_0_M_AXI_GP0_RRESP;
-  wire [0:0]CIPS_0_M_AXI_GP0_RVALID;
+  wire CIPS_0_M_AXI_GP0_RVALID;
   wire [127:0]CIPS_0_M_AXI_GP0_WDATA;
   wire CIPS_0_M_AXI_GP0_WLAST;
-  wire [0:0]CIPS_0_M_AXI_GP0_WREADY;
+  wire CIPS_0_M_AXI_GP0_WREADY;
   wire [15:0]CIPS_0_M_AXI_GP0_WSTRB;
   wire CIPS_0_M_AXI_GP0_WVALID;
   (* HARD_CONN = "true" *) wire [63:0]CIPS_0_PMC_NOC_AXI_0_ARADDR;
@@ -3301,20 +2670,19 @@ module top_level
   (* HARD_CONN = "true" *) wire [2:0]CIPS_0_PMC_NOC_AXI_0_AWSIZE;
   (* HARD_CONN = "true" *) wire [17:0]CIPS_0_PMC_NOC_AXI_0_AWUSER;
   (* HARD_CONN = "true" *) wire CIPS_0_PMC_NOC_AXI_0_AWVALID;
-  (* HARD_CONN = "true" *) wire CIPS_0_PMC_NOC_AXI_0_BID;
+  (* HARD_CONN = "true" *) wire [15:0]CIPS_0_PMC_NOC_AXI_0_BID;
   (* HARD_CONN = "true" *) wire CIPS_0_PMC_NOC_AXI_0_BREADY;
   (* HARD_CONN = "true" *) wire [1:0]CIPS_0_PMC_NOC_AXI_0_BRESP;
-  (* HARD_CONN = "true" *) wire CIPS_0_PMC_NOC_AXI_0_BUSER;
+  (* HARD_CONN = "true" *) wire [15:0]CIPS_0_PMC_NOC_AXI_0_BUSER;
   (* HARD_CONN = "true" *) wire [0:0]CIPS_0_PMC_NOC_AXI_0_BVALID;
-  (* HARD_CONN = "true" *) wire CIPS_0_PMC_NOC_AXI_0_RDATA;
-  (* HARD_CONN = "true" *) wire CIPS_0_PMC_NOC_AXI_0_RID;
+  (* HARD_CONN = "true" *) wire [127:0]CIPS_0_PMC_NOC_AXI_0_RDATA;
+  (* HARD_CONN = "true" *) wire [15:0]CIPS_0_PMC_NOC_AXI_0_RID;
   (* HARD_CONN = "true" *) wire [0:0]CIPS_0_PMC_NOC_AXI_0_RLAST;
   (* HARD_CONN = "true" *) wire CIPS_0_PMC_NOC_AXI_0_RREADY;
   (* HARD_CONN = "true" *) wire [1:0]CIPS_0_PMC_NOC_AXI_0_RRESP;
-  (* HARD_CONN = "true" *) wire CIPS_0_PMC_NOC_AXI_0_RUSER;
+  (* HARD_CONN = "true" *) wire [16:0]CIPS_0_PMC_NOC_AXI_0_RUSER;
   (* HARD_CONN = "true" *) wire [0:0]CIPS_0_PMC_NOC_AXI_0_RVALID;
   (* HARD_CONN = "true" *) wire [127:0]CIPS_0_PMC_NOC_AXI_0_WDATA;
-  (* HARD_CONN = "true" *) wire [15:0]CIPS_0_PMC_NOC_AXI_0_WID;
   (* HARD_CONN = "true" *) wire CIPS_0_PMC_NOC_AXI_0_WLAST;
   (* HARD_CONN = "true" *) wire [0:0]CIPS_0_PMC_NOC_AXI_0_WREADY;
   (* HARD_CONN = "true" *) wire [15:0]CIPS_0_PMC_NOC_AXI_0_WSTRB;
@@ -3334,8 +2702,8 @@ module top_level
   wire [3:0]GT_Serial_grx_p;
   wire [3:0]GT_Serial_gtx_n;
   wire [3:0]GT_Serial_gtx_p;
-  wire [0:0]QSFPDD2_LPMODE;
-  wire [0:0]QSFPDD2_RESETL;
+  wire [0:0]QSFPDD1_LPMODE;
+  wire [0:0]QSFPDD1_RESETL;
   wire UART_rxd;
   wire UART_txd;
   wire [5:0]ch0_lpddr4_trip1_ca_a;
@@ -3462,18 +2830,19 @@ module top_level
   wire [0:0]cips_noc_M07_INI_INTERNOC;
   wire clk_wizard_0_clk_out1;
   wire clk_wizard_0_locked;
-  wire [0:0]dummy_intr_dout;
+  wire [0:0]ilconstant_0_dout;
   wire lpddr4_clk1_clk_n;
   wire lpddr4_clk1_clk_p;
   wire lpddr4_clk2_clk_n;
   wire lpddr4_clk2_clk_p;
   wire lpddr4_clk3_clk_n;
   wire lpddr4_clk3_clk_p;
-  wire pl_rtl_irq;
   wire [0:0]proc_sys_reset_0_peripheral_aresetn;
   wire [0:0]qsfp0_clk_clk_n;
   wire [0:0]qsfp0_clk_clk_p;
 
+  assign QSFPDD2_LPMODE[0] = QSFPDD1_LPMODE;
+  assign QSFPDD2_RESETL[0] = QSFPDD1_RESETL;
   assign ch0_lpddr4_trip1_ck_c_a = \^ch0_lpddr4_trip1_ck_c_a [0];
   assign ch0_lpddr4_trip1_ck_c_b = \^ch0_lpddr4_trip1_ck_c_b [0];
   assign ch0_lpddr4_trip1_ck_t_a = \^ch0_lpddr4_trip1_ck_t_a [0];
@@ -3553,12 +2922,12 @@ module top_level
         .FPD_AXI_NOC_0_awsize(CIPS_0_FPD_AXI_NOC_0_AWSIZE),
         .FPD_AXI_NOC_0_awuser(CIPS_0_FPD_AXI_NOC_0_AWUSER),
         .FPD_AXI_NOC_0_awvalid(CIPS_0_FPD_AXI_NOC_0_AWVALID),
-        .FPD_AXI_NOC_0_bid({CIPS_0_FPD_AXI_NOC_0_BID,CIPS_0_FPD_AXI_NOC_0_BID,CIPS_0_FPD_AXI_NOC_0_BID,CIPS_0_FPD_AXI_NOC_0_BID,CIPS_0_FPD_AXI_NOC_0_BID,CIPS_0_FPD_AXI_NOC_0_BID,CIPS_0_FPD_AXI_NOC_0_BID,CIPS_0_FPD_AXI_NOC_0_BID,CIPS_0_FPD_AXI_NOC_0_BID,CIPS_0_FPD_AXI_NOC_0_BID,CIPS_0_FPD_AXI_NOC_0_BID,CIPS_0_FPD_AXI_NOC_0_BID,CIPS_0_FPD_AXI_NOC_0_BID,CIPS_0_FPD_AXI_NOC_0_BID,CIPS_0_FPD_AXI_NOC_0_BID,CIPS_0_FPD_AXI_NOC_0_BID}),
+        .FPD_AXI_NOC_0_bid(CIPS_0_FPD_AXI_NOC_0_BID),
         .FPD_AXI_NOC_0_bready(CIPS_0_FPD_AXI_NOC_0_BREADY),
         .FPD_AXI_NOC_0_bresp(CIPS_0_FPD_AXI_NOC_0_BRESP),
         .FPD_AXI_NOC_0_bvalid(CIPS_0_FPD_AXI_NOC_0_BVALID),
-        .FPD_AXI_NOC_0_rdata({CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA,CIPS_0_FPD_AXI_NOC_0_RDATA}),
-        .FPD_AXI_NOC_0_rid({CIPS_0_FPD_AXI_NOC_0_RID,CIPS_0_FPD_AXI_NOC_0_RID,CIPS_0_FPD_AXI_NOC_0_RID,CIPS_0_FPD_AXI_NOC_0_RID,CIPS_0_FPD_AXI_NOC_0_RID,CIPS_0_FPD_AXI_NOC_0_RID,CIPS_0_FPD_AXI_NOC_0_RID,CIPS_0_FPD_AXI_NOC_0_RID,CIPS_0_FPD_AXI_NOC_0_RID,CIPS_0_FPD_AXI_NOC_0_RID,CIPS_0_FPD_AXI_NOC_0_RID,CIPS_0_FPD_AXI_NOC_0_RID,CIPS_0_FPD_AXI_NOC_0_RID,CIPS_0_FPD_AXI_NOC_0_RID,CIPS_0_FPD_AXI_NOC_0_RID,CIPS_0_FPD_AXI_NOC_0_RID}),
+        .FPD_AXI_NOC_0_rdata(CIPS_0_FPD_AXI_NOC_0_RDATA),
+        .FPD_AXI_NOC_0_rid(CIPS_0_FPD_AXI_NOC_0_RID),
         .FPD_AXI_NOC_0_rlast(CIPS_0_FPD_AXI_NOC_0_RLAST),
         .FPD_AXI_NOC_0_rready(CIPS_0_FPD_AXI_NOC_0_RREADY),
         .FPD_AXI_NOC_0_rresp(CIPS_0_FPD_AXI_NOC_0_RRESP),
@@ -3592,12 +2961,12 @@ module top_level
         .FPD_AXI_NOC_1_awsize(CIPS_0_FPD_AXI_NOC_1_AWSIZE),
         .FPD_AXI_NOC_1_awuser(CIPS_0_FPD_AXI_NOC_1_AWUSER),
         .FPD_AXI_NOC_1_awvalid(CIPS_0_FPD_AXI_NOC_1_AWVALID),
-        .FPD_AXI_NOC_1_bid({CIPS_0_FPD_AXI_NOC_1_BID,CIPS_0_FPD_AXI_NOC_1_BID,CIPS_0_FPD_AXI_NOC_1_BID,CIPS_0_FPD_AXI_NOC_1_BID,CIPS_0_FPD_AXI_NOC_1_BID,CIPS_0_FPD_AXI_NOC_1_BID,CIPS_0_FPD_AXI_NOC_1_BID,CIPS_0_FPD_AXI_NOC_1_BID,CIPS_0_FPD_AXI_NOC_1_BID,CIPS_0_FPD_AXI_NOC_1_BID,CIPS_0_FPD_AXI_NOC_1_BID,CIPS_0_FPD_AXI_NOC_1_BID,CIPS_0_FPD_AXI_NOC_1_BID,CIPS_0_FPD_AXI_NOC_1_BID,CIPS_0_FPD_AXI_NOC_1_BID,CIPS_0_FPD_AXI_NOC_1_BID}),
+        .FPD_AXI_NOC_1_bid(CIPS_0_FPD_AXI_NOC_1_BID),
         .FPD_AXI_NOC_1_bready(CIPS_0_FPD_AXI_NOC_1_BREADY),
         .FPD_AXI_NOC_1_bresp(CIPS_0_FPD_AXI_NOC_1_BRESP),
         .FPD_AXI_NOC_1_bvalid(CIPS_0_FPD_AXI_NOC_1_BVALID),
-        .FPD_AXI_NOC_1_rdata({CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA,CIPS_0_FPD_AXI_NOC_1_RDATA}),
-        .FPD_AXI_NOC_1_rid({CIPS_0_FPD_AXI_NOC_1_RID,CIPS_0_FPD_AXI_NOC_1_RID,CIPS_0_FPD_AXI_NOC_1_RID,CIPS_0_FPD_AXI_NOC_1_RID,CIPS_0_FPD_AXI_NOC_1_RID,CIPS_0_FPD_AXI_NOC_1_RID,CIPS_0_FPD_AXI_NOC_1_RID,CIPS_0_FPD_AXI_NOC_1_RID,CIPS_0_FPD_AXI_NOC_1_RID,CIPS_0_FPD_AXI_NOC_1_RID,CIPS_0_FPD_AXI_NOC_1_RID,CIPS_0_FPD_AXI_NOC_1_RID,CIPS_0_FPD_AXI_NOC_1_RID,CIPS_0_FPD_AXI_NOC_1_RID,CIPS_0_FPD_AXI_NOC_1_RID,CIPS_0_FPD_AXI_NOC_1_RID}),
+        .FPD_AXI_NOC_1_rdata(CIPS_0_FPD_AXI_NOC_1_RDATA),
+        .FPD_AXI_NOC_1_rid(CIPS_0_FPD_AXI_NOC_1_RID),
         .FPD_AXI_NOC_1_rlast(CIPS_0_FPD_AXI_NOC_1_RLAST),
         .FPD_AXI_NOC_1_rready(CIPS_0_FPD_AXI_NOC_1_RREADY),
         .FPD_AXI_NOC_1_rresp(CIPS_0_FPD_AXI_NOC_1_RRESP),
@@ -3631,12 +3000,12 @@ module top_level
         .FPD_CCI_NOC_0_awsize(CIPS_0_FPD_CCI_NOC_0_AWSIZE),
         .FPD_CCI_NOC_0_awuser(CIPS_0_FPD_CCI_NOC_0_AWUSER),
         .FPD_CCI_NOC_0_awvalid(CIPS_0_FPD_CCI_NOC_0_AWVALID),
-        .FPD_CCI_NOC_0_bid({CIPS_0_FPD_CCI_NOC_0_BID,CIPS_0_FPD_CCI_NOC_0_BID,CIPS_0_FPD_CCI_NOC_0_BID,CIPS_0_FPD_CCI_NOC_0_BID,CIPS_0_FPD_CCI_NOC_0_BID,CIPS_0_FPD_CCI_NOC_0_BID,CIPS_0_FPD_CCI_NOC_0_BID,CIPS_0_FPD_CCI_NOC_0_BID,CIPS_0_FPD_CCI_NOC_0_BID,CIPS_0_FPD_CCI_NOC_0_BID,CIPS_0_FPD_CCI_NOC_0_BID,CIPS_0_FPD_CCI_NOC_0_BID,CIPS_0_FPD_CCI_NOC_0_BID,CIPS_0_FPD_CCI_NOC_0_BID,CIPS_0_FPD_CCI_NOC_0_BID,CIPS_0_FPD_CCI_NOC_0_BID}),
+        .FPD_CCI_NOC_0_bid(CIPS_0_FPD_CCI_NOC_0_BID),
         .FPD_CCI_NOC_0_bready(CIPS_0_FPD_CCI_NOC_0_BREADY),
         .FPD_CCI_NOC_0_bresp(CIPS_0_FPD_CCI_NOC_0_BRESP),
         .FPD_CCI_NOC_0_bvalid(CIPS_0_FPD_CCI_NOC_0_BVALID),
-        .FPD_CCI_NOC_0_rdata({CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA,CIPS_0_FPD_CCI_NOC_0_RDATA}),
-        .FPD_CCI_NOC_0_rid({CIPS_0_FPD_CCI_NOC_0_RID,CIPS_0_FPD_CCI_NOC_0_RID,CIPS_0_FPD_CCI_NOC_0_RID,CIPS_0_FPD_CCI_NOC_0_RID,CIPS_0_FPD_CCI_NOC_0_RID,CIPS_0_FPD_CCI_NOC_0_RID,CIPS_0_FPD_CCI_NOC_0_RID,CIPS_0_FPD_CCI_NOC_0_RID,CIPS_0_FPD_CCI_NOC_0_RID,CIPS_0_FPD_CCI_NOC_0_RID,CIPS_0_FPD_CCI_NOC_0_RID,CIPS_0_FPD_CCI_NOC_0_RID,CIPS_0_FPD_CCI_NOC_0_RID,CIPS_0_FPD_CCI_NOC_0_RID,CIPS_0_FPD_CCI_NOC_0_RID,CIPS_0_FPD_CCI_NOC_0_RID}),
+        .FPD_CCI_NOC_0_rdata(CIPS_0_FPD_CCI_NOC_0_RDATA),
+        .FPD_CCI_NOC_0_rid(CIPS_0_FPD_CCI_NOC_0_RID),
         .FPD_CCI_NOC_0_rlast(CIPS_0_FPD_CCI_NOC_0_RLAST),
         .FPD_CCI_NOC_0_rready(CIPS_0_FPD_CCI_NOC_0_RREADY),
         .FPD_CCI_NOC_0_rresp(CIPS_0_FPD_CCI_NOC_0_RRESP),
@@ -3671,12 +3040,12 @@ module top_level
         .FPD_CCI_NOC_1_awsize(CIPS_0_FPD_CCI_NOC_1_AWSIZE),
         .FPD_CCI_NOC_1_awuser(CIPS_0_FPD_CCI_NOC_1_AWUSER),
         .FPD_CCI_NOC_1_awvalid(CIPS_0_FPD_CCI_NOC_1_AWVALID),
-        .FPD_CCI_NOC_1_bid({CIPS_0_FPD_CCI_NOC_1_BID,CIPS_0_FPD_CCI_NOC_1_BID,CIPS_0_FPD_CCI_NOC_1_BID,CIPS_0_FPD_CCI_NOC_1_BID,CIPS_0_FPD_CCI_NOC_1_BID,CIPS_0_FPD_CCI_NOC_1_BID,CIPS_0_FPD_CCI_NOC_1_BID,CIPS_0_FPD_CCI_NOC_1_BID,CIPS_0_FPD_CCI_NOC_1_BID,CIPS_0_FPD_CCI_NOC_1_BID,CIPS_0_FPD_CCI_NOC_1_BID,CIPS_0_FPD_CCI_NOC_1_BID,CIPS_0_FPD_CCI_NOC_1_BID,CIPS_0_FPD_CCI_NOC_1_BID,CIPS_0_FPD_CCI_NOC_1_BID,CIPS_0_FPD_CCI_NOC_1_BID}),
+        .FPD_CCI_NOC_1_bid(CIPS_0_FPD_CCI_NOC_1_BID),
         .FPD_CCI_NOC_1_bready(CIPS_0_FPD_CCI_NOC_1_BREADY),
         .FPD_CCI_NOC_1_bresp(CIPS_0_FPD_CCI_NOC_1_BRESP),
         .FPD_CCI_NOC_1_bvalid(CIPS_0_FPD_CCI_NOC_1_BVALID),
-        .FPD_CCI_NOC_1_rdata({CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA,CIPS_0_FPD_CCI_NOC_1_RDATA}),
-        .FPD_CCI_NOC_1_rid({CIPS_0_FPD_CCI_NOC_1_RID,CIPS_0_FPD_CCI_NOC_1_RID,CIPS_0_FPD_CCI_NOC_1_RID,CIPS_0_FPD_CCI_NOC_1_RID,CIPS_0_FPD_CCI_NOC_1_RID,CIPS_0_FPD_CCI_NOC_1_RID,CIPS_0_FPD_CCI_NOC_1_RID,CIPS_0_FPD_CCI_NOC_1_RID,CIPS_0_FPD_CCI_NOC_1_RID,CIPS_0_FPD_CCI_NOC_1_RID,CIPS_0_FPD_CCI_NOC_1_RID,CIPS_0_FPD_CCI_NOC_1_RID,CIPS_0_FPD_CCI_NOC_1_RID,CIPS_0_FPD_CCI_NOC_1_RID,CIPS_0_FPD_CCI_NOC_1_RID,CIPS_0_FPD_CCI_NOC_1_RID}),
+        .FPD_CCI_NOC_1_rdata(CIPS_0_FPD_CCI_NOC_1_RDATA),
+        .FPD_CCI_NOC_1_rid(CIPS_0_FPD_CCI_NOC_1_RID),
         .FPD_CCI_NOC_1_rlast(CIPS_0_FPD_CCI_NOC_1_RLAST),
         .FPD_CCI_NOC_1_rready(CIPS_0_FPD_CCI_NOC_1_RREADY),
         .FPD_CCI_NOC_1_rresp(CIPS_0_FPD_CCI_NOC_1_RRESP),
@@ -3711,12 +3080,12 @@ module top_level
         .FPD_CCI_NOC_2_awsize(CIPS_0_FPD_CCI_NOC_2_AWSIZE),
         .FPD_CCI_NOC_2_awuser(CIPS_0_FPD_CCI_NOC_2_AWUSER),
         .FPD_CCI_NOC_2_awvalid(CIPS_0_FPD_CCI_NOC_2_AWVALID),
-        .FPD_CCI_NOC_2_bid({CIPS_0_FPD_CCI_NOC_2_BID,CIPS_0_FPD_CCI_NOC_2_BID,CIPS_0_FPD_CCI_NOC_2_BID,CIPS_0_FPD_CCI_NOC_2_BID,CIPS_0_FPD_CCI_NOC_2_BID,CIPS_0_FPD_CCI_NOC_2_BID,CIPS_0_FPD_CCI_NOC_2_BID,CIPS_0_FPD_CCI_NOC_2_BID,CIPS_0_FPD_CCI_NOC_2_BID,CIPS_0_FPD_CCI_NOC_2_BID,CIPS_0_FPD_CCI_NOC_2_BID,CIPS_0_FPD_CCI_NOC_2_BID,CIPS_0_FPD_CCI_NOC_2_BID,CIPS_0_FPD_CCI_NOC_2_BID,CIPS_0_FPD_CCI_NOC_2_BID,CIPS_0_FPD_CCI_NOC_2_BID}),
+        .FPD_CCI_NOC_2_bid(CIPS_0_FPD_CCI_NOC_2_BID),
         .FPD_CCI_NOC_2_bready(CIPS_0_FPD_CCI_NOC_2_BREADY),
         .FPD_CCI_NOC_2_bresp(CIPS_0_FPD_CCI_NOC_2_BRESP),
         .FPD_CCI_NOC_2_bvalid(CIPS_0_FPD_CCI_NOC_2_BVALID),
-        .FPD_CCI_NOC_2_rdata({CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA,CIPS_0_FPD_CCI_NOC_2_RDATA}),
-        .FPD_CCI_NOC_2_rid({CIPS_0_FPD_CCI_NOC_2_RID,CIPS_0_FPD_CCI_NOC_2_RID,CIPS_0_FPD_CCI_NOC_2_RID,CIPS_0_FPD_CCI_NOC_2_RID,CIPS_0_FPD_CCI_NOC_2_RID,CIPS_0_FPD_CCI_NOC_2_RID,CIPS_0_FPD_CCI_NOC_2_RID,CIPS_0_FPD_CCI_NOC_2_RID,CIPS_0_FPD_CCI_NOC_2_RID,CIPS_0_FPD_CCI_NOC_2_RID,CIPS_0_FPD_CCI_NOC_2_RID,CIPS_0_FPD_CCI_NOC_2_RID,CIPS_0_FPD_CCI_NOC_2_RID,CIPS_0_FPD_CCI_NOC_2_RID,CIPS_0_FPD_CCI_NOC_2_RID,CIPS_0_FPD_CCI_NOC_2_RID}),
+        .FPD_CCI_NOC_2_rdata(CIPS_0_FPD_CCI_NOC_2_RDATA),
+        .FPD_CCI_NOC_2_rid(CIPS_0_FPD_CCI_NOC_2_RID),
         .FPD_CCI_NOC_2_rlast(CIPS_0_FPD_CCI_NOC_2_RLAST),
         .FPD_CCI_NOC_2_rready(CIPS_0_FPD_CCI_NOC_2_RREADY),
         .FPD_CCI_NOC_2_rresp(CIPS_0_FPD_CCI_NOC_2_RRESP),
@@ -3751,12 +3120,12 @@ module top_level
         .FPD_CCI_NOC_3_awsize(CIPS_0_FPD_CCI_NOC_3_AWSIZE),
         .FPD_CCI_NOC_3_awuser(CIPS_0_FPD_CCI_NOC_3_AWUSER),
         .FPD_CCI_NOC_3_awvalid(CIPS_0_FPD_CCI_NOC_3_AWVALID),
-        .FPD_CCI_NOC_3_bid({CIPS_0_FPD_CCI_NOC_3_BID,CIPS_0_FPD_CCI_NOC_3_BID,CIPS_0_FPD_CCI_NOC_3_BID,CIPS_0_FPD_CCI_NOC_3_BID,CIPS_0_FPD_CCI_NOC_3_BID,CIPS_0_FPD_CCI_NOC_3_BID,CIPS_0_FPD_CCI_NOC_3_BID,CIPS_0_FPD_CCI_NOC_3_BID,CIPS_0_FPD_CCI_NOC_3_BID,CIPS_0_FPD_CCI_NOC_3_BID,CIPS_0_FPD_CCI_NOC_3_BID,CIPS_0_FPD_CCI_NOC_3_BID,CIPS_0_FPD_CCI_NOC_3_BID,CIPS_0_FPD_CCI_NOC_3_BID,CIPS_0_FPD_CCI_NOC_3_BID,CIPS_0_FPD_CCI_NOC_3_BID}),
+        .FPD_CCI_NOC_3_bid(CIPS_0_FPD_CCI_NOC_3_BID),
         .FPD_CCI_NOC_3_bready(CIPS_0_FPD_CCI_NOC_3_BREADY),
         .FPD_CCI_NOC_3_bresp(CIPS_0_FPD_CCI_NOC_3_BRESP),
         .FPD_CCI_NOC_3_bvalid(CIPS_0_FPD_CCI_NOC_3_BVALID),
-        .FPD_CCI_NOC_3_rdata({CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA,CIPS_0_FPD_CCI_NOC_3_RDATA}),
-        .FPD_CCI_NOC_3_rid({CIPS_0_FPD_CCI_NOC_3_RID,CIPS_0_FPD_CCI_NOC_3_RID,CIPS_0_FPD_CCI_NOC_3_RID,CIPS_0_FPD_CCI_NOC_3_RID,CIPS_0_FPD_CCI_NOC_3_RID,CIPS_0_FPD_CCI_NOC_3_RID,CIPS_0_FPD_CCI_NOC_3_RID,CIPS_0_FPD_CCI_NOC_3_RID,CIPS_0_FPD_CCI_NOC_3_RID,CIPS_0_FPD_CCI_NOC_3_RID,CIPS_0_FPD_CCI_NOC_3_RID,CIPS_0_FPD_CCI_NOC_3_RID,CIPS_0_FPD_CCI_NOC_3_RID,CIPS_0_FPD_CCI_NOC_3_RID,CIPS_0_FPD_CCI_NOC_3_RID,CIPS_0_FPD_CCI_NOC_3_RID}),
+        .FPD_CCI_NOC_3_rdata(CIPS_0_FPD_CCI_NOC_3_RDATA),
+        .FPD_CCI_NOC_3_rid(CIPS_0_FPD_CCI_NOC_3_RID),
         .FPD_CCI_NOC_3_rlast(CIPS_0_FPD_CCI_NOC_3_RLAST),
         .FPD_CCI_NOC_3_rready(CIPS_0_FPD_CCI_NOC_3_RREADY),
         .FPD_CCI_NOC_3_rresp(CIPS_0_FPD_CCI_NOC_3_RRESP),
@@ -3791,12 +3160,12 @@ module top_level
         .LPD_AXI_NOC_0_awsize(CIPS_0_LPD_AXI_NOC_0_AWSIZE),
         .LPD_AXI_NOC_0_awuser(CIPS_0_LPD_AXI_NOC_0_AWUSER),
         .LPD_AXI_NOC_0_awvalid(CIPS_0_LPD_AXI_NOC_0_AWVALID),
-        .LPD_AXI_NOC_0_bid({CIPS_0_LPD_AXI_NOC_0_BID,CIPS_0_LPD_AXI_NOC_0_BID,CIPS_0_LPD_AXI_NOC_0_BID,CIPS_0_LPD_AXI_NOC_0_BID,CIPS_0_LPD_AXI_NOC_0_BID,CIPS_0_LPD_AXI_NOC_0_BID,CIPS_0_LPD_AXI_NOC_0_BID,CIPS_0_LPD_AXI_NOC_0_BID,CIPS_0_LPD_AXI_NOC_0_BID,CIPS_0_LPD_AXI_NOC_0_BID,CIPS_0_LPD_AXI_NOC_0_BID,CIPS_0_LPD_AXI_NOC_0_BID,CIPS_0_LPD_AXI_NOC_0_BID,CIPS_0_LPD_AXI_NOC_0_BID,CIPS_0_LPD_AXI_NOC_0_BID,CIPS_0_LPD_AXI_NOC_0_BID}),
+        .LPD_AXI_NOC_0_bid(CIPS_0_LPD_AXI_NOC_0_BID),
         .LPD_AXI_NOC_0_bready(CIPS_0_LPD_AXI_NOC_0_BREADY),
         .LPD_AXI_NOC_0_bresp(CIPS_0_LPD_AXI_NOC_0_BRESP),
         .LPD_AXI_NOC_0_bvalid(CIPS_0_LPD_AXI_NOC_0_BVALID),
-        .LPD_AXI_NOC_0_rdata({CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA,CIPS_0_LPD_AXI_NOC_0_RDATA}),
-        .LPD_AXI_NOC_0_rid({CIPS_0_LPD_AXI_NOC_0_RID,CIPS_0_LPD_AXI_NOC_0_RID,CIPS_0_LPD_AXI_NOC_0_RID,CIPS_0_LPD_AXI_NOC_0_RID,CIPS_0_LPD_AXI_NOC_0_RID,CIPS_0_LPD_AXI_NOC_0_RID,CIPS_0_LPD_AXI_NOC_0_RID,CIPS_0_LPD_AXI_NOC_0_RID,CIPS_0_LPD_AXI_NOC_0_RID,CIPS_0_LPD_AXI_NOC_0_RID,CIPS_0_LPD_AXI_NOC_0_RID,CIPS_0_LPD_AXI_NOC_0_RID,CIPS_0_LPD_AXI_NOC_0_RID,CIPS_0_LPD_AXI_NOC_0_RID,CIPS_0_LPD_AXI_NOC_0_RID,CIPS_0_LPD_AXI_NOC_0_RID}),
+        .LPD_AXI_NOC_0_rdata(CIPS_0_LPD_AXI_NOC_0_RDATA),
+        .LPD_AXI_NOC_0_rid(CIPS_0_LPD_AXI_NOC_0_RID),
         .LPD_AXI_NOC_0_rlast(CIPS_0_LPD_AXI_NOC_0_RLAST),
         .LPD_AXI_NOC_0_rready(CIPS_0_LPD_AXI_NOC_0_RREADY),
         .LPD_AXI_NOC_0_rresp(CIPS_0_LPD_AXI_NOC_0_RRESP),
@@ -3830,12 +3199,12 @@ module top_level
         .M_AXI_FPD_awsize(CIPS_0_M_AXI_GP0_AWSIZE),
         .M_AXI_FPD_awuser(CIPS_0_M_AXI_GP0_AWUSER),
         .M_AXI_FPD_awvalid(CIPS_0_M_AXI_GP0_AWVALID),
-        .M_AXI_FPD_bid({CIPS_0_M_AXI_GP0_BID,CIPS_0_M_AXI_GP0_BID,CIPS_0_M_AXI_GP0_BID,CIPS_0_M_AXI_GP0_BID,CIPS_0_M_AXI_GP0_BID,CIPS_0_M_AXI_GP0_BID,CIPS_0_M_AXI_GP0_BID,CIPS_0_M_AXI_GP0_BID,CIPS_0_M_AXI_GP0_BID,CIPS_0_M_AXI_GP0_BID,CIPS_0_M_AXI_GP0_BID,CIPS_0_M_AXI_GP0_BID,CIPS_0_M_AXI_GP0_BID,CIPS_0_M_AXI_GP0_BID,CIPS_0_M_AXI_GP0_BID,CIPS_0_M_AXI_GP0_BID}),
+        .M_AXI_FPD_bid(CIPS_0_M_AXI_GP0_BID),
         .M_AXI_FPD_bready(CIPS_0_M_AXI_GP0_BREADY),
         .M_AXI_FPD_bresp(CIPS_0_M_AXI_GP0_BRESP),
         .M_AXI_FPD_bvalid(CIPS_0_M_AXI_GP0_BVALID),
-        .M_AXI_FPD_rdata({CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA,CIPS_0_M_AXI_GP0_RDATA}),
-        .M_AXI_FPD_rid({CIPS_0_M_AXI_GP0_RID,CIPS_0_M_AXI_GP0_RID,CIPS_0_M_AXI_GP0_RID,CIPS_0_M_AXI_GP0_RID,CIPS_0_M_AXI_GP0_RID,CIPS_0_M_AXI_GP0_RID,CIPS_0_M_AXI_GP0_RID,CIPS_0_M_AXI_GP0_RID,CIPS_0_M_AXI_GP0_RID,CIPS_0_M_AXI_GP0_RID,CIPS_0_M_AXI_GP0_RID,CIPS_0_M_AXI_GP0_RID,CIPS_0_M_AXI_GP0_RID,CIPS_0_M_AXI_GP0_RID,CIPS_0_M_AXI_GP0_RID,CIPS_0_M_AXI_GP0_RID}),
+        .M_AXI_FPD_rdata(CIPS_0_M_AXI_GP0_RDATA),
+        .M_AXI_FPD_rid(CIPS_0_M_AXI_GP0_RID),
         .M_AXI_FPD_rlast(CIPS_0_M_AXI_GP0_RLAST),
         .M_AXI_FPD_rready(CIPS_0_M_AXI_GP0_RREADY),
         .M_AXI_FPD_rresp(CIPS_0_M_AXI_GP0_RRESP),
@@ -3871,20 +3240,19 @@ module top_level
         .PMC_NOC_AXI_0_awsize(CIPS_0_PMC_NOC_AXI_0_AWSIZE),
         .PMC_NOC_AXI_0_awuser(CIPS_0_PMC_NOC_AXI_0_AWUSER),
         .PMC_NOC_AXI_0_awvalid(CIPS_0_PMC_NOC_AXI_0_AWVALID),
-        .PMC_NOC_AXI_0_bid({CIPS_0_PMC_NOC_AXI_0_BID,CIPS_0_PMC_NOC_AXI_0_BID,CIPS_0_PMC_NOC_AXI_0_BID,CIPS_0_PMC_NOC_AXI_0_BID,CIPS_0_PMC_NOC_AXI_0_BID,CIPS_0_PMC_NOC_AXI_0_BID,CIPS_0_PMC_NOC_AXI_0_BID,CIPS_0_PMC_NOC_AXI_0_BID,CIPS_0_PMC_NOC_AXI_0_BID,CIPS_0_PMC_NOC_AXI_0_BID,CIPS_0_PMC_NOC_AXI_0_BID,CIPS_0_PMC_NOC_AXI_0_BID,CIPS_0_PMC_NOC_AXI_0_BID,CIPS_0_PMC_NOC_AXI_0_BID,CIPS_0_PMC_NOC_AXI_0_BID,CIPS_0_PMC_NOC_AXI_0_BID}),
+        .PMC_NOC_AXI_0_bid(CIPS_0_PMC_NOC_AXI_0_BID),
         .PMC_NOC_AXI_0_bready(CIPS_0_PMC_NOC_AXI_0_BREADY),
         .PMC_NOC_AXI_0_bresp(CIPS_0_PMC_NOC_AXI_0_BRESP),
-        .PMC_NOC_AXI_0_buser({CIPS_0_PMC_NOC_AXI_0_BUSER,CIPS_0_PMC_NOC_AXI_0_BUSER,CIPS_0_PMC_NOC_AXI_0_BUSER,CIPS_0_PMC_NOC_AXI_0_BUSER,CIPS_0_PMC_NOC_AXI_0_BUSER,CIPS_0_PMC_NOC_AXI_0_BUSER,CIPS_0_PMC_NOC_AXI_0_BUSER,CIPS_0_PMC_NOC_AXI_0_BUSER,CIPS_0_PMC_NOC_AXI_0_BUSER,CIPS_0_PMC_NOC_AXI_0_BUSER,CIPS_0_PMC_NOC_AXI_0_BUSER,CIPS_0_PMC_NOC_AXI_0_BUSER,CIPS_0_PMC_NOC_AXI_0_BUSER,CIPS_0_PMC_NOC_AXI_0_BUSER,CIPS_0_PMC_NOC_AXI_0_BUSER,CIPS_0_PMC_NOC_AXI_0_BUSER}),
+        .PMC_NOC_AXI_0_buser(CIPS_0_PMC_NOC_AXI_0_BUSER),
         .PMC_NOC_AXI_0_bvalid(CIPS_0_PMC_NOC_AXI_0_BVALID),
-        .PMC_NOC_AXI_0_rdata({CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA,CIPS_0_PMC_NOC_AXI_0_RDATA}),
-        .PMC_NOC_AXI_0_rid({CIPS_0_PMC_NOC_AXI_0_RID,CIPS_0_PMC_NOC_AXI_0_RID,CIPS_0_PMC_NOC_AXI_0_RID,CIPS_0_PMC_NOC_AXI_0_RID,CIPS_0_PMC_NOC_AXI_0_RID,CIPS_0_PMC_NOC_AXI_0_RID,CIPS_0_PMC_NOC_AXI_0_RID,CIPS_0_PMC_NOC_AXI_0_RID,CIPS_0_PMC_NOC_AXI_0_RID,CIPS_0_PMC_NOC_AXI_0_RID,CIPS_0_PMC_NOC_AXI_0_RID,CIPS_0_PMC_NOC_AXI_0_RID,CIPS_0_PMC_NOC_AXI_0_RID,CIPS_0_PMC_NOC_AXI_0_RID,CIPS_0_PMC_NOC_AXI_0_RID,CIPS_0_PMC_NOC_AXI_0_RID}),
+        .PMC_NOC_AXI_0_rdata(CIPS_0_PMC_NOC_AXI_0_RDATA),
+        .PMC_NOC_AXI_0_rid(CIPS_0_PMC_NOC_AXI_0_RID),
         .PMC_NOC_AXI_0_rlast(CIPS_0_PMC_NOC_AXI_0_RLAST),
         .PMC_NOC_AXI_0_rready(CIPS_0_PMC_NOC_AXI_0_RREADY),
         .PMC_NOC_AXI_0_rresp(CIPS_0_PMC_NOC_AXI_0_RRESP),
-        .PMC_NOC_AXI_0_ruser({CIPS_0_PMC_NOC_AXI_0_RUSER,CIPS_0_PMC_NOC_AXI_0_RUSER,CIPS_0_PMC_NOC_AXI_0_RUSER,CIPS_0_PMC_NOC_AXI_0_RUSER,CIPS_0_PMC_NOC_AXI_0_RUSER,CIPS_0_PMC_NOC_AXI_0_RUSER,CIPS_0_PMC_NOC_AXI_0_RUSER,CIPS_0_PMC_NOC_AXI_0_RUSER,CIPS_0_PMC_NOC_AXI_0_RUSER,CIPS_0_PMC_NOC_AXI_0_RUSER,CIPS_0_PMC_NOC_AXI_0_RUSER,CIPS_0_PMC_NOC_AXI_0_RUSER,CIPS_0_PMC_NOC_AXI_0_RUSER,CIPS_0_PMC_NOC_AXI_0_RUSER,CIPS_0_PMC_NOC_AXI_0_RUSER,CIPS_0_PMC_NOC_AXI_0_RUSER,CIPS_0_PMC_NOC_AXI_0_RUSER}),
+        .PMC_NOC_AXI_0_ruser(CIPS_0_PMC_NOC_AXI_0_RUSER),
         .PMC_NOC_AXI_0_rvalid(CIPS_0_PMC_NOC_AXI_0_RVALID),
         .PMC_NOC_AXI_0_wdata(CIPS_0_PMC_NOC_AXI_0_WDATA),
-        .PMC_NOC_AXI_0_wid(CIPS_0_PMC_NOC_AXI_0_WID),
         .PMC_NOC_AXI_0_wlast(CIPS_0_PMC_NOC_AXI_0_WLAST),
         .PMC_NOC_AXI_0_wready(CIPS_0_PMC_NOC_AXI_0_WREADY),
         .PMC_NOC_AXI_0_wstrb(CIPS_0_PMC_NOC_AXI_0_WSTRB),
@@ -3900,7 +3268,7 @@ module top_level
         .m_axi_fpd_aclk(clk_wizard_0_clk_out1),
         .pl0_ref_clk(CIPS_0_pl_clk0),
         .pl0_resetn(CIPS_0_pl_resetn1),
-        .pl_ps_irq0(pl_rtl_irq),
+        .pl_ps_irq0(ilconstant_0_dout),
         .pmc_axi_noc_axi0_clk(CIPS_0_pmc_axi_noc_axi0_clk));
   top_level_cips_noc_0 cips_noc
        (.M00_INI_internoc(cips_noc_M00_INI_INTERNOC),
@@ -3911,31 +3279,31 @@ module top_level
         .M05_INI_internoc(cips_noc_M05_INI_INTERNOC),
         .M06_INI_internoc(cips_noc_M06_INI_INTERNOC),
         .M07_INI_internoc(cips_noc_M07_INI_INTERNOC),
-        .S00_AXI_araddr(CIPS_0_FPD_CCI_NOC_0_ARADDR[0]),
+        .S00_AXI_araddr(CIPS_0_FPD_CCI_NOC_0_ARADDR),
         .S00_AXI_arburst(CIPS_0_FPD_CCI_NOC_0_ARBURST),
         .S00_AXI_arcache(CIPS_0_FPD_CCI_NOC_0_ARCACHE),
-        .S00_AXI_arid(CIPS_0_FPD_CCI_NOC_0_ARID[0]),
-        .S00_AXI_arlen(CIPS_0_FPD_CCI_NOC_0_ARLEN[0]),
+        .S00_AXI_arid(CIPS_0_FPD_CCI_NOC_0_ARID),
+        .S00_AXI_arlen(CIPS_0_FPD_CCI_NOC_0_ARLEN),
         .S00_AXI_arlock(CIPS_0_FPD_CCI_NOC_0_ARLOCK),
         .S00_AXI_arprot(CIPS_0_FPD_CCI_NOC_0_ARPROT),
         .S00_AXI_arqos(CIPS_0_FPD_CCI_NOC_0_ARQOS),
         .S00_AXI_arready(CIPS_0_FPD_CCI_NOC_0_ARREADY),
         .S00_AXI_arregion({1'b0,1'b0,1'b0,1'b0}),
         .S00_AXI_arsize(CIPS_0_FPD_CCI_NOC_0_ARSIZE),
-        .S00_AXI_aruser(CIPS_0_FPD_CCI_NOC_0_ARUSER[0]),
+        .S00_AXI_aruser(CIPS_0_FPD_CCI_NOC_0_ARUSER),
         .S00_AXI_arvalid(CIPS_0_FPD_CCI_NOC_0_ARVALID),
-        .S00_AXI_awaddr(CIPS_0_FPD_CCI_NOC_0_AWADDR[0]),
+        .S00_AXI_awaddr(CIPS_0_FPD_CCI_NOC_0_AWADDR),
         .S00_AXI_awburst(CIPS_0_FPD_CCI_NOC_0_AWBURST),
         .S00_AXI_awcache(CIPS_0_FPD_CCI_NOC_0_AWCACHE),
-        .S00_AXI_awid(CIPS_0_FPD_CCI_NOC_0_AWID[0]),
-        .S00_AXI_awlen(CIPS_0_FPD_CCI_NOC_0_AWLEN[0]),
+        .S00_AXI_awid(CIPS_0_FPD_CCI_NOC_0_AWID),
+        .S00_AXI_awlen(CIPS_0_FPD_CCI_NOC_0_AWLEN),
         .S00_AXI_awlock(CIPS_0_FPD_CCI_NOC_0_AWLOCK),
         .S00_AXI_awprot(CIPS_0_FPD_CCI_NOC_0_AWPROT),
         .S00_AXI_awqos(CIPS_0_FPD_CCI_NOC_0_AWQOS),
         .S00_AXI_awready(CIPS_0_FPD_CCI_NOC_0_AWREADY),
         .S00_AXI_awregion({1'b0,1'b0,1'b0,1'b0}),
         .S00_AXI_awsize(CIPS_0_FPD_CCI_NOC_0_AWSIZE),
-        .S00_AXI_awuser(CIPS_0_FPD_CCI_NOC_0_AWUSER[0]),
+        .S00_AXI_awuser(CIPS_0_FPD_CCI_NOC_0_AWUSER),
         .S00_AXI_awvalid(CIPS_0_FPD_CCI_NOC_0_AWVALID),
         .S00_AXI_bid(CIPS_0_FPD_CCI_NOC_0_BID),
         .S00_AXI_bready(CIPS_0_FPD_CCI_NOC_0_BREADY),
@@ -3947,38 +3315,37 @@ module top_level
         .S00_AXI_rready(CIPS_0_FPD_CCI_NOC_0_RREADY),
         .S00_AXI_rresp(CIPS_0_FPD_CCI_NOC_0_RRESP),
         .S00_AXI_rvalid(CIPS_0_FPD_CCI_NOC_0_RVALID),
-        .S00_AXI_wdata(CIPS_0_FPD_CCI_NOC_0_WDATA[0]),
-        .S00_AXI_wid(1'b0),
+        .S00_AXI_wdata(CIPS_0_FPD_CCI_NOC_0_WDATA),
         .S00_AXI_wlast(CIPS_0_FPD_CCI_NOC_0_WLAST),
         .S00_AXI_wready(CIPS_0_FPD_CCI_NOC_0_WREADY),
-        .S00_AXI_wstrb(CIPS_0_FPD_CCI_NOC_0_WSTRB[0]),
-        .S00_AXI_wuser(CIPS_0_FPD_CCI_NOC_0_WUSER[0]),
+        .S00_AXI_wstrb(CIPS_0_FPD_CCI_NOC_0_WSTRB),
+        .S00_AXI_wuser(CIPS_0_FPD_CCI_NOC_0_WUSER),
         .S00_AXI_wvalid(CIPS_0_FPD_CCI_NOC_0_WVALID),
-        .S01_AXI_araddr(CIPS_0_FPD_CCI_NOC_1_ARADDR[0]),
+        .S01_AXI_araddr(CIPS_0_FPD_CCI_NOC_1_ARADDR),
         .S01_AXI_arburst(CIPS_0_FPD_CCI_NOC_1_ARBURST),
         .S01_AXI_arcache(CIPS_0_FPD_CCI_NOC_1_ARCACHE),
-        .S01_AXI_arid(CIPS_0_FPD_CCI_NOC_1_ARID[0]),
-        .S01_AXI_arlen(CIPS_0_FPD_CCI_NOC_1_ARLEN[0]),
+        .S01_AXI_arid(CIPS_0_FPD_CCI_NOC_1_ARID),
+        .S01_AXI_arlen(CIPS_0_FPD_CCI_NOC_1_ARLEN),
         .S01_AXI_arlock(CIPS_0_FPD_CCI_NOC_1_ARLOCK),
         .S01_AXI_arprot(CIPS_0_FPD_CCI_NOC_1_ARPROT),
         .S01_AXI_arqos(CIPS_0_FPD_CCI_NOC_1_ARQOS),
         .S01_AXI_arready(CIPS_0_FPD_CCI_NOC_1_ARREADY),
         .S01_AXI_arregion({1'b0,1'b0,1'b0,1'b0}),
         .S01_AXI_arsize(CIPS_0_FPD_CCI_NOC_1_ARSIZE),
-        .S01_AXI_aruser(CIPS_0_FPD_CCI_NOC_1_ARUSER[0]),
+        .S01_AXI_aruser(CIPS_0_FPD_CCI_NOC_1_ARUSER),
         .S01_AXI_arvalid(CIPS_0_FPD_CCI_NOC_1_ARVALID),
-        .S01_AXI_awaddr(CIPS_0_FPD_CCI_NOC_1_AWADDR[0]),
+        .S01_AXI_awaddr(CIPS_0_FPD_CCI_NOC_1_AWADDR),
         .S01_AXI_awburst(CIPS_0_FPD_CCI_NOC_1_AWBURST),
         .S01_AXI_awcache(CIPS_0_FPD_CCI_NOC_1_AWCACHE),
-        .S01_AXI_awid(CIPS_0_FPD_CCI_NOC_1_AWID[0]),
-        .S01_AXI_awlen(CIPS_0_FPD_CCI_NOC_1_AWLEN[0]),
+        .S01_AXI_awid(CIPS_0_FPD_CCI_NOC_1_AWID),
+        .S01_AXI_awlen(CIPS_0_FPD_CCI_NOC_1_AWLEN),
         .S01_AXI_awlock(CIPS_0_FPD_CCI_NOC_1_AWLOCK),
         .S01_AXI_awprot(CIPS_0_FPD_CCI_NOC_1_AWPROT),
         .S01_AXI_awqos(CIPS_0_FPD_CCI_NOC_1_AWQOS),
         .S01_AXI_awready(CIPS_0_FPD_CCI_NOC_1_AWREADY),
         .S01_AXI_awregion({1'b0,1'b0,1'b0,1'b0}),
         .S01_AXI_awsize(CIPS_0_FPD_CCI_NOC_1_AWSIZE),
-        .S01_AXI_awuser(CIPS_0_FPD_CCI_NOC_1_AWUSER[0]),
+        .S01_AXI_awuser(CIPS_0_FPD_CCI_NOC_1_AWUSER),
         .S01_AXI_awvalid(CIPS_0_FPD_CCI_NOC_1_AWVALID),
         .S01_AXI_bid(CIPS_0_FPD_CCI_NOC_1_BID),
         .S01_AXI_bready(CIPS_0_FPD_CCI_NOC_1_BREADY),
@@ -3990,38 +3357,37 @@ module top_level
         .S01_AXI_rready(CIPS_0_FPD_CCI_NOC_1_RREADY),
         .S01_AXI_rresp(CIPS_0_FPD_CCI_NOC_1_RRESP),
         .S01_AXI_rvalid(CIPS_0_FPD_CCI_NOC_1_RVALID),
-        .S01_AXI_wdata(CIPS_0_FPD_CCI_NOC_1_WDATA[0]),
-        .S01_AXI_wid(1'b0),
+        .S01_AXI_wdata(CIPS_0_FPD_CCI_NOC_1_WDATA),
         .S01_AXI_wlast(CIPS_0_FPD_CCI_NOC_1_WLAST),
         .S01_AXI_wready(CIPS_0_FPD_CCI_NOC_1_WREADY),
-        .S01_AXI_wstrb(CIPS_0_FPD_CCI_NOC_1_WSTRB[0]),
-        .S01_AXI_wuser(CIPS_0_FPD_CCI_NOC_1_WUSER[0]),
+        .S01_AXI_wstrb(CIPS_0_FPD_CCI_NOC_1_WSTRB),
+        .S01_AXI_wuser(CIPS_0_FPD_CCI_NOC_1_WUSER),
         .S01_AXI_wvalid(CIPS_0_FPD_CCI_NOC_1_WVALID),
-        .S02_AXI_araddr(CIPS_0_FPD_CCI_NOC_2_ARADDR[0]),
+        .S02_AXI_araddr(CIPS_0_FPD_CCI_NOC_2_ARADDR),
         .S02_AXI_arburst(CIPS_0_FPD_CCI_NOC_2_ARBURST),
         .S02_AXI_arcache(CIPS_0_FPD_CCI_NOC_2_ARCACHE),
-        .S02_AXI_arid(CIPS_0_FPD_CCI_NOC_2_ARID[0]),
-        .S02_AXI_arlen(CIPS_0_FPD_CCI_NOC_2_ARLEN[0]),
+        .S02_AXI_arid(CIPS_0_FPD_CCI_NOC_2_ARID),
+        .S02_AXI_arlen(CIPS_0_FPD_CCI_NOC_2_ARLEN),
         .S02_AXI_arlock(CIPS_0_FPD_CCI_NOC_2_ARLOCK),
         .S02_AXI_arprot(CIPS_0_FPD_CCI_NOC_2_ARPROT),
         .S02_AXI_arqos(CIPS_0_FPD_CCI_NOC_2_ARQOS),
         .S02_AXI_arready(CIPS_0_FPD_CCI_NOC_2_ARREADY),
         .S02_AXI_arregion({1'b0,1'b0,1'b0,1'b0}),
         .S02_AXI_arsize(CIPS_0_FPD_CCI_NOC_2_ARSIZE),
-        .S02_AXI_aruser(CIPS_0_FPD_CCI_NOC_2_ARUSER[0]),
+        .S02_AXI_aruser(CIPS_0_FPD_CCI_NOC_2_ARUSER),
         .S02_AXI_arvalid(CIPS_0_FPD_CCI_NOC_2_ARVALID),
-        .S02_AXI_awaddr(CIPS_0_FPD_CCI_NOC_2_AWADDR[0]),
+        .S02_AXI_awaddr(CIPS_0_FPD_CCI_NOC_2_AWADDR),
         .S02_AXI_awburst(CIPS_0_FPD_CCI_NOC_2_AWBURST),
         .S02_AXI_awcache(CIPS_0_FPD_CCI_NOC_2_AWCACHE),
-        .S02_AXI_awid(CIPS_0_FPD_CCI_NOC_2_AWID[0]),
-        .S02_AXI_awlen(CIPS_0_FPD_CCI_NOC_2_AWLEN[0]),
+        .S02_AXI_awid(CIPS_0_FPD_CCI_NOC_2_AWID),
+        .S02_AXI_awlen(CIPS_0_FPD_CCI_NOC_2_AWLEN),
         .S02_AXI_awlock(CIPS_0_FPD_CCI_NOC_2_AWLOCK),
         .S02_AXI_awprot(CIPS_0_FPD_CCI_NOC_2_AWPROT),
         .S02_AXI_awqos(CIPS_0_FPD_CCI_NOC_2_AWQOS),
         .S02_AXI_awready(CIPS_0_FPD_CCI_NOC_2_AWREADY),
         .S02_AXI_awregion({1'b0,1'b0,1'b0,1'b0}),
         .S02_AXI_awsize(CIPS_0_FPD_CCI_NOC_2_AWSIZE),
-        .S02_AXI_awuser(CIPS_0_FPD_CCI_NOC_2_AWUSER[0]),
+        .S02_AXI_awuser(CIPS_0_FPD_CCI_NOC_2_AWUSER),
         .S02_AXI_awvalid(CIPS_0_FPD_CCI_NOC_2_AWVALID),
         .S02_AXI_bid(CIPS_0_FPD_CCI_NOC_2_BID),
         .S02_AXI_bready(CIPS_0_FPD_CCI_NOC_2_BREADY),
@@ -4033,38 +3399,37 @@ module top_level
         .S02_AXI_rready(CIPS_0_FPD_CCI_NOC_2_RREADY),
         .S02_AXI_rresp(CIPS_0_FPD_CCI_NOC_2_RRESP),
         .S02_AXI_rvalid(CIPS_0_FPD_CCI_NOC_2_RVALID),
-        .S02_AXI_wdata(CIPS_0_FPD_CCI_NOC_2_WDATA[0]),
-        .S02_AXI_wid(1'b0),
+        .S02_AXI_wdata(CIPS_0_FPD_CCI_NOC_2_WDATA),
         .S02_AXI_wlast(CIPS_0_FPD_CCI_NOC_2_WLAST),
         .S02_AXI_wready(CIPS_0_FPD_CCI_NOC_2_WREADY),
-        .S02_AXI_wstrb(CIPS_0_FPD_CCI_NOC_2_WSTRB[0]),
-        .S02_AXI_wuser(CIPS_0_FPD_CCI_NOC_2_WUSER[0]),
+        .S02_AXI_wstrb(CIPS_0_FPD_CCI_NOC_2_WSTRB),
+        .S02_AXI_wuser(CIPS_0_FPD_CCI_NOC_2_WUSER),
         .S02_AXI_wvalid(CIPS_0_FPD_CCI_NOC_2_WVALID),
-        .S03_AXI_araddr(CIPS_0_FPD_CCI_NOC_3_ARADDR[0]),
+        .S03_AXI_araddr(CIPS_0_FPD_CCI_NOC_3_ARADDR),
         .S03_AXI_arburst(CIPS_0_FPD_CCI_NOC_3_ARBURST),
         .S03_AXI_arcache(CIPS_0_FPD_CCI_NOC_3_ARCACHE),
-        .S03_AXI_arid(CIPS_0_FPD_CCI_NOC_3_ARID[0]),
-        .S03_AXI_arlen(CIPS_0_FPD_CCI_NOC_3_ARLEN[0]),
+        .S03_AXI_arid(CIPS_0_FPD_CCI_NOC_3_ARID),
+        .S03_AXI_arlen(CIPS_0_FPD_CCI_NOC_3_ARLEN),
         .S03_AXI_arlock(CIPS_0_FPD_CCI_NOC_3_ARLOCK),
         .S03_AXI_arprot(CIPS_0_FPD_CCI_NOC_3_ARPROT),
         .S03_AXI_arqos(CIPS_0_FPD_CCI_NOC_3_ARQOS),
         .S03_AXI_arready(CIPS_0_FPD_CCI_NOC_3_ARREADY),
         .S03_AXI_arregion({1'b0,1'b0,1'b0,1'b0}),
         .S03_AXI_arsize(CIPS_0_FPD_CCI_NOC_3_ARSIZE),
-        .S03_AXI_aruser(CIPS_0_FPD_CCI_NOC_3_ARUSER[0]),
+        .S03_AXI_aruser(CIPS_0_FPD_CCI_NOC_3_ARUSER),
         .S03_AXI_arvalid(CIPS_0_FPD_CCI_NOC_3_ARVALID),
-        .S03_AXI_awaddr(CIPS_0_FPD_CCI_NOC_3_AWADDR[0]),
+        .S03_AXI_awaddr(CIPS_0_FPD_CCI_NOC_3_AWADDR),
         .S03_AXI_awburst(CIPS_0_FPD_CCI_NOC_3_AWBURST),
         .S03_AXI_awcache(CIPS_0_FPD_CCI_NOC_3_AWCACHE),
-        .S03_AXI_awid(CIPS_0_FPD_CCI_NOC_3_AWID[0]),
-        .S03_AXI_awlen(CIPS_0_FPD_CCI_NOC_3_AWLEN[0]),
+        .S03_AXI_awid(CIPS_0_FPD_CCI_NOC_3_AWID),
+        .S03_AXI_awlen(CIPS_0_FPD_CCI_NOC_3_AWLEN),
         .S03_AXI_awlock(CIPS_0_FPD_CCI_NOC_3_AWLOCK),
         .S03_AXI_awprot(CIPS_0_FPD_CCI_NOC_3_AWPROT),
         .S03_AXI_awqos(CIPS_0_FPD_CCI_NOC_3_AWQOS),
         .S03_AXI_awready(CIPS_0_FPD_CCI_NOC_3_AWREADY),
         .S03_AXI_awregion({1'b0,1'b0,1'b0,1'b0}),
         .S03_AXI_awsize(CIPS_0_FPD_CCI_NOC_3_AWSIZE),
-        .S03_AXI_awuser(CIPS_0_FPD_CCI_NOC_3_AWUSER[0]),
+        .S03_AXI_awuser(CIPS_0_FPD_CCI_NOC_3_AWUSER),
         .S03_AXI_awvalid(CIPS_0_FPD_CCI_NOC_3_AWVALID),
         .S03_AXI_bid(CIPS_0_FPD_CCI_NOC_3_BID),
         .S03_AXI_bready(CIPS_0_FPD_CCI_NOC_3_BREADY),
@@ -4076,38 +3441,37 @@ module top_level
         .S03_AXI_rready(CIPS_0_FPD_CCI_NOC_3_RREADY),
         .S03_AXI_rresp(CIPS_0_FPD_CCI_NOC_3_RRESP),
         .S03_AXI_rvalid(CIPS_0_FPD_CCI_NOC_3_RVALID),
-        .S03_AXI_wdata(CIPS_0_FPD_CCI_NOC_3_WDATA[0]),
-        .S03_AXI_wid(1'b0),
+        .S03_AXI_wdata(CIPS_0_FPD_CCI_NOC_3_WDATA),
         .S03_AXI_wlast(CIPS_0_FPD_CCI_NOC_3_WLAST),
         .S03_AXI_wready(CIPS_0_FPD_CCI_NOC_3_WREADY),
-        .S03_AXI_wstrb(CIPS_0_FPD_CCI_NOC_3_WSTRB[0]),
-        .S03_AXI_wuser(CIPS_0_FPD_CCI_NOC_3_WUSER[0]),
+        .S03_AXI_wstrb(CIPS_0_FPD_CCI_NOC_3_WSTRB),
+        .S03_AXI_wuser(CIPS_0_FPD_CCI_NOC_3_WUSER),
         .S03_AXI_wvalid(CIPS_0_FPD_CCI_NOC_3_WVALID),
-        .S04_AXI_araddr(CIPS_0_FPD_AXI_NOC_0_ARADDR[0]),
+        .S04_AXI_araddr(CIPS_0_FPD_AXI_NOC_0_ARADDR),
         .S04_AXI_arburst(CIPS_0_FPD_AXI_NOC_0_ARBURST),
         .S04_AXI_arcache(CIPS_0_FPD_AXI_NOC_0_ARCACHE),
-        .S04_AXI_arid(CIPS_0_FPD_AXI_NOC_0_ARID[0]),
-        .S04_AXI_arlen(CIPS_0_FPD_AXI_NOC_0_ARLEN[0]),
+        .S04_AXI_arid(CIPS_0_FPD_AXI_NOC_0_ARID),
+        .S04_AXI_arlen(CIPS_0_FPD_AXI_NOC_0_ARLEN),
         .S04_AXI_arlock(CIPS_0_FPD_AXI_NOC_0_ARLOCK),
         .S04_AXI_arprot(CIPS_0_FPD_AXI_NOC_0_ARPROT),
         .S04_AXI_arqos(CIPS_0_FPD_AXI_NOC_0_ARQOS),
         .S04_AXI_arready(CIPS_0_FPD_AXI_NOC_0_ARREADY),
         .S04_AXI_arregion({1'b0,1'b0,1'b0,1'b0}),
         .S04_AXI_arsize(CIPS_0_FPD_AXI_NOC_0_ARSIZE),
-        .S04_AXI_aruser(CIPS_0_FPD_AXI_NOC_0_ARUSER[0]),
+        .S04_AXI_aruser(CIPS_0_FPD_AXI_NOC_0_ARUSER),
         .S04_AXI_arvalid(CIPS_0_FPD_AXI_NOC_0_ARVALID),
-        .S04_AXI_awaddr(CIPS_0_FPD_AXI_NOC_0_AWADDR[0]),
+        .S04_AXI_awaddr(CIPS_0_FPD_AXI_NOC_0_AWADDR),
         .S04_AXI_awburst(CIPS_0_FPD_AXI_NOC_0_AWBURST),
         .S04_AXI_awcache(CIPS_0_FPD_AXI_NOC_0_AWCACHE),
-        .S04_AXI_awid(CIPS_0_FPD_AXI_NOC_0_AWID[0]),
-        .S04_AXI_awlen(CIPS_0_FPD_AXI_NOC_0_AWLEN[0]),
+        .S04_AXI_awid(CIPS_0_FPD_AXI_NOC_0_AWID),
+        .S04_AXI_awlen(CIPS_0_FPD_AXI_NOC_0_AWLEN),
         .S04_AXI_awlock(CIPS_0_FPD_AXI_NOC_0_AWLOCK),
         .S04_AXI_awprot(CIPS_0_FPD_AXI_NOC_0_AWPROT),
         .S04_AXI_awqos(CIPS_0_FPD_AXI_NOC_0_AWQOS),
         .S04_AXI_awready(CIPS_0_FPD_AXI_NOC_0_AWREADY),
         .S04_AXI_awregion({1'b0,1'b0,1'b0,1'b0}),
         .S04_AXI_awsize(CIPS_0_FPD_AXI_NOC_0_AWSIZE),
-        .S04_AXI_awuser(CIPS_0_FPD_AXI_NOC_0_AWUSER[0]),
+        .S04_AXI_awuser(CIPS_0_FPD_AXI_NOC_0_AWUSER),
         .S04_AXI_awvalid(CIPS_0_FPD_AXI_NOC_0_AWVALID),
         .S04_AXI_bid(CIPS_0_FPD_AXI_NOC_0_BID),
         .S04_AXI_bready(CIPS_0_FPD_AXI_NOC_0_BREADY),
@@ -4119,38 +3483,37 @@ module top_level
         .S04_AXI_rready(CIPS_0_FPD_AXI_NOC_0_RREADY),
         .S04_AXI_rresp(CIPS_0_FPD_AXI_NOC_0_RRESP),
         .S04_AXI_rvalid(CIPS_0_FPD_AXI_NOC_0_RVALID),
-        .S04_AXI_wdata(CIPS_0_FPD_AXI_NOC_0_WDATA[0]),
-        .S04_AXI_wid(1'b0),
+        .S04_AXI_wdata(CIPS_0_FPD_AXI_NOC_0_WDATA),
         .S04_AXI_wlast(CIPS_0_FPD_AXI_NOC_0_WLAST),
         .S04_AXI_wready(CIPS_0_FPD_AXI_NOC_0_WREADY),
-        .S04_AXI_wstrb(CIPS_0_FPD_AXI_NOC_0_WSTRB[0]),
-        .S04_AXI_wuser(1'b0),
+        .S04_AXI_wstrb(CIPS_0_FPD_AXI_NOC_0_WSTRB),
+        .S04_AXI_wuser({1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0}),
         .S04_AXI_wvalid(CIPS_0_FPD_AXI_NOC_0_WVALID),
-        .S05_AXI_araddr(CIPS_0_FPD_AXI_NOC_1_ARADDR[0]),
+        .S05_AXI_araddr(CIPS_0_FPD_AXI_NOC_1_ARADDR),
         .S05_AXI_arburst(CIPS_0_FPD_AXI_NOC_1_ARBURST),
         .S05_AXI_arcache(CIPS_0_FPD_AXI_NOC_1_ARCACHE),
-        .S05_AXI_arid(CIPS_0_FPD_AXI_NOC_1_ARID[0]),
-        .S05_AXI_arlen(CIPS_0_FPD_AXI_NOC_1_ARLEN[0]),
+        .S05_AXI_arid(CIPS_0_FPD_AXI_NOC_1_ARID),
+        .S05_AXI_arlen(CIPS_0_FPD_AXI_NOC_1_ARLEN),
         .S05_AXI_arlock(CIPS_0_FPD_AXI_NOC_1_ARLOCK),
         .S05_AXI_arprot(CIPS_0_FPD_AXI_NOC_1_ARPROT),
         .S05_AXI_arqos(CIPS_0_FPD_AXI_NOC_1_ARQOS),
         .S05_AXI_arready(CIPS_0_FPD_AXI_NOC_1_ARREADY),
         .S05_AXI_arregion({1'b0,1'b0,1'b0,1'b0}),
         .S05_AXI_arsize(CIPS_0_FPD_AXI_NOC_1_ARSIZE),
-        .S05_AXI_aruser(CIPS_0_FPD_AXI_NOC_1_ARUSER[0]),
+        .S05_AXI_aruser(CIPS_0_FPD_AXI_NOC_1_ARUSER),
         .S05_AXI_arvalid(CIPS_0_FPD_AXI_NOC_1_ARVALID),
-        .S05_AXI_awaddr(CIPS_0_FPD_AXI_NOC_1_AWADDR[0]),
+        .S05_AXI_awaddr(CIPS_0_FPD_AXI_NOC_1_AWADDR),
         .S05_AXI_awburst(CIPS_0_FPD_AXI_NOC_1_AWBURST),
         .S05_AXI_awcache(CIPS_0_FPD_AXI_NOC_1_AWCACHE),
-        .S05_AXI_awid(CIPS_0_FPD_AXI_NOC_1_AWID[0]),
-        .S05_AXI_awlen(CIPS_0_FPD_AXI_NOC_1_AWLEN[0]),
+        .S05_AXI_awid(CIPS_0_FPD_AXI_NOC_1_AWID),
+        .S05_AXI_awlen(CIPS_0_FPD_AXI_NOC_1_AWLEN),
         .S05_AXI_awlock(CIPS_0_FPD_AXI_NOC_1_AWLOCK),
         .S05_AXI_awprot(CIPS_0_FPD_AXI_NOC_1_AWPROT),
         .S05_AXI_awqos(CIPS_0_FPD_AXI_NOC_1_AWQOS),
         .S05_AXI_awready(CIPS_0_FPD_AXI_NOC_1_AWREADY),
         .S05_AXI_awregion({1'b0,1'b0,1'b0,1'b0}),
         .S05_AXI_awsize(CIPS_0_FPD_AXI_NOC_1_AWSIZE),
-        .S05_AXI_awuser(CIPS_0_FPD_AXI_NOC_1_AWUSER[0]),
+        .S05_AXI_awuser(CIPS_0_FPD_AXI_NOC_1_AWUSER),
         .S05_AXI_awvalid(CIPS_0_FPD_AXI_NOC_1_AWVALID),
         .S05_AXI_bid(CIPS_0_FPD_AXI_NOC_1_BID),
         .S05_AXI_bready(CIPS_0_FPD_AXI_NOC_1_BREADY),
@@ -4162,38 +3525,37 @@ module top_level
         .S05_AXI_rready(CIPS_0_FPD_AXI_NOC_1_RREADY),
         .S05_AXI_rresp(CIPS_0_FPD_AXI_NOC_1_RRESP),
         .S05_AXI_rvalid(CIPS_0_FPD_AXI_NOC_1_RVALID),
-        .S05_AXI_wdata(CIPS_0_FPD_AXI_NOC_1_WDATA[0]),
-        .S05_AXI_wid(1'b0),
+        .S05_AXI_wdata(CIPS_0_FPD_AXI_NOC_1_WDATA),
         .S05_AXI_wlast(CIPS_0_FPD_AXI_NOC_1_WLAST),
         .S05_AXI_wready(CIPS_0_FPD_AXI_NOC_1_WREADY),
-        .S05_AXI_wstrb(CIPS_0_FPD_AXI_NOC_1_WSTRB[0]),
-        .S05_AXI_wuser(1'b0),
+        .S05_AXI_wstrb(CIPS_0_FPD_AXI_NOC_1_WSTRB),
+        .S05_AXI_wuser({1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0}),
         .S05_AXI_wvalid(CIPS_0_FPD_AXI_NOC_1_WVALID),
-        .S06_AXI_araddr(CIPS_0_LPD_AXI_NOC_0_ARADDR[0]),
+        .S06_AXI_araddr(CIPS_0_LPD_AXI_NOC_0_ARADDR),
         .S06_AXI_arburst(CIPS_0_LPD_AXI_NOC_0_ARBURST),
         .S06_AXI_arcache(CIPS_0_LPD_AXI_NOC_0_ARCACHE),
-        .S06_AXI_arid(CIPS_0_LPD_AXI_NOC_0_ARID[0]),
-        .S06_AXI_arlen(CIPS_0_LPD_AXI_NOC_0_ARLEN[0]),
+        .S06_AXI_arid(CIPS_0_LPD_AXI_NOC_0_ARID),
+        .S06_AXI_arlen(CIPS_0_LPD_AXI_NOC_0_ARLEN),
         .S06_AXI_arlock(CIPS_0_LPD_AXI_NOC_0_ARLOCK),
         .S06_AXI_arprot(CIPS_0_LPD_AXI_NOC_0_ARPROT),
         .S06_AXI_arqos(CIPS_0_LPD_AXI_NOC_0_ARQOS),
         .S06_AXI_arready(CIPS_0_LPD_AXI_NOC_0_ARREADY),
         .S06_AXI_arregion({1'b0,1'b0,1'b0,1'b0}),
         .S06_AXI_arsize(CIPS_0_LPD_AXI_NOC_0_ARSIZE),
-        .S06_AXI_aruser(CIPS_0_LPD_AXI_NOC_0_ARUSER[0]),
+        .S06_AXI_aruser(CIPS_0_LPD_AXI_NOC_0_ARUSER),
         .S06_AXI_arvalid(CIPS_0_LPD_AXI_NOC_0_ARVALID),
-        .S06_AXI_awaddr(CIPS_0_LPD_AXI_NOC_0_AWADDR[0]),
+        .S06_AXI_awaddr(CIPS_0_LPD_AXI_NOC_0_AWADDR),
         .S06_AXI_awburst(CIPS_0_LPD_AXI_NOC_0_AWBURST),
         .S06_AXI_awcache(CIPS_0_LPD_AXI_NOC_0_AWCACHE),
-        .S06_AXI_awid(CIPS_0_LPD_AXI_NOC_0_AWID[0]),
-        .S06_AXI_awlen(CIPS_0_LPD_AXI_NOC_0_AWLEN[0]),
+        .S06_AXI_awid(CIPS_0_LPD_AXI_NOC_0_AWID),
+        .S06_AXI_awlen(CIPS_0_LPD_AXI_NOC_0_AWLEN),
         .S06_AXI_awlock(CIPS_0_LPD_AXI_NOC_0_AWLOCK),
         .S06_AXI_awprot(CIPS_0_LPD_AXI_NOC_0_AWPROT),
         .S06_AXI_awqos(CIPS_0_LPD_AXI_NOC_0_AWQOS),
         .S06_AXI_awready(CIPS_0_LPD_AXI_NOC_0_AWREADY),
         .S06_AXI_awregion({1'b0,1'b0,1'b0,1'b0}),
         .S06_AXI_awsize(CIPS_0_LPD_AXI_NOC_0_AWSIZE),
-        .S06_AXI_awuser(CIPS_0_LPD_AXI_NOC_0_AWUSER[0]),
+        .S06_AXI_awuser(CIPS_0_LPD_AXI_NOC_0_AWUSER),
         .S06_AXI_awvalid(CIPS_0_LPD_AXI_NOC_0_AWVALID),
         .S06_AXI_bid(CIPS_0_LPD_AXI_NOC_0_BID),
         .S06_AXI_bready(CIPS_0_LPD_AXI_NOC_0_BREADY),
@@ -4205,38 +3567,37 @@ module top_level
         .S06_AXI_rready(CIPS_0_LPD_AXI_NOC_0_RREADY),
         .S06_AXI_rresp(CIPS_0_LPD_AXI_NOC_0_RRESP),
         .S06_AXI_rvalid(CIPS_0_LPD_AXI_NOC_0_RVALID),
-        .S06_AXI_wdata(CIPS_0_LPD_AXI_NOC_0_WDATA[0]),
-        .S06_AXI_wid(1'b0),
+        .S06_AXI_wdata(CIPS_0_LPD_AXI_NOC_0_WDATA),
         .S06_AXI_wlast(CIPS_0_LPD_AXI_NOC_0_WLAST),
         .S06_AXI_wready(CIPS_0_LPD_AXI_NOC_0_WREADY),
-        .S06_AXI_wstrb(CIPS_0_LPD_AXI_NOC_0_WSTRB[0]),
-        .S06_AXI_wuser(1'b0),
+        .S06_AXI_wstrb(CIPS_0_LPD_AXI_NOC_0_WSTRB),
+        .S06_AXI_wuser({1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0}),
         .S06_AXI_wvalid(CIPS_0_LPD_AXI_NOC_0_WVALID),
-        .S07_AXI_araddr(CIPS_0_PMC_NOC_AXI_0_ARADDR[0]),
+        .S07_AXI_araddr(CIPS_0_PMC_NOC_AXI_0_ARADDR),
         .S07_AXI_arburst(CIPS_0_PMC_NOC_AXI_0_ARBURST),
         .S07_AXI_arcache(CIPS_0_PMC_NOC_AXI_0_ARCACHE),
-        .S07_AXI_arid(CIPS_0_PMC_NOC_AXI_0_ARID[0]),
-        .S07_AXI_arlen(CIPS_0_PMC_NOC_AXI_0_ARLEN[0]),
+        .S07_AXI_arid(CIPS_0_PMC_NOC_AXI_0_ARID),
+        .S07_AXI_arlen(CIPS_0_PMC_NOC_AXI_0_ARLEN),
         .S07_AXI_arlock(CIPS_0_PMC_NOC_AXI_0_ARLOCK),
         .S07_AXI_arprot(CIPS_0_PMC_NOC_AXI_0_ARPROT),
         .S07_AXI_arqos(CIPS_0_PMC_NOC_AXI_0_ARQOS),
         .S07_AXI_arready(CIPS_0_PMC_NOC_AXI_0_ARREADY),
         .S07_AXI_arregion(CIPS_0_PMC_NOC_AXI_0_ARREGION),
         .S07_AXI_arsize(CIPS_0_PMC_NOC_AXI_0_ARSIZE),
-        .S07_AXI_aruser(CIPS_0_PMC_NOC_AXI_0_ARUSER[0]),
+        .S07_AXI_aruser(CIPS_0_PMC_NOC_AXI_0_ARUSER),
         .S07_AXI_arvalid(CIPS_0_PMC_NOC_AXI_0_ARVALID),
-        .S07_AXI_awaddr(CIPS_0_PMC_NOC_AXI_0_AWADDR[0]),
+        .S07_AXI_awaddr(CIPS_0_PMC_NOC_AXI_0_AWADDR),
         .S07_AXI_awburst(CIPS_0_PMC_NOC_AXI_0_AWBURST),
         .S07_AXI_awcache(CIPS_0_PMC_NOC_AXI_0_AWCACHE),
-        .S07_AXI_awid(CIPS_0_PMC_NOC_AXI_0_AWID[0]),
-        .S07_AXI_awlen(CIPS_0_PMC_NOC_AXI_0_AWLEN[0]),
+        .S07_AXI_awid(CIPS_0_PMC_NOC_AXI_0_AWID),
+        .S07_AXI_awlen(CIPS_0_PMC_NOC_AXI_0_AWLEN),
         .S07_AXI_awlock(CIPS_0_PMC_NOC_AXI_0_AWLOCK),
         .S07_AXI_awprot(CIPS_0_PMC_NOC_AXI_0_AWPROT),
         .S07_AXI_awqos(CIPS_0_PMC_NOC_AXI_0_AWQOS),
         .S07_AXI_awready(CIPS_0_PMC_NOC_AXI_0_AWREADY),
         .S07_AXI_awregion(CIPS_0_PMC_NOC_AXI_0_AWREGION),
         .S07_AXI_awsize(CIPS_0_PMC_NOC_AXI_0_AWSIZE),
-        .S07_AXI_awuser(CIPS_0_PMC_NOC_AXI_0_AWUSER[0]),
+        .S07_AXI_awuser(CIPS_0_PMC_NOC_AXI_0_AWUSER),
         .S07_AXI_awvalid(CIPS_0_PMC_NOC_AXI_0_AWVALID),
         .S07_AXI_bid(CIPS_0_PMC_NOC_AXI_0_BID),
         .S07_AXI_bready(CIPS_0_PMC_NOC_AXI_0_BREADY),
@@ -4250,12 +3611,11 @@ module top_level
         .S07_AXI_rresp(CIPS_0_PMC_NOC_AXI_0_RRESP),
         .S07_AXI_ruser(CIPS_0_PMC_NOC_AXI_0_RUSER),
         .S07_AXI_rvalid(CIPS_0_PMC_NOC_AXI_0_RVALID),
-        .S07_AXI_wdata(CIPS_0_PMC_NOC_AXI_0_WDATA[0]),
-        .S07_AXI_wid(CIPS_0_PMC_NOC_AXI_0_WID[0]),
+        .S07_AXI_wdata(CIPS_0_PMC_NOC_AXI_0_WDATA),
         .S07_AXI_wlast(CIPS_0_PMC_NOC_AXI_0_WLAST),
         .S07_AXI_wready(CIPS_0_PMC_NOC_AXI_0_WREADY),
-        .S07_AXI_wstrb(CIPS_0_PMC_NOC_AXI_0_WSTRB[0]),
-        .S07_AXI_wuser(CIPS_0_PMC_NOC_AXI_0_WUSER[0]),
+        .S07_AXI_wstrb(CIPS_0_PMC_NOC_AXI_0_WSTRB),
+        .S07_AXI_wuser(CIPS_0_PMC_NOC_AXI_0_WUSER),
         .S07_AXI_wvalid(CIPS_0_PMC_NOC_AXI_0_WVALID),
         .aclk0(clk_wizard_0_clk_out1),
         .aclk1(CIPS_0_fpd_cci_noc_axi0_clk),
@@ -4271,7 +3631,7 @@ module top_level
         .clk_out1(clk_wizard_0_clk_out1),
         .locked(clk_wizard_0_locked),
         .resetn(CIPS_0_pl_resetn1));
-  assign dummy_intr_dout = 1'h0;
+  assign ilconstant_0_dout = 1'h0;
   top_level_noc_lpddr4_0_0 noc_lpddr4_0
        (.CH0_LPDDR4_0_ca_a(ch0_lpddr4_trip1_ca_a),
         .CH0_LPDDR4_0_ca_b(ch0_lpddr4_trip1_ca_b),
@@ -4409,29 +3769,29 @@ module top_level
         .GT_Serial_grx_p(GT_Serial_grx_p),
         .GT_Serial_gtx_n(GT_Serial_gtx_n),
         .GT_Serial_gtx_p(GT_Serial_gtx_p),
-        .S00_AXI_araddr(CIPS_0_M_AXI_GP0_ARADDR[0]),
+        .S00_AXI_araddr(CIPS_0_M_AXI_GP0_ARADDR),
         .S00_AXI_arburst(CIPS_0_M_AXI_GP0_ARBURST),
         .S00_AXI_arcache(CIPS_0_M_AXI_GP0_ARCACHE),
-        .S00_AXI_arid(CIPS_0_M_AXI_GP0_ARID[0]),
-        .S00_AXI_arlen(CIPS_0_M_AXI_GP0_ARLEN[0]),
+        .S00_AXI_arid(CIPS_0_M_AXI_GP0_ARID),
+        .S00_AXI_arlen(CIPS_0_M_AXI_GP0_ARLEN),
         .S00_AXI_arlock(CIPS_0_M_AXI_GP0_ARLOCK),
         .S00_AXI_arprot(CIPS_0_M_AXI_GP0_ARPROT),
         .S00_AXI_arqos(CIPS_0_M_AXI_GP0_ARQOS),
         .S00_AXI_arready(CIPS_0_M_AXI_GP0_ARREADY),
         .S00_AXI_arsize(CIPS_0_M_AXI_GP0_ARSIZE),
-        .S00_AXI_aruser(CIPS_0_M_AXI_GP0_ARUSER[0]),
+        .S00_AXI_aruser(CIPS_0_M_AXI_GP0_ARUSER),
         .S00_AXI_arvalid(CIPS_0_M_AXI_GP0_ARVALID),
-        .S00_AXI_awaddr(CIPS_0_M_AXI_GP0_AWADDR[0]),
+        .S00_AXI_awaddr(CIPS_0_M_AXI_GP0_AWADDR),
         .S00_AXI_awburst(CIPS_0_M_AXI_GP0_AWBURST),
         .S00_AXI_awcache(CIPS_0_M_AXI_GP0_AWCACHE),
-        .S00_AXI_awid(CIPS_0_M_AXI_GP0_AWID[0]),
-        .S00_AXI_awlen(CIPS_0_M_AXI_GP0_AWLEN[0]),
+        .S00_AXI_awid(CIPS_0_M_AXI_GP0_AWID),
+        .S00_AXI_awlen(CIPS_0_M_AXI_GP0_AWLEN),
         .S00_AXI_awlock(CIPS_0_M_AXI_GP0_AWLOCK),
         .S00_AXI_awprot(CIPS_0_M_AXI_GP0_AWPROT),
         .S00_AXI_awqos(CIPS_0_M_AXI_GP0_AWQOS),
         .S00_AXI_awready(CIPS_0_M_AXI_GP0_AWREADY),
         .S00_AXI_awsize(CIPS_0_M_AXI_GP0_AWSIZE),
-        .S00_AXI_awuser(CIPS_0_M_AXI_GP0_AWUSER[0]),
+        .S00_AXI_awuser(CIPS_0_M_AXI_GP0_AWUSER),
         .S00_AXI_awvalid(CIPS_0_M_AXI_GP0_AWVALID),
         .S00_AXI_bid(CIPS_0_M_AXI_GP0_BID),
         .S00_AXI_bready(CIPS_0_M_AXI_GP0_BREADY),
@@ -4443,17 +3803,15 @@ module top_level
         .S00_AXI_rready(CIPS_0_M_AXI_GP0_RREADY),
         .S00_AXI_rresp(CIPS_0_M_AXI_GP0_RRESP),
         .S00_AXI_rvalid(CIPS_0_M_AXI_GP0_RVALID),
-        .S00_AXI_wdata(CIPS_0_M_AXI_GP0_WDATA[0]),
+        .S00_AXI_wdata(CIPS_0_M_AXI_GP0_WDATA),
         .S00_AXI_wlast(CIPS_0_M_AXI_GP0_WLAST),
         .S00_AXI_wready(CIPS_0_M_AXI_GP0_WREADY),
-        .S00_AXI_wstrb(CIPS_0_M_AXI_GP0_WSTRB[0]),
+        .S00_AXI_wstrb(CIPS_0_M_AXI_GP0_WSTRB),
         .S00_AXI_wvalid(CIPS_0_M_AXI_GP0_WVALID),
         .UART_rxd(UART_rxd),
         .UART_txd(UART_txd),
         .aclk(clk_wizard_0_clk_out1),
-        .aresetn(proc_sys_reset_0_peripheral_aresetn),
-        .intr(dummy_intr_dout),
-        .irq(pl_rtl_irq));
+        .aresetn(proc_sys_reset_0_peripheral_aresetn));
   top_level_proc_sys_reset_0_0 proc_sys_reset
        (.aux_reset_in(1'b1),
         .dcm_locked(clk_wizard_0_locked),
@@ -4461,6 +3819,6 @@ module top_level
         .mb_debug_sys_rst(1'b0),
         .peripheral_aresetn(proc_sys_reset_0_peripheral_aresetn),
         .slowest_sync_clk(clk_wizard_0_clk_out1));
-  assign QSFPDD2_LPMODE = 1'h0;
-  assign QSFPDD2_RESETL = 1'h1;
+  assign QSFPDD1_LPMODE = 1'h0;
+  assign QSFPDD1_RESETL = 1'h1;
 endmodule

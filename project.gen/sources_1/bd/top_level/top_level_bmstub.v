@@ -135,7 +135,9 @@ module top_level (
   qsfp0_clk_clk_n,
   qsfp0_clk_clk_p,
   QSFPDD2_LPMODE,
-  QSFPDD2_RESETL
+  QSFPDD2_RESETL,
+  QSFPDD1_RESETL,
+  QSFPDD1_LPMODE
 );
 
   (* X_INTERFACE_INFO = "xilinx.com:interface:lpddr4:1.0 ch0_lpddr4_trip1 DQ_A" *)
@@ -421,6 +423,10 @@ module top_level (
   output [0:0]QSFPDD2_LPMODE;
   (* X_INTERFACE_IGNORE = "true" *)
   output [0:0]QSFPDD2_RESETL;
+  (* X_INTERFACE_IGNORE = "true" *)
+  output [0:0]QSFPDD1_RESETL;
+  (* X_INTERFACE_IGNORE = "true" *)
+  output [0:0]QSFPDD1_LPMODE;
 
   // stub module has no contents
 

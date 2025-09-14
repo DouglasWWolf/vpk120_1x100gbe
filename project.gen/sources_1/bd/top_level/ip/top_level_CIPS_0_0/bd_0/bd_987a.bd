@@ -1676,11 +1676,11 @@
         "parameters": {
           "PortWidth": {
             "value": "1",
-            "value_src": "default"
+            "value_src": "default_prop"
           },
           "SENSITIVITY": {
             "value": "LEVEL_HIGH",
-            "value_src": "user_prop"
+            "value_src": "default_prop"
           }
         }
       }

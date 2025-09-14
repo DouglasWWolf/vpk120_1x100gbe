@@ -2,7 +2,7 @@
 //Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.
 //--------------------------------------------------------------------------------
 //Tool Version: Vivado v.2024.2 (lin64) Build 5239630 Fri Nov 08 22:34:34 MST 2024
-//Date        : Thu Sep 11 18:40:04 2025
+//Date        : Sun Sep 14 03:08:20 2025
 //Host        : wolf-super-server running 64-bit Ubuntu 20.04.6 LTS
 //Command     : generate_target top_level_wrapper.bd
 //Design      : top_level_wrapper
@@ -15,6 +15,8 @@ module top_level_wrapper
     GT_Serial_grx_p,
     GT_Serial_gtx_n,
     GT_Serial_gtx_p,
+    QSFPDD1_LPMODE,
+    QSFPDD1_RESETL,
     QSFPDD2_LPMODE,
     QSFPDD2_RESETL,
     UART_rxd,
@@ -145,6 +147,8 @@ module top_level_wrapper
   input [3:0]GT_Serial_grx_p;
   output [3:0]GT_Serial_gtx_n;
   output [3:0]GT_Serial_gtx_p;
+  output [0:0]QSFPDD1_LPMODE;
+  output [0:0]QSFPDD1_RESETL;
   output [0:0]QSFPDD2_LPMODE;
   output [0:0]QSFPDD2_RESETL;
   input UART_rxd;
@@ -276,6 +280,8 @@ module top_level_wrapper
   wire [3:0]GT_Serial_grx_p;
   wire [3:0]GT_Serial_gtx_n;
   wire [3:0]GT_Serial_gtx_p;
+  wire [0:0]QSFPDD1_LPMODE;
+  wire [0:0]QSFPDD1_RESETL;
   wire [0:0]QSFPDD2_LPMODE;
   wire [0:0]QSFPDD2_RESETL;
   wire UART_rxd;
@@ -408,6 +414,8 @@ module top_level_wrapper
         .GT_Serial_grx_p(GT_Serial_grx_p),
         .GT_Serial_gtx_n(GT_Serial_gtx_n),
         .GT_Serial_gtx_p(GT_Serial_gtx_p),
+        .QSFPDD1_LPMODE(QSFPDD1_LPMODE),
+        .QSFPDD1_RESETL(QSFPDD1_RESETL),
         .QSFPDD2_LPMODE(QSFPDD2_LPMODE),
         .QSFPDD2_RESETL(QSFPDD2_RESETL),
         .UART_rxd(UART_rxd),

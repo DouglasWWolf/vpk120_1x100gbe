@@ -1,31 +1,26 @@
 export axi_uart_device=/dev/ttyUSB2
 
-                DCMAC=0xA4000000
-          GLOBAL_MODE=0x0004
-    GLOBAL_CONTROL_RX=0x00F0
-    GLOBAL_CONTROL_TX=0x00F8
- C0_CHANNEL_CONFIG_TX=0x1000
- C0_CHANNEL_CONFIG_RX=0x1004
-C0_CHANNEL_CONTROL_RX=0x1030
-C0_CHANNEL_CONTROL_TX=0x1038
-           C0_TX_MODE=0x1040
-           C0_RX_MODE=0x1044
-   C0_PORT_CONTROL_RX=0x10F0
-   C0_PORT_CONTROL_TX=0x10F8
-           
-     RESET=0xA4100000
-RESET_DONE=$((RESET + 4))
+                     DCMAC=0xA4000000
+               GLOBAL_MODE=0x0004
+         GLOBAL_CONTROL_RX=0x00F0
+         GLOBAL_CONTROL_TX=0x00F8
+      C0_CHANNEL_CONFIG_TX=0x1000
+      C0_CHANNEL_CONFIG_RX=0x1004
+     C0_CHANNEL_CONTROL_RX=0x1030
+     C0_CHANNEL_CONTROL_TX=0x1038
+                C0_TX_MODE=0x1040
+                C0_RX_MODE=0x1044
+        C0_PORT_CONTROL_RX=0x10F0
+        C0_PORT_CONTROL_TX=0x10F8
+C0_STAT_PORT_RX_PHY_STATUS=0x1C00           
 
-  rx_core=1
-  tx_core=2
-rx_serdes=4
-tx_serdes=8
-   gt_all=16
-  gt_rxdp=32
-  gt_txdp=64
+    DCMAC_CTL=0xA4100000
+    DCMAC_CTL_RX_RESET_DONE=$((DCMAC_CTL + 4))
+    DCMAC_CTL_TX_RESET_DONE=$((DCMAC_CTL + 8))    
 
+        gt_reset_all=$((2**0))
+gt_reset_rx_datapath=$((2**1))                          
 
-sreg=$((DCMAC + 0x1C00))
 
 axi()
 {
@@ -40,6 +35,32 @@ all_ports()
          axi $addr $2
      done
 }
+
+
+wait_gt_txresetdone()
+{
+    sleep .1
+    v=$(axi -dec $DCMAC_CTL_TX_RESET_DONE)
+    if [ $v -ne 15 ]; then
+        echo wait_gt_txresetdone failed!
+        read
+        exit 1
+    fi
+}
+
+
+wait_gt_rxresetdone()
+{
+    sleep .1
+    v=$(axi -dec $DCMAC_CTL_RX_RESET_DONE)
+    if [ $v -ne 15 ]; then
+        echo wait_gt_rxresetdone failed!
+        read
+        exit 1
+    fi
+}
+
+
 
 assert_all_reset()
 {
@@ -85,18 +106,6 @@ release_channel_resets()
 }
 
 
-assert_dcmac_global_port_channel_resets_static()
-{
-    assert_all_reset
-    assert_channel_resets    
-}
-
-release_dcmac_global_port_channel_resets_static()
-{
-    release_all_reset
-    release_channel_resets    
-} 
-
 
 config_mac()
 {
@@ -113,71 +122,81 @@ set_data_rate()
     all_ports $C0_RX_MODE $wdata_rx
 }
 
-program_dcmac()
-{
-    axi $((DCMAC + GLOBAL_MODE)) 0x07550000
-    config_mac
-    set_data_rate
-}
 
 gt_rx_datapathonly_reset()
 {
-    axi $RESET $gt_rxdp
-    sleep .1
-    axi $RESET 0
+    axi $DCMAC_CTL $gt_reset_rx_datapath
+    sleep .5
+    axi $DCMAC_CTL 0
+    sleep .5
 }
+
+
+assert_rx_port_reset()
+{
+    all_ports $C0_PORT_CONTROL_RX 2    
+}
+
+deassert_rx_port_reset()
+{
+    all_ports $C0_PORT_CONTROL_RX 0    
+}
+
+
 
 dcmac_rx_port_reset()
 {
-    all_ports $C0_PORT_CONTROL_RX 2
+    assert_rx_port_reset
     sleep .1
-    all_ports $C0_PORT_CONTROL_RX 0        
+    deassert_rx_port_reset
     sleep .1
 }
 
 
-
-axi $RESET $gt_all
-sleep .1
-axi $RESET 0
-sleep .1
-if [ $(axi -dec $RESET_DONE) -ne 255 ]; then
-    echo "Never came out of reset!"
-    exit 1
-fi
-
-axi $RESET $gt_rxdp
-sleep .1
-axi $RESET 0
-sleep .5
-
-# Reset Cn_PORT_CONTROL_REG_RX
-all_ports $C0_PORT_CONTROL_RX 2
-sleep .1
-all_ports $C0_PORT_CONTROL_RX 0
-sleep .1
-
-
-assert_dcmac_global_port_channel_resets_static
-program_dcmac
-release_dcmac_global_port_channel_resets_static
-sleep .5
-gt_rx_datapathonly_reset
-
-sleep .5
-if [ $(axi -dec $RESET_DONE) -ne 255 ]; then
-    echo "gt_rx_datapathonly never came out of reset!"
-    exit 1
-fi
-dcmac_rx_port_reset
-
-
-sleep 3
-
-# Show alignment status
-for i in {1..5}; do
+wait_for_alignment()
+{
+    sreg=$((DCMAC + C0_STAT_PORT_RX_PHY_STATUS))
+    sleep .5
     axi $sreg 0xFFFFFFFF
-    sleep 1
-    axi -hex $sreg
-done
+    sleep .5
+    v=$(axi -dec $sreg)
+    printf "PHY Status = 0x%X\n" $v   
+    test $((v & 1)) -eq 1 && return 0
+    return 1
+}
 
+main()
+{
+    axi $DCMAC_CTL $gt_reset_all
+    sleep .01
+    axi $DCMAC_CTL 0
+    sleep .01
+
+    wait_gt_txresetdone
+    wait_gt_rxresetdone
+
+    assert_all_reset
+    assert_channel_resets    
+    
+    axi $((DCMAC + GLOBAL_MODE)) 0x07550000
+    config_mac
+    set_data_rate
+
+    release_all_reset
+    release_channel_resets    
+
+    sleep .5
+
+    for i in {1..10}; do
+        gt_rx_datapathonly_reset
+	    wait_gt_rxresetdone
+        sleep .5
+        dcmac_rx_port_reset
+        sleep .5
+	    wait_for_alignment
+        test $? -eq 0 && break
+    done
+}
+
+
+main

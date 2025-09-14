@@ -16,13 +16,8 @@ module dcmac_ctrl # (parameter AW=8)
 (
     input clk, resetn,
 
-    output rx_core_reset,
-    output tx_core_reset,
-    output rx_serdes_reset,
-    output tx_serdes_reset,
     output gt_reset_all,
     output gt_reset_rx_datapath,
-    output gt_reset_tx_datapath,
 
     input[3:0] rx_reset_done,
     input[3:0] tx_reset_done,
@@ -97,13 +92,8 @@ localparam DECERR = 3;
 
 reg[31:0] dcmac_resets;
 
-assign rx_core_reset        = dcmac_resets[0];                      
-assign tx_core_reset        = dcmac_resets[1];                     
-assign rx_serdes_reset      = dcmac_resets[2];                      
-assign tx_serdes_reset      = dcmac_resets[3];                       
-assign gt_reset_all         = dcmac_resets[4];                      
-assign gt_reset_rx_datapath = dcmac_resets[5];                          
-assign gt_reset_tx_datapath = dcmac_resets[6];              
+assign gt_reset_all         = dcmac_resets[0];                      
+assign gt_reset_rx_datapath = dcmac_resets[1];                          
 
 //==========================================================================
 // This state machine handles AXI4-Lite write requests
@@ -164,7 +154,8 @@ always @(posedge clk) begin
             
             // Allow a read from any valid register                
             0:  ashi_rdata <= dcmac_resets;
-            1:  ashi_rdata = {tx_reset_done, rx_reset_done};
+            1:  ashi_rdata <= rx_reset_done;
+            2:  ashi_rdata <= tx_reset_done;
 
             // Reads of any other register are a decode-error
             default: ashi_rresp <= DECERR;

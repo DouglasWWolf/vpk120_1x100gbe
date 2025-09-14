@@ -1,19 +1,10 @@
 
-/*
-    This module contains two output pins called dcmac_rx_core_reset and dcmac_tx_core_reset.
-    By rights, those pins should be called "rx_core_reset" and "tx_core_reset", but if we 
-    do that, Vivado (as of 2024.2) erroneously thinks they are synchronous with clocks 
-    "rx_core_clk" and "tx_core_clk".    
-
-    Due to what is probably a bug in Vivado 2024.2, the DCMAC requires "rx_core_reset" and
-    "tx_core_reset" to be synchronous to "rx_axi_clk" and "tx_axi_clk".   We have renamed
-    "[rx|tx]_core_reset" to "dcmac_[rx|tx]_core_reset" to prevent Vivado from erroneously
-    deciding that those pins are synchronous to "[rx|tx]_core_clk"
-
-*/
 
 module dcmac_helper # (parameter MAX_PORTS = 6, DW = 256)
 (
+    // System clock.  "gt_[tx|rx]_reset_done" will be synced to this
+    input   s_axi_clk,
+
     // To user-logic
     (* X_INTERFACE_INFO = "xilinx.com:signal:clock:1.0  axis_clk  CLK" *)
     (* X_INTERFACE_PARAMETER = "ASSOCIATED_BUSIF axis_in:tx_axis_0, FREQ_HZ 390625000" *)
@@ -27,15 +18,16 @@ module dcmac_helper # (parameter MAX_PORTS = 6, DW = 256)
 
     // To DCMAC
     output gtpowergood_in,
+    
+    // To GT Quad
+    output gt_rxcdrhold,
+    
+    // To GT Quad
+    output gt_loopback,
    
     // From user-logic
-    input user_rx_core_reset,
-    input user_tx_core_reset,
-    input user_rx_serdes_reset,
-    input user_tx_serdes_reset,
     input user_gt_reset_all,
-    input user_gt_reset_rx_datapath,
-    input user_gt_reset_tx_datapath,
+    input porta_gt_reset_rx_datapath,
 
     // From GT Quad
     input   gt_tx_reset_done_0,
@@ -49,7 +41,7 @@ module dcmac_helper # (parameter MAX_PORTS = 6, DW = 256)
     input   gt_rx_reset_done_2,
     input   gt_rx_reset_done_3,
 
-    // To user-logic
+    // To user-logic.  Synchronous to s_axi_clk
     output[3:0] gt_rx_reset_done,
     output[3:0] gt_tx_reset_done,
 
@@ -59,31 +51,11 @@ module dcmac_helper # (parameter MAX_PORTS = 6, DW = 256)
     //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
     //                  These resets all go to the DCMAC
     //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-    (* X_INTERFACE_INFO = "xilinx.com:signal:reset:1.0 dcmac_rx_core_reset RST" *)
-    (* X_INTERFACE_PARAMETER = "POLARITY ACTIVE_HIGH" *)
-    output                dcmac_rx_core_reset,
-    
-    (* X_INTERFACE_INFO = "xilinx.com:signal:reset:1.0 dcmac_tx_core_reset RST" *)
-    (* X_INTERFACE_PARAMETER = "POLARITY ACTIVE_HIGH" *)
-    output                dcmac_tx_core_reset,
-
-    (* X_INTERFACE_INFO = "xilinx.com:signal:reset:1.0 rx_serdes_reset RST" *)
-    (* X_INTERFACE_PARAMETER = "POLARITY ACTIVE_HIGH" *)
-    output[MAX_PORTS-1:0] rx_serdes_reset,
-
-    (* X_INTERFACE_INFO = "xilinx.com:signal:reset:1.0 tx_serdes_reset RST" *)
-    (* X_INTERFACE_PARAMETER = "POLARITY ACTIVE_HIGH" *)
-    output[MAX_PORTS-1:0] tx_serdes_reset,
-    
     output                gt_reset_all_in,
     output                gt_reset_rx_datapath_in_0,
     output                gt_reset_rx_datapath_in_1,
     output                gt_reset_rx_datapath_in_2,
     output                gt_reset_rx_datapath_in_3,    
-    output                gt_reset_tx_datapath_in_0,
-    output                gt_reset_tx_datapath_in_1,
-    output                gt_reset_tx_datapath_in_2,
-    output                gt_reset_tx_datapath_in_3,    
 
     // To DCMAC
     (* X_INTERFACE_INFO = "xilinx.com:signal:clock:1.0  rx_core_clk  CLK" *)
@@ -95,16 +67,14 @@ module dcmac_helper # (parameter MAX_PORTS = 6, DW = 256)
     (* X_INTERFACE_PARAMETER = "FREQ_HZ 781250000" *)
     output tx_core_clk,
 
-    // To DCMAC - A bug in Vivado 2024.2 erroneously causes Vivado to believe 
-    //            rx_core_reset is synchronous with rx_axi_clk
+    // To DCMAC
     (* X_INTERFACE_INFO = "xilinx.com:signal:clock:1.0  rx_axi_clk  CLK" *)
-    (* X_INTERFACE_PARAMETER = "FREQ_HZ 390625000, ASSOCIATED_RESET dcmac_rx_core_reset" *)
+    (* X_INTERFACE_PARAMETER = "FREQ_HZ 390625000" *)
     output rx_axi_clk,
 
-    // To DCMAC - A bug in Vivado 2024.2 erroneously causes Vivado to believe 
-    //            tx_core_reset is synchronous with tx_axi_clk
+    // To DCMAC
     (* X_INTERFACE_INFO = "xilinx.com:signal:clock:1.0  tx_axi_clk  CLK" *)
-    (* X_INTERFACE_PARAMETER = "FREQ_HZ 390625000, ASSOCIATED_RESET dcmac_tx_core_reset" *)
+    (* X_INTERFACE_PARAMETER = "FREQ_HZ 390625000" *)
     output tx_axi_clk,
 
     // To DCMAC
@@ -196,9 +166,9 @@ assign rx_axi_clk    = axis_clk;
 assign tx_axi_clk    = axis_clk;
 assign rx_macif_clk  = axis_clk;
 assign tx_macif_clk  = axis_clk;
-assign rx_flexif_clk = {6{axis_clk}};
-assign tx_flexif_clk = {6{axis_clk}};
-assign ts_clk        = {6{local_ts_clk}};
+assign rx_flexif_clk = {MAX_PORTS{axis_clk}};
+assign tx_flexif_clk = {MAX_PORTS{axis_clk}};
+assign ts_clk        = {MAX_PORTS{local_ts_clk}};
 
 //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 //              The DCMAC clock inputs from the GT Quad
@@ -210,28 +180,26 @@ assign tx_serdes_clk     = {1'b0,1'b0,1'b0,1'b0,1'b0, ch0_tx_usr_clk_0 };
 
 
 // To DCMAC (resets)
-assign rx_serdes_reset           = {6{user_rx_serdes_reset}};
-assign tx_serdes_reset           = {6{user_tx_serdes_reset}};
 assign gt_reset_all_in           = user_gt_reset_all;
-assign gt_reset_rx_datapath_in_0 = user_gt_reset_rx_datapath;
-assign gt_reset_rx_datapath_in_1 = user_gt_reset_rx_datapath;
-assign gt_reset_rx_datapath_in_2 = user_gt_reset_rx_datapath;
-assign gt_reset_rx_datapath_in_3 = user_gt_reset_rx_datapath;
-assign gt_reset_tx_datapath_in_0 = user_gt_reset_tx_datapath;
-assign gt_reset_tx_datapath_in_1 = user_gt_reset_tx_datapath;
-assign gt_reset_tx_datapath_in_2 = user_gt_reset_tx_datapath;
-assign gt_reset_tx_datapath_in_3 = user_gt_reset_tx_datapath;
+assign gt_reset_rx_datapath_in_0 = porta_gt_reset_rx_datapath;
+assign gt_reset_rx_datapath_in_1 = porta_gt_reset_rx_datapath;
+assign gt_reset_rx_datapath_in_2 = porta_gt_reset_rx_datapath;
+assign gt_reset_rx_datapath_in_3 = porta_gt_reset_rx_datapath;
 
 
 // Tell the DCMAC about the GT Quad's "power is good" signal
 assign gtpowergood_in = gtpowergood_0;
 
+// Don't hold RXCDR and no loopback on the GT quad
+assign gt_rxcdrhold = 0;
+assign gt_loopback  = 0;
+
 //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 //            Various signal shaping for the GT Quad
 //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-localparam DFL_TXMAINCURSOR = 7'h4B;
-localparam DFL_TXPOSTCURSOR = 6'h24;
-localparam DFL_TXPRECURSOR  = 6'h03;
+localparam DFL_TXMAINCURSOR = 75;
+localparam DFL_TXPOSTCURSOR = 9;
+localparam DFL_TXPRECURSOR  = 3;
 assign gt_txmaincursor = DFL_TXMAINCURSOR;
 assign gt_txpostcursor = DFL_TXPOSTCURSOR;
 assign gt_txprecursor  = DFL_TXPRECURSOR;
@@ -240,7 +208,7 @@ assign gt_txrate       = 0;
 //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 //                     "Reset done" outputs
 //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-assign gt_tx_reset_done =
+wire[3:0] async_gt_tx_reset_done =
 {
     gt_tx_reset_done_3,
     gt_tx_reset_done_2,
@@ -249,7 +217,7 @@ assign gt_tx_reset_done =
 };
 
 
-assign gt_rx_reset_done =
+wire[3:0] async_gt_rx_reset_done =
 {
     gt_rx_reset_done_3,
     gt_rx_reset_done_2,
@@ -258,58 +226,36 @@ assign gt_rx_reset_done =
 };
 
 
-// Synchronize output pin "dmac_rx_core_reset" to "rx_axi_clk"
-/*
-xpm_cdc_async_rst #
+// Synchronize async_gt_rx_reset_done to s_axi_clk
+xpm_cdc_array_single #
 (
-   .DEST_SYNC_FF    (4),  
-   .INIT_SYNC_FF    (0),  
-   .RST_ACTIVE_HIGH (1)
+    .DEST_SYNC_FF     (4),   
+    .SRC_INPUT_REG    (0),  
+    .WIDTH            (4)           
 )
-sync_rx_core_reset
+i_sync_gt_rx_reset_done
 (
-   .src_arst    (user_rx_core_reset),   
-   .dest_arst   (dcmac_rx_core_reset),
-   .dest_clk    (rx_axi_clk)
+    .src_clk    (),   
+    .src_in     (async_gt_rx_reset_done),
+    .dest_clk   (s_axi_clk),
+    .dest_out   (gt_rx_reset_done) 
 );
-*/
-assign dcmac_rx_core_reset = user_rx_core_reset;
 
 
-/*
-// Synchronize output pin "dmac_tx_core_reset" to "tx_axi_clk"
-xpm_cdc_async_rst #
+// Synchronize async_gt_tx_reset_done to s_axi_clk
+xpm_cdc_array_single #
 (
-   .DEST_SYNC_FF    (4),  
-   .INIT_SYNC_FF    (0),  
-   .RST_ACTIVE_HIGH (1)
+    .DEST_SYNC_FF     (4),   
+    .SRC_INPUT_REG    (0),  
+    .WIDTH            (4)           
 )
-sync_tx_core_reset
+i_sync_gt_tx_reset_done
 (
-   .src_arst    (user_tx_core_reset),   
-   .dest_arst   (dcmac_tx_core_reset),
-   .dest_clk    (tx_axi_clk)
+    .src_clk    (),   
+    .src_in     (async_gt_tx_reset_done),
+    .dest_clk   (s_axi_clk),
+    .dest_out   (gt_tx_reset_done) 
 );
-*/
-assign dcmac_tx_core_reset = user_tx_core_reset;
-
-// Synchronize user_tx_core_reset to clock "axis_clk"
-wire axis_reset;
-xpm_cdc_async_rst #
-(
-   .DEST_SYNC_FF    (4),  
-   .INIT_SYNC_FF    (0),  
-   .RST_ACTIVE_HIGH (1)
-)
-sync_tx_axis_reset
-(
-   .src_arst    (user_tx_core_reset),   
-   .dest_arst   (axis_reset),
-   .dest_clk    (axis_clk)
-);
-assign axis_resetn = ~axis_reset;
-
-
 
 
 axis_to_dcmac #

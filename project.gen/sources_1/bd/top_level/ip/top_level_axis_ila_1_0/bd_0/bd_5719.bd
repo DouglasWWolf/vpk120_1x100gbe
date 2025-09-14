@@ -902,7 +902,7 @@
             "value": "1"
           },
           "C_PROBE10_WIDTH": {
-            "value": "1"
+            "value": "4"
           },
           "C_PROBE11_WIDTH": {
             "value": "1"
@@ -911,10 +911,10 @@
             "value": "1"
           },
           "C_PROBE1_WIDTH": {
-            "value": "1"
+            "value": "128"
           },
           "C_PROBE2_WIDTH": {
-            "value": "1"
+            "value": "128"
           },
           "C_PROBE3_WIDTH": {
             "value": "1"
@@ -935,7 +935,7 @@
             "value": "1"
           },
           "C_PROBE9_WIDTH": {
-            "value": "1"
+            "value": "4"
           }
         }
       },
