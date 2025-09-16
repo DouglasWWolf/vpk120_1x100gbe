@@ -15,8 +15,9 @@ export axi_uart_device=/dev/ttyUSB2
 C0_STAT_PORT_RX_PHY_STATUS=0x1C00           
 
     DCMAC_CTL=0xA4100000
-    DCMAC_CTL_RX_RESET_DONE=$((DCMAC_CTL + 4))
-    DCMAC_CTL_TX_RESET_DONE=$((DCMAC_CTL + 8))    
+    DCMAC_CTL_RX_RESET_DONE=$((DCMAC_CTL +  4))
+    DCMAC_CTL_TX_RESET_DONE=$((DCMAC_CTL +  8))    
+         DCMAC_CTL_LOOPBACK=$((DCMAC_CTL + 12))
 
         gt_reset_all=$((2**0))
 gt_reset_rx_datapath=$((2**1))                          
@@ -167,6 +168,9 @@ wait_for_alignment()
 
 main()
 {
+    # Add 8 to the loopback mode to assert gt_rxcdrhold
+    axi $DCMAC_CTL_LOOPBACK $((1 + 8))
+
     axi $DCMAC_CTL $gt_reset_all
     sleep .01
     axi $DCMAC_CTL 0

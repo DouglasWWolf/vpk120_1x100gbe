@@ -1680,7 +1680,7 @@
           },
           "SENSITIVITY": {
             "value": "LEVEL_HIGH",
-            "value_src": "default_prop"
+            "value_src": "default"
           }
         }
       }

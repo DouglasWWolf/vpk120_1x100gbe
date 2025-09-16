@@ -31,7 +31,7 @@ done
 
 
 #git add pre_build.sh post_build.sh release_history.txt
-git add src xdc runtime grab.sh README.md push
+git add src xdc tcl runtime grab.sh README.md push
 
 git commit -m "No commit message"
 repo push origin main

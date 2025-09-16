@@ -22,6 +22,9 @@ module dcmac_ctrl # (parameter AW=8)
     input[3:0] rx_reset_done,
     input[3:0] tx_reset_done,
 
+    output reg[2:0] gt_loopback,
+    output reg      gt_rxcdrhold,
+
     //================== This is an AXI4-Lite slave interface ==================
         
     // "Specify write address"              -- Master --    -- Slave --
@@ -95,6 +98,13 @@ reg[31:0] dcmac_resets;
 assign gt_reset_all         = dcmac_resets[0];                      
 assign gt_reset_rx_datapath = dcmac_resets[1];                          
 
+reg[3:0] loopback_config;
+
+always @(posedge clk) begin
+    gt_loopback  <= loopback_config[2:0];
+    gt_rxcdrhold <= loopback_config[3];
+end
+
 //==========================================================================
 // This state machine handles AXI4-Lite write requests
 //==========================================================================
@@ -119,6 +129,7 @@ always @(posedge clk) begin
                 case (ashi_windx)
                
                     0:  dcmac_resets <= ashi_wdata;
+                    3:  loopback_config <= ashi_wdata[3:0];
 
                     // Writes to any other register are a decode-error
                     default: ashi_wresp <= DECERR;
@@ -156,6 +167,7 @@ always @(posedge clk) begin
             0:  ashi_rdata <= dcmac_resets;
             1:  ashi_rdata <= rx_reset_done;
             2:  ashi_rdata <= tx_reset_done;
+            3:  ashi_rdata <= {gt_rxcdrhold, gt_loopback};
 
             // Reads of any other register are a decode-error
             default: ashi_rresp <= DECERR;

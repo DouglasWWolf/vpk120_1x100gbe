@@ -19,15 +19,17 @@ module dcmac_helper # (parameter MAX_PORTS = 6, DW = 256)
     // To DCMAC
     output gtpowergood_in,
     
-    // To GT Quad
-    output gt_rxcdrhold,
-    
-    // To GT Quad
-    output gt_loopback,
-   
     // From user-logic
     input user_gt_reset_all,
     input porta_gt_reset_rx_datapath,
+
+    // From user-logic
+    input[2:0] user_gt_loopback,
+    input      user_gt_rxcdrhold,
+
+    // To GT Quad
+    output[2:0] gt_loopback,
+    output      gt_rxcdrhold,
 
     // From GT Quad
     input   gt_tx_reset_done_0,
@@ -148,6 +150,10 @@ module dcmac_helper # (parameter MAX_PORTS = 6, DW = 256)
     output[MAX_PORTS-1:0] tx_alt_serdes_clk
 );
 
+// GT Quad loopback mode is configurable
+assign gt_loopback  = user_gt_loopback;
+assign gt_rxcdrhold = user_gt_rxcdrhold;
+
 wire core_clk, local_ts_clk;
 wire clk_wiz_locked;
 dcmac_clkwiz i_dcmac_clk_wiz 
@@ -158,6 +164,7 @@ dcmac_clkwiz i_dcmac_clk_wiz
     .clk_out2   (axis_clk),        // nominally 390.625 MHz 
     .clk_out3   (local_ts_clk)     // nominally 300.000 Mhz
 );
+
 
 // These generated clocks all go to the DCMAC
 assign rx_core_clk   = core_clk;
@@ -189,10 +196,6 @@ assign gt_reset_rx_datapath_in_3 = porta_gt_reset_rx_datapath;
 
 // Tell the DCMAC about the GT Quad's "power is good" signal
 assign gtpowergood_in = gtpowergood_0;
-
-// Don't hold RXCDR and no loopback on the GT quad
-assign gt_rxcdrhold = 0;
-assign gt_loopback  = 0;
 
 //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 //            Various signal shaping for the GT Quad
@@ -258,19 +261,42 @@ i_sync_gt_tx_reset_done
 );
 
 
+//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+//                Create the "axis_resetn" signal
+//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+wire async_axis_resetn = (async_gt_rx_reset_done == 4'b1111);
+
+xpm_cdc_async_rst #
+(
+    .DEST_SYNC_FF   (4),   
+    .RST_ACTIVE_HIGH(0)
+)
+i_sync_axis_resetn
+(
+    .src_arst   (async_axis_resetn),    
+    .dest_clk   (axis_clk),   
+    .dest_arst  (axis_resetn) 
+);
+
+
+
+//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+//      Create an ordinary AXI stream for TX port 0
+//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 axis_to_dcmac #
 (
     .DW(DW),
     .SW(128)
 )
-i_axis_to_dcmac7
+i_axis_to_dcmac
 (
     .clk                (axis_clk),
     .resetn             (axis_resetn),
     .axis_in_tdata      (axis_in_tdata),
     .axis_in_tkeep      (axis_in_tkeep),
     .axis_in_tlast      (axis_in_tlast),
-    .axis_in_tvalid     (axis_in_valid),
+    .axis_in_tvalid     (axis_in_tvalid),
     .axis_in_tready     (axis_in_tready),
 
     .tx_axis_tdata0     (tx_axis_tdata0),
@@ -304,7 +330,6 @@ i_axis_to_dcmac7
     .tx_axis_tvalid     (tx_axis_tvalid_0),
     .tx_axis_tready     (tx_axis_tready_0)
 );
-
 
 
 endmodule

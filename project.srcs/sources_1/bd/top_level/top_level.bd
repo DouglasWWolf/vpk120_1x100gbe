@@ -26,14 +26,16 @@
             "util_ds_buf_mbufg_tx_0": "",
             "util_ds_buf_mbufg_rx_0": "",
             "gt_quad_base": "",
-            "util_ds_buf_0": ""
+            "util_ds_buf_0": "",
+            "axis_ila_0": "",
+            "axis_ila_1": ""
           },
-          "dcmac_helper": "",
-          "axis_ila_1": ""
+          "dcmac_helper": ""
         },
         "packet_config": "",
         "packet_gen": "",
-        "dcmac_ctrl_0": ""
+        "dcmac_ctrl_0": "",
+        "axis_register_slice": ""
       },
       "cips_noc": "",
       "clk_wizard": "",
@@ -2433,6 +2435,14 @@
               },
               "porta_gt_reset_rx_datapath": {
                 "direction": "I"
+              },
+              "user_gt_loopback": {
+                "direction": "I",
+                "left": "2",
+                "right": "0"
+              },
+              "user_gt_rxcdrhold": {
+                "direction": "I"
               }
             },
             "components": {
@@ -2462,53 +2472,6 @@
                   "s_axi_aresetn": {
                     "type": "rst",
                     "direction": "I"
-                  },
-                  "rx_axis_tdata0": {
-                    "direction": "O",
-                    "left": "127",
-                    "right": "0"
-                  },
-                  "rx_axis_tdata1": {
-                    "direction": "O",
-                    "left": "127",
-                    "right": "0"
-                  },
-                  "rx_axis_tuser_ena0": {
-                    "direction": "O"
-                  },
-                  "rx_axis_tuser_ena1": {
-                    "direction": "O"
-                  },
-                  "rx_axis_tuser_eop0": {
-                    "direction": "O"
-                  },
-                  "rx_axis_tuser_eop1": {
-                    "direction": "O"
-                  },
-                  "rx_axis_tuser_err0": {
-                    "direction": "O"
-                  },
-                  "rx_axis_tuser_err1": {
-                    "direction": "O"
-                  },
-                  "rx_axis_tuser_mty0": {
-                    "direction": "O",
-                    "left": "3",
-                    "right": "0"
-                  },
-                  "rx_axis_tuser_mty1": {
-                    "direction": "O",
-                    "left": "3",
-                    "right": "0"
-                  },
-                  "rx_axis_tuser_sop0": {
-                    "direction": "O"
-                  },
-                  "rx_axis_tuser_sop1": {
-                    "direction": "O"
-                  },
-                  "rx_axis_tvalid_0": {
-                    "direction": "O"
                   },
                   "tx_axis_taf_0": {
                     "direction": "O"
@@ -2894,6 +2857,57 @@
                         "value": "IBUFDS_GTME5"
                       }
                     }
+                  },
+                  "axis_ila_0": {
+                    "vlnv": "xilinx.com:ip:axis_ila:1.3",
+                    "ip_revision": "0",
+                    "xci_name": "top_level_axis_ila_0_1",
+                    "xci_path": "ip/top_level_axis_ila_0_1/top_level_axis_ila_0_1.xci",
+                    "inst_hier_path": "pl_rtl/ethernet/dcmac_ip/axis_ila_0",
+                    "parameters": {
+                      "C_NUM_OF_PROBES": {
+                        "value": "12"
+                      },
+                      "C_PROBE10_WIDTH": {
+                        "value": "4"
+                      },
+                      "C_PROBE11_WIDTH": {
+                        "value": "4"
+                      },
+                      "C_PROBE2_WIDTH": {
+                        "value": "128"
+                      },
+                      "C_PROBE3_WIDTH": {
+                        "value": "128"
+                      }
+                    }
+                  },
+                  "axis_ila_1": {
+                    "vlnv": "xilinx.com:ip:axis_ila:1.3",
+                    "ip_revision": "0",
+                    "xci_name": "top_level_axis_ila_1_0",
+                    "xci_path": "ip/top_level_axis_ila_1_0/top_level_axis_ila_1_0.xci",
+                    "inst_hier_path": "pl_rtl/ethernet/dcmac_ip/axis_ila_1",
+                    "parameters": {
+                      "C_NUM_OF_PROBES": {
+                        "value": "13"
+                      },
+                      "C_PROBE10_WIDTH": {
+                        "value": "4"
+                      },
+                      "C_PROBE1_WIDTH": {
+                        "value": "128"
+                      },
+                      "C_PROBE2_WIDTH": {
+                        "value": "128"
+                      },
+                      "C_PROBE9_WIDTH": {
+                        "value": "4"
+                      },
+                      "C_PROBE_WIDTH_PROPAGATION": {
+                        "value": "MANUAL"
+                      }
+                    }
                   }
                 },
                 "interface_nets": {
@@ -2975,15 +2989,6 @@
                     "ports": [
                       "bufg_gt_odiv2/usrclk",
                       "IBUFDS_ODIV2"
-                    ]
-                  },
-                  "ch0_loopback_1": {
-                    "ports": [
-                      "gt_loopback",
-                      "gt_quad_base/ch0_loopback",
-                      "gt_quad_base/ch1_loopback",
-                      "gt_quad_base/ch2_loopback",
-                      "gt_quad_base/ch3_loopback"
                     ]
                   },
                   "dcmac_0_gt_rx_reset_done_out_0": {
@@ -3070,79 +3075,79 @@
                   "dcmac_0_rx_axis_tdata0": {
                     "ports": [
                       "dcmac_0/rx_axis_tdata0",
-                      "rx_axis_tdata0"
+                      "axis_ila_1/probe1"
                     ]
                   },
                   "dcmac_0_rx_axis_tdata1": {
                     "ports": [
                       "dcmac_0/rx_axis_tdata1",
-                      "rx_axis_tdata1"
+                      "axis_ila_1/probe2"
                     ]
                   },
                   "dcmac_0_rx_axis_tuser_ena0": {
                     "ports": [
                       "dcmac_0/rx_axis_tuser_ena0",
-                      "rx_axis_tuser_ena0"
+                      "axis_ila_1/probe3"
                     ]
                   },
                   "dcmac_0_rx_axis_tuser_ena1": {
                     "ports": [
                       "dcmac_0/rx_axis_tuser_ena1",
-                      "rx_axis_tuser_ena1"
+                      "axis_ila_1/probe4"
                     ]
                   },
                   "dcmac_0_rx_axis_tuser_eop0": {
                     "ports": [
                       "dcmac_0/rx_axis_tuser_eop0",
-                      "rx_axis_tuser_eop0"
+                      "axis_ila_1/probe7"
                     ]
                   },
                   "dcmac_0_rx_axis_tuser_eop1": {
                     "ports": [
                       "dcmac_0/rx_axis_tuser_eop1",
-                      "rx_axis_tuser_eop1"
+                      "axis_ila_1/probe8"
                     ]
                   },
                   "dcmac_0_rx_axis_tuser_err0": {
                     "ports": [
                       "dcmac_0/rx_axis_tuser_err0",
-                      "rx_axis_tuser_err0"
+                      "axis_ila_1/probe11"
                     ]
                   },
                   "dcmac_0_rx_axis_tuser_err1": {
                     "ports": [
                       "dcmac_0/rx_axis_tuser_err1",
-                      "rx_axis_tuser_err1"
+                      "axis_ila_1/probe12"
                     ]
                   },
                   "dcmac_0_rx_axis_tuser_mty0": {
                     "ports": [
                       "dcmac_0/rx_axis_tuser_mty0",
-                      "rx_axis_tuser_mty0"
+                      "axis_ila_1/probe9"
                     ]
                   },
                   "dcmac_0_rx_axis_tuser_mty1": {
                     "ports": [
                       "dcmac_0/rx_axis_tuser_mty1",
-                      "rx_axis_tuser_mty1"
+                      "axis_ila_1/probe10"
                     ]
                   },
                   "dcmac_0_rx_axis_tuser_sop0": {
                     "ports": [
                       "dcmac_0/rx_axis_tuser_sop0",
-                      "rx_axis_tuser_sop0"
+                      "axis_ila_1/probe5"
                     ]
                   },
                   "dcmac_0_rx_axis_tuser_sop1": {
                     "ports": [
                       "dcmac_0/rx_axis_tuser_sop1",
-                      "rx_axis_tuser_sop1"
+                      "axis_ila_1/probe6"
                     ]
                   },
                   "dcmac_0_rx_axis_tvalid_0": {
                     "ports": [
                       "dcmac_0/rx_axis_tvalid_0",
-                      "rx_axis_tvalid_0"
+                      "axis_ila_1/probe0"
                     ]
                   },
                   "dcmac_0_rx_clr_out_0": {
@@ -3166,7 +3171,8 @@
                   "dcmac_0_tx_axis_tready_0": {
                     "ports": [
                       "dcmac_0/tx_axis_tready_0",
-                      "tx_axis_tready_0"
+                      "tx_axis_tready_0",
+                      "axis_ila_0/probe1"
                     ]
                   },
                   "dcmac_0_tx_clr_out_0": {
@@ -3179,6 +3185,15 @@
                     "ports": [
                       "dcmac_0/tx_clrb_leaf_out_0",
                       "util_ds_buf_mbufg_tx_0/MBUFG_GT_CLRB_LEAF"
+                    ]
+                  },
+                  "gt_loopback_1": {
+                    "ports": [
+                      "gt_loopback",
+                      "gt_quad_base/ch0_loopback",
+                      "gt_quad_base/ch1_loopback",
+                      "gt_quad_base/ch2_loopback",
+                      "gt_quad_base/ch3_loopback"
                     ]
                   },
                   "gt_quad_base_ch0_iloresetdone": {
@@ -3325,7 +3340,8 @@
                   "rx_axi_clk_1": {
                     "ports": [
                       "rx_axi_clk",
-                      "dcmac_0/rx_axi_clk"
+                      "dcmac_0/rx_axi_clk",
+                      "axis_ila_1/clk"
                     ]
                   },
                   "rx_core_clk_1": {
@@ -3380,43 +3396,50 @@
                   "tx_axi_clk_1": {
                     "ports": [
                       "tx_axi_clk",
-                      "dcmac_0/tx_axi_clk"
+                      "dcmac_0/tx_axi_clk",
+                      "axis_ila_0/clk"
                     ]
                   },
                   "tx_axis_tdata0_1": {
                     "ports": [
                       "tx_axis_tdata0",
-                      "dcmac_0/tx_axis_tdata0"
+                      "dcmac_0/tx_axis_tdata0",
+                      "axis_ila_0/probe2"
                     ]
                   },
                   "tx_axis_tdata1_1": {
                     "ports": [
                       "tx_axis_tdata1",
-                      "dcmac_0/tx_axis_tdata1"
+                      "dcmac_0/tx_axis_tdata1",
+                      "axis_ila_0/probe3"
                     ]
                   },
                   "tx_axis_tuser_ena0_1": {
                     "ports": [
                       "tx_axis_tuser_ena0",
-                      "dcmac_0/tx_axis_tuser_ena0"
+                      "dcmac_0/tx_axis_tuser_ena0",
+                      "axis_ila_0/probe4"
                     ]
                   },
                   "tx_axis_tuser_ena1_1": {
                     "ports": [
                       "tx_axis_tuser_ena1",
-                      "dcmac_0/tx_axis_tuser_ena1"
+                      "dcmac_0/tx_axis_tuser_ena1",
+                      "axis_ila_0/probe5"
                     ]
                   },
                   "tx_axis_tuser_eop0_1": {
                     "ports": [
                       "tx_axis_tuser_eop0",
-                      "dcmac_0/tx_axis_tuser_eop0"
+                      "dcmac_0/tx_axis_tuser_eop0",
+                      "axis_ila_0/probe8"
                     ]
                   },
                   "tx_axis_tuser_eop1_1": {
                     "ports": [
                       "tx_axis_tuser_eop1",
-                      "dcmac_0/tx_axis_tuser_eop1"
+                      "dcmac_0/tx_axis_tuser_eop1",
+                      "axis_ila_0/probe9"
                     ]
                   },
                   "tx_axis_tuser_err0_1": {
@@ -3434,31 +3457,36 @@
                   "tx_axis_tuser_mty0_1": {
                     "ports": [
                       "tx_axis_tuser_mty0",
-                      "dcmac_0/tx_axis_tuser_mty0"
+                      "dcmac_0/tx_axis_tuser_mty0",
+                      "axis_ila_0/probe10"
                     ]
                   },
                   "tx_axis_tuser_mty1_1": {
                     "ports": [
                       "tx_axis_tuser_mty1",
-                      "dcmac_0/tx_axis_tuser_mty1"
+                      "dcmac_0/tx_axis_tuser_mty1",
+                      "axis_ila_0/probe11"
                     ]
                   },
                   "tx_axis_tuser_sop0_1": {
                     "ports": [
                       "tx_axis_tuser_sop0",
-                      "dcmac_0/tx_axis_tuser_sop0"
+                      "dcmac_0/tx_axis_tuser_sop0",
+                      "axis_ila_0/probe6"
                     ]
                   },
                   "tx_axis_tuser_sop1_1": {
                     "ports": [
                       "tx_axis_tuser_sop1",
-                      "dcmac_0/tx_axis_tuser_sop1"
+                      "dcmac_0/tx_axis_tuser_sop1",
+                      "axis_ila_0/probe7"
                     ]
                   },
                   "tx_axis_tvalid_0_1": {
                     "ports": [
                       "tx_axis_tvalid_0",
-                      "dcmac_0/tx_axis_tvalid_0"
+                      "dcmac_0/tx_axis_tvalid_0",
+                      "axis_ila_0/probe0"
                     ]
                   },
                   "tx_core_clk_1": {
@@ -3726,17 +3754,27 @@
                   "gtpowergood_in": {
                     "direction": "O"
                   },
-                  "gt_rxcdrhold": {
-                    "direction": "O"
-                  },
-                  "gt_loopback": {
-                    "direction": "O"
-                  },
                   "user_gt_reset_all": {
                     "direction": "I"
                   },
                   "porta_gt_reset_rx_datapath": {
                     "direction": "I"
+                  },
+                  "user_gt_loopback": {
+                    "direction": "I",
+                    "left": "2",
+                    "right": "0"
+                  },
+                  "user_gt_rxcdrhold": {
+                    "direction": "I"
+                  },
+                  "gt_loopback": {
+                    "direction": "O",
+                    "left": "2",
+                    "right": "0"
+                  },
+                  "gt_rxcdrhold": {
+                    "direction": "O"
                   },
                   "gt_tx_reset_done_0": {
                     "direction": "I"
@@ -4097,33 +4135,6 @@
                     }
                   }
                 }
-              },
-              "axis_ila_1": {
-                "vlnv": "xilinx.com:ip:axis_ila:1.3",
-                "ip_revision": "0",
-                "xci_name": "top_level_axis_ila_1_0",
-                "xci_path": "ip/top_level_axis_ila_1_0/top_level_axis_ila_1_0.xci",
-                "inst_hier_path": "pl_rtl/ethernet/axis_ila_1",
-                "parameters": {
-                  "C_NUM_OF_PROBES": {
-                    "value": "13"
-                  },
-                  "C_PROBE10_WIDTH": {
-                    "value": "4"
-                  },
-                  "C_PROBE1_WIDTH": {
-                    "value": "128"
-                  },
-                  "C_PROBE2_WIDTH": {
-                    "value": "128"
-                  },
-                  "C_PROBE9_WIDTH": {
-                    "value": "4"
-                  },
-                  "C_PROBE_WIDTH_PROPAGATION": {
-                    "value": "MANUAL"
-                  }
-                }
               }
             },
             "interface_nets": {
@@ -4240,8 +4251,7 @@
               "dcmac_helper_rx_axi_clk": {
                 "ports": [
                   "dcmac_helper/rx_axi_clk",
-                  "dcmac_ip/rx_axi_clk",
-                  "axis_ila_1/clk"
+                  "dcmac_ip/rx_axi_clk"
                 ]
               },
               "dcmac_helper_rx_core_clk": {
@@ -4436,84 +4446,6 @@
                   "dcmac_helper/gtpowergood_0"
                 ]
               },
-              "dcmac_ip_rx_axis_tdata0": {
-                "ports": [
-                  "dcmac_ip/rx_axis_tdata0",
-                  "axis_ila_1/probe1"
-                ]
-              },
-              "dcmac_ip_rx_axis_tdata1": {
-                "ports": [
-                  "dcmac_ip/rx_axis_tdata1",
-                  "axis_ila_1/probe2"
-                ]
-              },
-              "dcmac_ip_rx_axis_tuser_ena0": {
-                "ports": [
-                  "dcmac_ip/rx_axis_tuser_ena0",
-                  "axis_ila_1/probe3"
-                ]
-              },
-              "dcmac_ip_rx_axis_tuser_ena1": {
-                "ports": [
-                  "dcmac_ip/rx_axis_tuser_ena1",
-                  "axis_ila_1/probe4"
-                ]
-              },
-              "dcmac_ip_rx_axis_tuser_eop0": {
-                "ports": [
-                  "dcmac_ip/rx_axis_tuser_eop0",
-                  "axis_ila_1/probe7"
-                ]
-              },
-              "dcmac_ip_rx_axis_tuser_eop1": {
-                "ports": [
-                  "dcmac_ip/rx_axis_tuser_eop1",
-                  "axis_ila_1/probe8"
-                ]
-              },
-              "dcmac_ip_rx_axis_tuser_err0": {
-                "ports": [
-                  "dcmac_ip/rx_axis_tuser_err0",
-                  "axis_ila_1/probe11"
-                ]
-              },
-              "dcmac_ip_rx_axis_tuser_err1": {
-                "ports": [
-                  "dcmac_ip/rx_axis_tuser_err1",
-                  "axis_ila_1/probe12"
-                ]
-              },
-              "dcmac_ip_rx_axis_tuser_mty0": {
-                "ports": [
-                  "dcmac_ip/rx_axis_tuser_mty0",
-                  "axis_ila_1/probe9"
-                ]
-              },
-              "dcmac_ip_rx_axis_tuser_mty1": {
-                "ports": [
-                  "dcmac_ip/rx_axis_tuser_mty1",
-                  "axis_ila_1/probe10"
-                ]
-              },
-              "dcmac_ip_rx_axis_tuser_sop0": {
-                "ports": [
-                  "dcmac_ip/rx_axis_tuser_sop0",
-                  "axis_ila_1/probe5"
-                ]
-              },
-              "dcmac_ip_rx_axis_tuser_sop1": {
-                "ports": [
-                  "dcmac_ip/rx_axis_tuser_sop1",
-                  "axis_ila_1/probe6"
-                ]
-              },
-              "dcmac_ip_rx_axis_tvalid_0": {
-                "ports": [
-                  "dcmac_ip/rx_axis_tvalid_0",
-                  "axis_ila_1/probe0"
-                ]
-              },
               "dcmac_ip_tx_axis_tready_1": {
                 "ports": [
                   "dcmac_ip/tx_axis_tready_0",
@@ -4594,10 +4526,22 @@
                   "dcmac_ip/tx_serdes_clk"
                 ]
               },
+              "user_gt_loopback_1": {
+                "ports": [
+                  "user_gt_loopback",
+                  "dcmac_helper/user_gt_loopback"
+                ]
+              },
               "user_gt_reset_all_1": {
                 "ports": [
                   "user_gt_reset_all",
                   "dcmac_helper/user_gt_reset_all"
+                ]
+              },
+              "user_gt_rxcdrhold_1": {
+                "ports": [
+                  "user_gt_rxcdrhold",
+                  "dcmac_helper/user_gt_rxcdrhold"
                 ]
               }
             }
@@ -5332,6 +5276,30 @@
                 "direction": "I",
                 "left": "3",
                 "right": "0"
+              },
+              "gt_loopback": {
+                "direction": "O",
+                "left": "2",
+                "right": "0"
+              },
+              "gt_rxcdrhold": {
+                "direction": "O"
+              }
+            }
+          },
+          "axis_register_slice": {
+            "vlnv": "xilinx.com:ip:axis_register_slice:1.1",
+            "ip_revision": "33",
+            "xci_name": "top_level_axis_register_slice_0_0",
+            "xci_path": "ip/top_level_axis_register_slice_0_0/top_level_axis_register_slice_0_0.xci",
+            "inst_hier_path": "pl_rtl/axis_register_slice",
+            "interface_ports": {
+              "S_AXIS": {
+                "vlnv": "xilinx.com:interface:axis_rtl:1.0",
+                "mode": "Slave",
+                "bridges": [
+                  "M_AXIS"
+                ]
               }
             }
           }
@@ -5367,6 +5335,12 @@
               "axi_uart_bridge/UART"
             ]
           },
+          "axis_register_slice_0_M_AXIS": {
+            "interface_ports": [
+              "axis_register_slice/M_AXIS",
+              "ethernet/axis_in"
+            ]
+          },
           "icn_ctrl_M01_AXI": {
             "interface_ports": [
               "packet_config/S_AXI",
@@ -5381,8 +5355,8 @@
           },
           "packet_gen_axis_out": {
             "interface_ports": [
-              "packet_gen/axis_out",
-              "ethernet/axis_in"
+              "axis_register_slice/S_AXIS",
+              "packet_gen/axis_out"
             ]
           },
           "s_axi_1": {
@@ -5402,6 +5376,12 @@
               "dcmac_ctrl_0/clk"
             ]
           },
+          "dcmac_ctrl_0_gt_loopback": {
+            "ports": [
+              "dcmac_ctrl_0/gt_loopback",
+              "ethernet/user_gt_loopback"
+            ]
+          },
           "dcmac_ctrl_0_gt_reset_all": {
             "ports": [
               "dcmac_ctrl_0/gt_reset_all",
@@ -5414,19 +5394,27 @@
               "ethernet/porta_gt_reset_rx_datapath"
             ]
           },
+          "dcmac_ctrl_0_gt_rxcdrhold": {
+            "ports": [
+              "dcmac_ctrl_0/gt_rxcdrhold",
+              "ethernet/user_gt_rxcdrhold"
+            ]
+          },
           "ethernet_axis_clk": {
             "ports": [
               "ethernet/axis_clk",
               "packet_config/clk",
               "packet_gen/clk",
-              "icn_ctrl/aclk1"
+              "icn_ctrl/aclk1",
+              "axis_register_slice/aclk"
             ]
           },
           "ethernet_axis_resetn": {
             "ports": [
               "ethernet/axis_resetn",
               "packet_config/resetn",
-              "packet_gen/resetn"
+              "packet_gen/resetn",
+              "axis_register_slice/aresetn"
             ]
           },
           "ethernet_gt_rx_reset_done": {

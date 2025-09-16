@@ -46,6 +46,8 @@
         "gt_reset_rx_datapath": [ { "direction": "out" } ],
         "rx_reset_done": [ { "direction": "in", "size_left": "3", "size_right": "0" } ],
         "tx_reset_done": [ { "direction": "in", "size_left": "3", "size_right": "0" } ],
+        "gt_loopback": [ { "direction": "out", "size_left": "2", "size_right": "0" } ],
+        "gt_rxcdrhold": [ { "direction": "out" } ],
         "S_AXI_AWADDR": [ { "direction": "in", "size_left": "7", "size_right": "0", "driver_value": "0" } ],
         "S_AXI_AWVALID": [ { "direction": "in", "driver_value": "0" } ],
         "S_AXI_AWPROT": [ { "direction": "in", "size_left": "2", "size_right": "0", "driver_value": "0" } ],

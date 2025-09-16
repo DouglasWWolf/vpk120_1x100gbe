@@ -18,10 +18,10 @@ set gt_quads [get_cells -hierarchical -filter {REF_NAME =~ "GT*QUAD*"}]
 
 
 
-# Bank 204
-set_property PACKAGE_PIN AB46 [get_ports "qsfp0_clk_clk_n"]
-set_property PACKAGE_PIN AB45 [get_ports "qsfp0_clk_clk_p"]
-set_property LOC GTM_QUAD_X0Y2 [get_cells $gt_quads -filter NAME=~*/gt_quad_base/*]
+# Bank 203
+set_property PACKAGE_PIN AF46 [get_ports "qsfp0_clk_clk_n"]
+set_property PACKAGE_PIN AF45 [get_ports "qsfp0_clk_clk_p"]
+set_property LOC GTM_QUAD_X0Y1 [get_cells $gt_quads -filter NAME=~*/gt_quad_base/*]
 create_clock -period 6.400 -name gt_ref_clk0_p -waveform {0.000 3.200} [get_ports qsfp0_clk_clk_p]
 
 

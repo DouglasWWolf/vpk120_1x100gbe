@@ -1,7 +1,7 @@
 {
   "design": {
     "design_info": {
-      "boundary_crc": "0xC597E883DA41EA10",
+      "boundary_crc": "0xC597E883AFBD560D",
       "design_src": "SBD",
       "device": "xcvp1202-vsva2785-2MP-e-S",
       "name": "bd_d0af",
@@ -626,15 +626,15 @@
         "vlnv": "xilinx.com:interface:aximm_rtl:1.0",
         "parameters": {
           "ADDR_WIDTH": {
-            "value": "64",
+            "value": "32",
             "value_src": "default"
           },
           "ARUSER_WIDTH": {
-            "value": "114",
+            "value": "0",
             "value_src": "default"
           },
           "AWUSER_WIDTH": {
-            "value": "114",
+            "value": "0",
             "value_src": "default"
           },
           "BUSER_WIDTH": {
@@ -678,8 +678,8 @@
             "value_src": "default"
           },
           "HAS_REGION": {
-            "value": "0",
-            "value_src": "constant"
+            "value": "1",
+            "value_src": "default"
           },
           "HAS_RRESP": {
             "value": "1",
@@ -690,7 +690,7 @@
             "value_src": "default"
           },
           "ID_WIDTH": {
-            "value": "2",
+            "value": "0",
             "value_src": "default"
           },
           "INSERT_VIP": {
@@ -728,7 +728,7 @@
             "value": "0"
           },
           "RUSER_WIDTH": {
-            "value": "14",
+            "value": "0",
             "value_src": "default"
           },
           "SUPPORTS_NARROW_BURST": {
@@ -738,7 +738,7 @@
             "value": "0"
           },
           "WUSER_WIDTH": {
-            "value": "14",
+            "value": "0",
             "value_src": "default"
           }
         },
