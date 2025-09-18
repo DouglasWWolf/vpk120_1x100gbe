@@ -119,7 +119,7 @@ module dcmac_helper # (parameter MAX_PORTS = 6, DW = 256)
     output        tx_axis_tuser_ena0, tx_axis_tuser_ena1,
     output        tx_axis_tuser_sop0, tx_axis_tuser_sop1,    
     output        tx_axis_tuser_eop0, tx_axis_tuser_eop1,
-    output        tx_axis_tuser_mty0, tx_axis_tuser_mty1,
+    output[3:0]   tx_axis_tuser_mty0, tx_axis_tuser_mty1,
     output        tx_axis_tuser_err0, tx_axis_tuser_err1,
     input         tx_axis_tready_0,
 

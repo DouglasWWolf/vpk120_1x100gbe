@@ -92,12 +92,26 @@ preplace netloc dcmac_0_iloreset_out_1 1 2 1 1610 1720n
 preplace netloc dcmac_0_iloreset_out_2 1 2 1 1630 1740n
 preplace netloc dcmac_0_iloreset_out_3 1 2 1 990 1760n
 preplace netloc dcmac_0_pllreset_out_0 1 2 1 1890 1840n
+preplace netloc dcmac_0_rx_axis_tdata0 1 2 1 N 3200
+preplace netloc dcmac_0_rx_axis_tdata1 1 2 1 N 3240
+preplace netloc dcmac_0_rx_axis_tuser_ena0 1 2 1 N 3280
+preplace netloc dcmac_0_rx_axis_tuser_ena1 1 2 1 N 3320
+preplace netloc dcmac_0_rx_axis_tuser_eop0 1 2 1 N 3440
+preplace netloc dcmac_0_rx_axis_tuser_eop1 1 2 1 N 3480
+preplace netloc dcmac_0_rx_axis_tuser_err0 1 2 1 1090 3380n
+preplace netloc dcmac_0_rx_axis_tuser_err1 1 2 1 1070 3460n
+preplace netloc dcmac_0_rx_axis_tuser_mty0 1 2 1 N 3520
+preplace netloc dcmac_0_rx_axis_tuser_mty1 1 2 1 N 3560
+preplace netloc dcmac_0_rx_axis_tuser_sop0 1 2 1 N 3360
+preplace netloc dcmac_0_rx_axis_tuser_sop1 1 2 1 N 3400
+preplace netloc dcmac_0_rx_axis_tvalid_0 1 2 1 N 3160
 preplace netloc dcmac_0_rx_clr_out_0 1 2 1 990 900n
 preplace netloc dcmac_0_rx_clrb_leaf_out_0 1 2 1 1050 880n
 preplace netloc dcmac_0_tx_axis_taf_0 1 2 2 NJ 4800 NJ
 preplace netloc dcmac_0_tx_axis_tready_0 1 0 3 NJ 500 NJ 500 1250
 preplace netloc dcmac_0_tx_clr_out_0 1 2 1 1010 1120n
 preplace netloc dcmac_0_tx_clrb_leaf_out_0 1 2 1 1030 1100n
+preplace netloc gt_loopback_1 1 0 3 NJ 180 NJ 180 1890
 preplace netloc gt_quad_base_ch0_iloresetdone 1 2 1 N 2000
 preplace netloc gt_quad_base_ch0_rxoutclk 1 2 1 1550 820n
 preplace netloc gt_quad_base_ch0_txoutclk 1 2 1 1290 1040n
@@ -112,6 +126,7 @@ preplace netloc gt_reset_rx_datapath_in_0_1 1 0 2 NJ 2400 NJ
 preplace netloc gt_reset_rx_datapath_in_1_1 1 0 2 NJ 2440 NJ
 preplace netloc gt_reset_rx_datapath_in_2_1 1 0 2 NJ 2480 NJ
 preplace netloc gt_reset_rx_datapath_in_3_1 1 0 2 NJ 2520 NJ
+preplace netloc gt_rxcdrhold_1 1 0 3 NJ 280 NJ 280 1790
 preplace netloc gt_txmaincursor_1 1 0 3 NJ 200 NJ 200 1870
 preplace netloc gt_txpostcursor_1 1 0 3 NJ 220 NJ 220 1850
 preplace netloc gt_txprecursor_1 1 0 3 NJ 240 NJ 240 1830
@@ -152,21 +167,6 @@ preplace netloc util_ds_buf_mbufg_rx_0_MBUFG_GT_O2 1 2 2 1070 2320 NJ
 preplace netloc util_ds_buf_mbufg_tx_0_MBUFG_GT_O1 1 2 2 1110J 3660 NJ
 preplace netloc util_ds_buf_mbufg_tx_0_MBUFG_GT_O2 1 2 2 1330 2340 NJ
 preplace netloc xlconstant_0_dout 1 1 1 280 900n
-preplace netloc dcmac_0_rx_axis_tuser_ena0 1 2 1 N 3280
-preplace netloc dcmac_0_rx_axis_tdata0 1 2 1 N 3200
-preplace netloc dcmac_0_rx_axis_tdata1 1 2 1 N 3240
-preplace netloc dcmac_0_rx_axis_tuser_ena1 1 2 1 N 3320
-preplace netloc dcmac_0_rx_axis_tuser_eop0 1 2 1 N 3440
-preplace netloc dcmac_0_rx_axis_tuser_sop1 1 2 1 N 3400
-preplace netloc dcmac_0_rx_axis_tuser_err1 1 2 1 1070 3460n
-preplace netloc dcmac_0_rx_axis_tuser_err0 1 2 1 1090 3380n
-preplace netloc dcmac_0_rx_axis_tuser_eop1 1 2 1 N 3480
-preplace netloc dcmac_0_rx_axis_tuser_mty0 1 2 1 N 3520
-preplace netloc dcmac_0_rx_axis_tuser_mty1 1 2 1 N 3560
-preplace netloc dcmac_0_rx_axis_tuser_sop0 1 2 1 N 3360
-preplace netloc dcmac_0_rx_axis_tvalid_0 1 2 1 N 3160
-preplace netloc gt_loopback_1 1 0 3 NJ 180 NJ 180 1890
-preplace netloc gt_rxcdrhold_1 1 0 3 NJ 280 NJ 280 1790
 preplace netloc Conn1 1 0 2 NJ 340 NJ
 preplace netloc dcmac_0_gtm_rx_serdes_interface_0 1 2 1 1450 1240n
 preplace netloc dcmac_0_gtm_rx_serdes_interface_1 1 2 1 1490 1280n
@@ -181,8 +181,8 @@ preplace netloc s_axi_1 1 0 2 NJ 1220 NJ
 levelinfo -pg 1 0 100 730 2120 2360
 pagesize -pg 1 -db -bbox -sgen -240 0 2580 5020
 ",
-   "No Loops_ScaleFactor":"0.40357",
-   "No Loops_TopLeft":"-409,2",
+   "No Loops_ScaleFactor":"0.146191",
+   "No Loops_TopLeft":"-4022,0",
    "guistr":"# # String gsaved with Nlview 7.8.0 2024-04-26 e1825d835c VDI=44 GEI=38 GUI=JA:21.0 TLS
 #  -string -flagsOSRD
 preplace port s_axi -pg 1 -lvl 0 -x 0 -y 2270 -defaultsOSRD
